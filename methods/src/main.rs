@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{io, io::Write};
+use std::{env, io, io::Write};
 
 use bonsai_starter_methods::GUEST_BINARY_LIST;
 use clap::Parser;
@@ -48,10 +48,14 @@ pub fn main() {
     // Execute or return image id
     let output_bytes = match &args.input {
         Some(input) => {
-            let input = hex::decode(&input[2..]).unwrap();
+            let input = hex::decode(&input[2..]).expect("Failed to decode image id");
             let env = ExecutorEnv::builder().add_input(&input).build();
-            let mut exec = Executor::from_elf(env, elf).unwrap();
-            let session = exec.run().unwrap();
+            let mut exec = Executor::from_elf(env, elf).expect("Failed to instantiate executor");
+            let session = exec.run().expect("Failed to run executor");
+            // Locally prove resulting journal
+            if env::var("PROVE_LOCALLY").is_ok() {
+                session.prove().expect("Failed to prove session");
+            }
             session.journal
         }
         None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(*image_id)),

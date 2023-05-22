@@ -13,8 +13,18 @@ cargo build --tests
 
 ## Test
 
+### Without proving
+
 ```
 forge test
 ```
 
-Note: The above command might take a while to compile the risc0 guest binary
+Note: The above command might take a while to compile the risc0 guest binary.
+
+### With proving
+
+```
+PROVE_LOCALLY=1 forge test
+```
+
+Note: The above command might take some time for the proof to be computed.

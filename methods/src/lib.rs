@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Generated create containing the image ID and ELF binary of the build guest.
+//! Generated crate containing the image ID and ELF binary of the build guest.
 
 include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 
