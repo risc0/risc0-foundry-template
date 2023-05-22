@@ -1,4 +1,4 @@
-# bonsai-starter
+# bonsai-foundry-template
 
 ## Requirements
 
@@ -28,3 +28,29 @@ PROVE_LOCALLY=1 forge test
 ```
 
 Note: The above command might take some time for the proof to be computed.
+
+## Usage
+
+### zkVM Guest Binary
+
+```
+methods/guest/src/bin/fibonacci.rs
+```
+
+### Solidity Contracts
+
+```
+src/BonsaiStarter.sol
+```
+```
+src/BonsaiStarterLowLevel.sol
+```
+
+### Foundry Tests
+
+```
+test/BonsaiStarter.t.sol
+```
+```
+test/BonsaiStarterLowLevel.t.sol
+```
