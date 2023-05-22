@@ -54,7 +54,7 @@ pub fn main() {
             let session = exec.run().unwrap();
             session.journal
         }
-        None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(image_id)),
+        None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(*image_id)),
     };
     let output = hex::encode(&output_bytes);
     print!("{output}");

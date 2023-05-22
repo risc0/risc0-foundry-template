@@ -16,5 +16,5 @@
 
 include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 
-pub const GUEST_BINARY_LIST: [(&str, (&[u8], [u32; 8])); 1] =
-    [("FIBONACCI", (FIBONACCI_ELF, FIBONACCI_ID))];
+pub const GUEST_BINARY_LIST: &[(&str, (&[u8], [u32; 8]))] =
+    &[("FIBONACCI", (FIBONACCI_ELF, FIBONACCI_ID))];
