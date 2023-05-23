@@ -14,7 +14,7 @@
 
 use std::{env, io, io::Write};
 
-use bonsai_starter_methods::GUEST_LIST;
+use bonsai_starter_methods::guest_list::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{Executor, ExecutorEnv};
 
@@ -50,7 +50,8 @@ pub fn main() {
         Some(input) => {
             let input = hex::decode(&input[2..]).expect("Failed to decode image id");
             let env = ExecutorEnv::builder().add_input(&input).build();
-            let mut exec = Executor::from_elf(env, guest_entry.elf).expect("Failed to instantiate executor");
+            let mut exec =
+                Executor::from_elf(env, guest_entry.elf).expect("Failed to instantiate executor");
             let session = exec.run().expect("Failed to run executor");
             // Locally prove resulting journal
             if env::var("PROVE_LOCALLY").is_ok() {

@@ -12,8 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Generated crate containing the image ID and ELF binary of the build guest.
+use crate::*;
 
-include!(concat!(env!("OUT_DIR"), "/methods.rs"));
+pub struct GuestEntry {
+    pub name: &'static str,
+    pub elf: &'static [u8],
+    pub image_id: [u32; 8],
+    pub path: &'static str,
+}
 
-pub mod guest_list;
+pub const GUEST_LIST: &[GuestEntry] = &[GuestEntry {
+    name: "FIBONACCI",
+    elf: FIBONACCI_ELF,
+    image_id: FIBONACCI_ID,
+    path: FIBONACCI_PATH,
+}];

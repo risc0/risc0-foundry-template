@@ -40,17 +40,17 @@ methods/guest/src/bin/fibonacci.rs
 ### Solidity Contracts
 
 ```
-src/BonsaiStarter.sol
+contracts/BonsaiStarter.sol
 ```
 ```
-src/BonsaiStarterLowLevel.sol
+contracts/BonsaiStarterLowLevel.sol
 ```
 
 ### Foundry Tests
 
 ```
-test/BonsaiStarter.t.sol
+tests/BonsaiStarter.t.sol
 ```
 ```
-test/BonsaiStarterLowLevel.t.sol
+tests/BonsaiStarterLowLevel.t.sol
 ```
