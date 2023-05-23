@@ -14,7 +14,7 @@
 
 use std::{env, io, io::Write};
 
-use bonsai_starter_methods::GUEST_BINARY_LIST;
+use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{Executor, ExecutorEnv};
 
@@ -38,11 +38,11 @@ pub fn main() {
             Ok(byte_vector) => byte_vector.try_into().unwrap_or([0u8; 32]),
             Err(_) => [0u8; 32],
         };
-    let (_, (elf, image_id)) = GUEST_BINARY_LIST
+    let guest_entry = GUEST_LIST
         .into_iter()
-        .find(|(binary_name, (_, image_id))| {
-            binary_name == &args.guest_binary.to_uppercase()
-                || bytemuck::cast::<[u32; 8], [u8; 32]>(*image_id) == potential_guest_image_id
+        .find(|entry| {
+            entry.name == &args.guest_binary.to_uppercase()
+                || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
         })
         .expect("Unknown guest binary");
     // Execute or return image id
@@ -50,7 +50,7 @@ pub fn main() {
         Some(input) => {
             let input = hex::decode(&input[2..]).expect("Failed to decode image id");
             let env = ExecutorEnv::builder().add_input(&input).build();
-            let mut exec = Executor::from_elf(env, elf).expect("Failed to instantiate executor");
+            let mut exec = Executor::from_elf(env, guest_entry.elf).expect("Failed to instantiate executor");
             let session = exec.run().expect("Failed to run executor");
             // Locally prove resulting journal
             if env::var("PROVE_LOCALLY").is_ok() {
@@ -58,7 +58,7 @@ pub fn main() {
             }
             session.journal
         }
-        None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(*image_id)),
+        None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id)),
     };
     let output = hex::encode(&output_bytes);
     print!("{output}");

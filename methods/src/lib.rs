@@ -16,5 +16,18 @@
 
 include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 
-pub const GUEST_BINARY_LIST: &[(&str, (&[u8], [u32; 8]))] =
-    &[("FIBONACCI", (FIBONACCI_ELF, FIBONACCI_ID))];
+pub struct GuestEntry {
+    pub name: &'static str,
+    pub elf: &'static [u8],
+    pub image_id: [u32; 8],
+    pub path: &'static str
+}
+
+pub const GUEST_LIST: &[GuestEntry] = &[
+    GuestEntry {
+        name: "FIBONACCI",
+        elf: FIBONACCI_ELF,
+        image_id: FIBONACCI_ID,
+        path: FIBONACCI_PATH
+    }
+];
