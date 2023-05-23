@@ -19,7 +19,7 @@ pragma solidity ^0.8.17;
 import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
 import {BonsaiLowLevelCallbackReceiver} from "bonsai-lib-sol/BonsaiLowLevelCallbackReceiver.sol";
 
-/// @title A starter application using Bonsai through the on-chain proxy.
+/// @title A starter application using Bonsai through the on-chain relay.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
 //       or difficult to implement function to a RISC Zero guest running on Bonsai.
 contract BonsaiStarterLowLevel is BonsaiLowLevelCallbackReceiver {
@@ -29,7 +29,7 @@ contract BonsaiStarterLowLevel is BonsaiLowLevelCallbackReceiver {
   // The image id of the only binary we accept callbacks from
   bytes32 public immutable fibImageId;
 
-  // Initialize the contract, binding it to a specified Bonsai proxy and RISC Zero guest image.
+  /// @notice Initialize the contract, binding it to a specified Bonsai relay and RISC Zero guest image.
   constructor(
     IBonsaiRelay bonsaiRelay,
     bytes32 _fibImageId
@@ -65,7 +65,7 @@ contract BonsaiStarterLowLevel is BonsaiLowLevelCallbackReceiver {
   }
 
   /// @notice Sends a request to Bonsai to have have the nth Fibonacci number calculated.
-  /// @dev This function sends the request to Bonsai through the on-chain proxy.
+  /// @dev This function sends the request to Bonsai through the on-chain relay.
   ///      The request will trigger Bonsai to run the specified RISC Zero guest program with
   ///      the given input and asynchronously return the verified results via the callback below.
   function calculateFibonacci(uint256 n) external {

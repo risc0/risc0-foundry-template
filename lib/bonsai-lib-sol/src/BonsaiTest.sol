@@ -21,18 +21,21 @@ import {Strings2} from "../lib/murky/differential_testing/test/utils/Strings2.so
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
 
+/// @notice A base contract for testing a Bonsai callback receiver contract
 abstract contract BonsaiTest is Test {
 
     using Strings2 for bytes;
 
     BonsaiTestRelay internal MOCK_BONSAI_RELAY;
 
+    /// @notice Instantiates a mock relay contract for testing
     modifier withRelayMock() {
         MOCK_BONSAI_RELAY = new BonsaiTestRelay();
         vm.recordLogs();
         _;
     }
 
+    /// @notice Returns the journal resulting from running the guest with the specified imageId using the provided input.
     function queryImageOutput(bytes32 imageId, bytes memory input) internal returns (bytes memory) {
         string[] memory imageRunnerInput = new string[](5);
         uint i = 0;
@@ -44,6 +47,7 @@ abstract contract BonsaiTest is Test {
         return vm.ffi(imageRunnerInput);
     }
 
+    /// @notice Returns the image id of the guest with the specified name.
     function queryImageId(string memory binaryName) internal returns (bytes32) {
         string[] memory imageRunnerInput = new string[](4);
         uint i = 0;
@@ -54,6 +58,7 @@ abstract contract BonsaiTest is Test {
         return bytes32(vm.ffi(imageRunnerInput));
     }
 
+    /// @notice Process a single callback request and invoke its receiver contract with the results.
     function relayCallback() internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
         // read logs, parse event, get image output, invoke proper callback

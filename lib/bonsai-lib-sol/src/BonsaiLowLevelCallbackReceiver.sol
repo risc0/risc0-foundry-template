@@ -22,6 +22,7 @@ pragma solidity ^0.8.17;
 /// @notice A base contract for writing a low-level Bonsai app
 abstract contract BonsaiLowLevelCallbackReceiver is BonsaiCallbackReceiver {
 
+    /// @notice Initialize the contract, binding it to a specified Bonsai relay contract
     constructor(IBonsaiRelay bonsaiRelay) BonsaiCallbackReceiver(bonsaiRelay) {}
 
     /// @notice Processes the low-level callback using the (journal, imageId) pair

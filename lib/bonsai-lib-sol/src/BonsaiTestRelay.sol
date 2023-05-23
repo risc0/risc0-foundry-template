@@ -19,6 +19,7 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 
+/// @notice A mock Bonsai relay for local testing
 contract BonsaiTestRelay is IBonsaiRelay, Test {
     event CallbackRequest(
         address account,

@@ -29,7 +29,7 @@ abstract contract BonsaiCallbackReceiver {
   // Invalid callback source error
   error UnauthorizedCallbackSource(IBonsaiRelay expected, IBonsaiRelay found);
 
-  // Initialize the contract, binding it to a specified Bonsai relay contract
+  /// @notice Initialize the contract, binding it to a specified Bonsai relay contract
   constructor(IBonsaiRelay _bonsaiRelay) {
     bonsaiRelay = _bonsaiRelay;
   }
