@@ -14,7 +14,7 @@
 
 use std::{env, io, io::Write};
 
-use bonsai_starter_methods::guest_list::GUEST_LIST;
+use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{Executor, ExecutorEnv};
 
