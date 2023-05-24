@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 ethabi = { version = "18.0", default-features = false }
-risc0-zkvm = { version = "=0.15.0", default-features = false }
+risc0-zkvm = { version = "0.15.0", default-features = false }
 
 [profile.release]
 lto = true
