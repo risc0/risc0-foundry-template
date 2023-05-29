@@ -9,7 +9,7 @@ path = "src/bin/fibonacci.rs"
 
 [dependencies]
 ethabi = { version = "18.0", default-features = false }
-risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "d40687ba803474277158eabca6f801e13324a354", default-features = false }
+risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "7c529b64006382d06024ca5862297b18a77a895c", default-features = false }
 
 [profile.release]
 lto = true
