@@ -16,8 +16,8 @@
 
 pragma solidity ^0.8.17;
 
-import {BonsaiTest} from "bonsai-lib-sol/BonsaiTest.sol";
-import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
+import {BonsaiTest} from "../lib/bonsai-lib-sol/src/BonsaiTest.sol";
+import {IBonsaiRelay} from "../lib/bonsai-lib-sol/src/IBonsaiRelay.sol";
 import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 
 contract BonsaiStarterTest is BonsaiTest {
