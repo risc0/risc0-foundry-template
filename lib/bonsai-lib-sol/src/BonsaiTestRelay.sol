@@ -16,7 +16,7 @@
 
 pragma solidity ^0.8.17;
 
-import "forge-std/Test.sol";
+import "../lib/forge-std/src/Test.sol";
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 
 /// @notice A mock Bonsai relay for local testing

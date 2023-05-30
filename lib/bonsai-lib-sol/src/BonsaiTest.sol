@@ -16,7 +16,7 @@
 
 pragma solidity ^0.8.17;
 
-import "forge-std/Test.sol";
+import "../lib/forge-std/src/Test.sol";
 import {Strings2} from "../lib/murky/differential_testing/test/utils/Strings2.sol";
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
