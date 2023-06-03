@@ -1,0 +1,38 @@
+name: lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  cargo:
+    name: cargo lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: install rust
+        uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
+
+      - name: install cargo-sort
+        uses: risc0/cargo-install@v1
+        with:
+          crate: cargo-sort
+          version: "^1.0.9"
+
+      - name: install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: lint code
+        run: cargo fmt --all -- --check
+
+      - name: lint cargo files
+        if: false # cargo sort appears to be broken. TODO: Re-evaluate
+        run: cargo sort --workspace --check

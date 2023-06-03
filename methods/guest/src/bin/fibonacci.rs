@@ -15,8 +15,7 @@
 #![no_main]
 #![no_std]
 
-use ethabi::ethereum_types::U256;
-use ethabi::{ParamType, Token};
+use ethabi::{ethereum_types::U256, ParamType, Token};
 use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
