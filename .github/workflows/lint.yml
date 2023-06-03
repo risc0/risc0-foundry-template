@@ -34,5 +34,4 @@ jobs:
         run: cargo fmt --all -- --check
 
       - name: lint cargo files
-        if: false # cargo sort appears to be broken. TODO: Re-evaluate
         run: cargo sort --workspace --check
