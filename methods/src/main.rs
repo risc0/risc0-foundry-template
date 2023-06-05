@@ -29,6 +29,17 @@ struct Args {
     input: Option<String>,
 }
 
+fn prove_locally(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
+    let env = ExecutorEnv::builder().add_input(&input).build();
+    let mut exec = Executor::from_elf(env, elf).expect("Failed to instantiate executor");
+    let session = exec.run().expect("Failed to run executor");
+    // Locally prove resulting journal
+    if env::var("PROVE_LOCALLY").is_ok() {
+        session.prove().expect("Failed to prove session");
+    }
+    session.journal
+}
+
 pub fn main() {
     // Parse arguments
     let args = Args::parse();
@@ -39,25 +50,17 @@ pub fn main() {
             Err(_) => [0u8; 32],
         };
     let guest_entry = GUEST_LIST
-        .into_iter()
+        .iter()
         .find(|entry| {
-            entry.name == &args.guest_binary.to_uppercase()
+            entry.name == args.guest_binary.to_uppercase()
                 || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
         })
         .expect("Unknown guest binary");
     // Execute or return image id
     let output_bytes = match &args.input {
         Some(input) => {
-            let input = hex::decode(&input[2..]).expect("Failed to decode image id");
-            let env = ExecutorEnv::builder().add_input(&input).build();
-            let mut exec =
-                Executor::from_elf(env, guest_entry.elf).expect("Failed to instantiate executor");
-            let session = exec.run().expect("Failed to run executor");
-            // Locally prove resulting journal
-            if env::var("PROVE_LOCALLY").is_ok() {
-                session.prove().expect("Failed to prove session");
-            }
-            session.journal
+            let input = hex::decode(&input[2..]).expect("Failed to decode input");
+            prove_locally(guest_entry.elf, input)
         }
         None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id)),
     };
