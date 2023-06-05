@@ -57,6 +57,11 @@ For testing with proof generation, which might take some time to complete, execu
 PROVE_LOCALLY=1 forge test
 ```
 
+For offloading your proof requests to a local Bonsai instance, you can execute the tests as follows:
+```bash
+BONSAI_ENDPOINT=http://localhost:8080 API_KEY=test_key forge test
+```
+
 ## Project Structure
 
 Below are the primary files in the project directory
