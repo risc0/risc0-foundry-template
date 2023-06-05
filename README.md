@@ -3,8 +3,8 @@
 Starter template for writing an application using [Bonsai].
 
 This repository implements an application on Ethereum utilizing Bonsai as a coprocessor to the smart contract application.
-It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive,
-or difficult to implement tasks to a [RISC Zero] guest, with verified results sent to your Ethereum contract.
+It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive
+(or difficult to implement) tasks to be proven by the [RISC Zero] zkVM, with verified results sent to your Ethereum contract.
 
 ## Getting Started
 
