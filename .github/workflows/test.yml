@@ -21,7 +21,7 @@ permissions:
 jobs:
   integration:
     name: integration tests
-    runs-on: [self-hosted, prod, Linux, X64, docker]
+    runs-on: [self-hosted, prod, Linux, X64]
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
