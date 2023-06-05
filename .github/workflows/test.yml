@@ -33,22 +33,13 @@ jobs:
       - name: install rust
         uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
 
-#      - name: Install Foundry
-#        uses: foundry-rs/foundry-toolchain@v1.0.9
-#
-#      - name: run tests
-#        run: forge test -vvv
-
-      - name: install docker
-        uses: docker/setup-buildx-action@v2
+      - name: Install Foundry
+        uses: risc0/foundry-toolchain
 
       - name: configure ssh agent
         uses: risc0/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: build docker image
-        run: docker build --ssh default . -t bonsai-foundry-template
-
-      - name: run integration tests
-        run: docker run bonsai-foundry-template test
+      - name: run tests
+        run: forge test -vvv
