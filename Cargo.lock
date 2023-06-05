@@ -260,11 +260,13 @@ name = "bonsai-starter-methods"
 version = "0.1.0"
 dependencies = [
  "bonsai-client",
+ "bonsai-common-rest",
  "bytemuck",
  "clap",
  "hex",
  "risc0-build",
  "risc0-zkvm",
+ "tokio",
 ]
 
 [[package]]

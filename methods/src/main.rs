@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{env, io, io::Write};
+use std::{env, io, io::Write, time::Duration};
 
+use bonsai_client::Client;
+use bonsai_common_rest::sdk::{CreationRequest, ReceiptRequest};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{Executor, ExecutorEnv};
@@ -40,7 +42,34 @@ fn prove_locally(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     session.journal
 }
 
-pub fn main() {
+async fn prove_remotely(api_url: String, elf: &[u8], input: Vec<u8>) -> Vec<u8> {
+    let api_key = match env::var("API_KEY") {
+        Ok(api_key) => api_key,
+        _ => "test_key".to_string(),
+    };
+    let mut base_client = Client::new(api_url).expect("Failed to instantiate Bonsai client");
+    let client = base_client.with_api_key(api_key);
+    let image_id = client
+        .put_image_from_elf(elf)
+        .await
+        .expect("Failed to upload elf to Bonsai")
+        .image_id;
+    let creation_request = CreationRequest { image_id, input };
+    let receipt_id = client
+        .post_receipt_request(ReceiptRequest::Create(creation_request))
+        .await
+        .expect("Failed to request receipt from Bonsai")
+        .receipt_id;
+    loop {
+        match client.get_receipt(receipt_id).await {
+            Ok(receipt) => return receipt.journal,
+            Err(_) => std::thread::sleep(Duration::from_secs(15)),
+        }
+    }
+}
+
+#[tokio::main]
+pub async fn main() {
     // Parse arguments
     let args = Args::parse();
     // Search list for requested binary name
@@ -60,7 +89,10 @@ pub fn main() {
     let output_bytes = match &args.input {
         Some(input) => {
             let input = hex::decode(&input[2..]).expect("Failed to decode input");
-            prove_locally(guest_entry.elf, input)
+            match env::var("BONSAI_ENDPOINT") {
+                Ok(api_url) => prove_remotely(api_url, guest_entry.elf, input).await,
+                Err(_) => prove_locally(guest_entry.elf, input),
+            }
         }
         None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id)),
     };
