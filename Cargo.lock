@@ -194,7 +194,7 @@ dependencies = [
 [[package]]
 name = "bonsai-client"
 version = "0.1.0"
-source = "git+ssh://git@github.com/risc0/bpn.git?rev=a8462a78d24ebae4350892ccf802f0ff133037f3#a8462a78d24ebae4350892ccf802f0ff133037f3"
+source = "git+ssh://git@github.com/risc0/bpn.git?rev=8ff66e793487ac44e533a5096709017625b12dca#8ff66e793487ac44e533a5096709017625b12dca"
 dependencies = [
  "anyhow",
  "bincode",
@@ -210,7 +210,7 @@ dependencies = [
 [[package]]
 name = "bonsai-common-rest"
 version = "0.1.0"
-source = "git+ssh://git@github.com/risc0/bpn.git?rev=a8462a78d24ebae4350892ccf802f0ff133037f3#a8462a78d24ebae4350892ccf802f0ff133037f3"
+source = "git+ssh://git@github.com/risc0/bpn.git?rev=8ff66e793487ac44e533a5096709017625b12dca#8ff66e793487ac44e533a5096709017625b12dca"
 dependencies = [
  "anyhow",
  "base64 0.21.2",
@@ -234,7 +234,7 @@ dependencies = [
 [[package]]
 name = "bonsai-compress"
 version = "0.1.0"
-source = "git+ssh://git@github.com/risc0/bpn.git?rev=a8462a78d24ebae4350892ccf802f0ff133037f3#a8462a78d24ebae4350892ccf802f0ff133037f3"
+source = "git+ssh://git@github.com/risc0/bpn.git?rev=8ff66e793487ac44e533a5096709017625b12dca#8ff66e793487ac44e533a5096709017625b12dca"
 dependencies = [
  "anyhow",
  "bincode",
@@ -246,7 +246,7 @@ dependencies = [
 [[package]]
 name = "bonsai-hashing"
 version = "0.1.0"
-source = "git+ssh://git@github.com/risc0/bpn.git?rev=a8462a78d24ebae4350892ccf802f0ff133037f3#a8462a78d24ebae4350892ccf802f0ff133037f3"
+source = "git+ssh://git@github.com/risc0/bpn.git?rev=8ff66e793487ac44e533a5096709017625b12dca#8ff66e793487ac44e533a5096709017625b12dca"
 dependencies = [
  "bytemuck",
  "hex",
@@ -2847,3 +2847,8 @@ dependencies = [
  "libc",
  "pkg-config",
 ]
+
+[[patch.unused]]
+name = "radium"
+version = "0.7.1"
+source = "git+https://github.com/bitvecto-rs/radium?rev=723bed5abd75994ee4b7221b8b12c9f4e77ce408#723bed5abd75994ee4b7221b8b12c9f4e77ce408"

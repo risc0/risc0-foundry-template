@@ -10,8 +10,8 @@ methods = ["guest"]
 risc0-build = { git = "https://github.com/risc0/risc0", rev = "d6f3ac8264233abe49f5383dc6e6df8812696ec2", features = ["guest-list"] }
 
 [dependencies]
-bonsai-client = { git = "ssh://git@github.com/risc0/bpn.git", rev = "a8462a78d24ebae4350892ccf802f0ff133037f3" }
-bonsai-common-rest = { git = "ssh://git@github.com/risc0/bpn.git", rev = "a8462a78d24ebae4350892ccf802f0ff133037f3" }
+bonsai-client = { git = "ssh://git@github.com/risc0/bpn.git", rev = "8ff66e793487ac44e533a5096709017625b12dca" }
+bonsai-common-rest = { git = "ssh://git@github.com/risc0/bpn.git", rev = "8ff66e793487ac44e533a5096709017625b12dca" }
 bytemuck = "1.13.1"
 clap = { version = "4.2.7", features = ["derive"] }
 hex = "0.4.3"
