@@ -44,7 +44,7 @@ jobs:
       - name: run tests
         run: forge test -vvv
   e2e:
-    name: e2e tests
+    name: e2e bonsai proving tests
     runs-on: [self-hosted, prod, Linux, X64, docker]
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
