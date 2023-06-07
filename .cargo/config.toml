@@ -30,6 +30,3 @@ rustflags = [
 
 [net]
 git-fetch-with-cli = true
-
-[patch.crates-io]
-radium = { git = "https://github.com/bitvecto-rs/radium", rev = "723bed5abd75994ee4b7221b8b12c9f4e77ce408" }
