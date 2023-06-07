@@ -39,7 +39,7 @@ jobs:
       - name: configure ssh agent
         uses: risc0/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_BPN_PRIVATE_KEY }}
 
       - name: run tests
         run: forge test -vvv
