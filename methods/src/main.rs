@@ -14,8 +14,7 @@
 
 use std::{env, io, io::Write, time::Duration};
 
-use bonsai_client::Client;
-use bonsai_common_rest::sdk::{CreationRequest, ReceiptRequest};
+use bonsai_sdk::Client;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{Executor, ExecutorEnv};
@@ -47,16 +46,14 @@ async fn prove_remotely(api_url: String, elf: &[u8], input: Vec<u8>) -> Vec<u8> 
         Ok(api_key) => api_key,
         _ => "test_key".to_string(),
     };
-    let mut base_client = Client::new(api_url).expect("Failed to instantiate Bonsai client");
-    let client = base_client.with_api_key(api_key);
+    let client = Client::new(api_url, api_key).expect("Failed to instantiate Bonsai client");
     let image_id = client
         .put_image_from_elf(elf)
         .await
         .expect("Failed to upload elf to Bonsai")
         .image_id;
-    let creation_request = CreationRequest { image_id, input };
     let receipt_id = client
-        .post_receipt_request(ReceiptRequest::Create(creation_request))
+        .request_receipt(image_id, input)
         .await
         .expect("Failed to request receipt from Bonsai")
         .receipt_id;
