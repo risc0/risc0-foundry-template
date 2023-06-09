@@ -41,6 +41,9 @@ jobs:
 #        with:
 #          ssh-private-key: ${{ secrets.SSH_BPN_PRIVATE_KEY }}
 
+      - name: build guest
+        run: cargo build
+
       - name: run tests
         run: forge test -vvv
   e2e:
@@ -60,10 +63,13 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: configure ssh agent
-        uses: risc0/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_BPN_PRIVATE_KEY }}
+      - name: build guest
+        run: cargo build
+
+#      - name: configure ssh agent
+#        uses: risc0/ssh-agent@v0.7.0
+#        with:
+#          ssh-private-key: ${{ secrets.SSH_BPN_PRIVATE_KEY }}
 
       - name: Pull Bonsai Repository
         uses: actions/checkout@v3
