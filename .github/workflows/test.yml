@@ -63,9 +63,6 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: build guest
-        run: cargo build
-
 #      - name: configure ssh agent
 #        uses: risc0/ssh-agent@v0.7.0
 #        with:
@@ -86,6 +83,9 @@ jobs:
       - name: Create Bonsai Docker Instance
         working-directory: ./bpn
         run: make up
+
+      - name: build guest
+        run: cargo build
 
       - name: run tests
         run: BONSAI_ENDPOINT=http://localhost:8080 forge test -vvv
