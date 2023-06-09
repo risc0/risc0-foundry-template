@@ -190,7 +190,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.1.0"
-source = "git+ssh://git@github.com/risc0/bpn.git?rev=cac7a5b6727d0d931375972186cf6683460489fe#cac7a5b6727d0d931375972186cf6683460489fe"
+source = "git+ssh://git@github.com/risc0/bpn.git?rev=c047cba3449e333baa300547bbb39d88a119a277#c047cba3449e333baa300547bbb39d88a119a277"
 dependencies = [
  "anyhow",
  "async-compression",
@@ -1627,8 +1627,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-build"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "cargo_metadata",
  "directories",
@@ -1644,8 +1644,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-build-kernel"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "cc",
  "directories",
@@ -1657,8 +1657,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "anyhow",
  "log",
@@ -1674,8 +1674,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-circuit-rv32im-sys"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "cc",
  "glob",
@@ -1686,8 +1686,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-core"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -1695,8 +1695,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-sys"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "cc",
  "glob",
@@ -1706,8 +1706,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkp"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "anyhow",
  "blake2",
@@ -1732,8 +1732,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1764,8 +1764,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm-platform"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0#ab3144a3161f4a3e7600421c6c24c4bba2ddeaa0"
+version = "0.15.2"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
 
 [[package]]
 name = "rrs-lib"
