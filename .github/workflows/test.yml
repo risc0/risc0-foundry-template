@@ -29,6 +29,8 @@ jobs:
 
       - name: clone repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: install rust
         uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
@@ -56,6 +58,8 @@ jobs:
 
       - name: clone repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: install rust
         uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
