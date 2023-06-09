@@ -71,6 +71,7 @@ jobs:
       - name: Pull Bonsai Repository
         uses: actions/checkout@v3
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: risc0/bpn
           ref: main
           path: bpn
