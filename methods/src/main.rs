@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#![allow(clippy::expect_used)]
+
 use std::{env, io, io::Write, time::Duration};
 
 use bonsai_sdk::Client;
@@ -93,7 +95,7 @@ pub async fn main() {
         }
         None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id)),
     };
-    let output = hex::encode(&output_bytes);
+    let output = hex::encode(output_bytes);
     print!("{output}");
-    io::stdout().flush().unwrap();
+    io::stdout().flush().expect("Failed to flush stdout buffer");
 }
