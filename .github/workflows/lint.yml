@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: install rust
         uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
@@ -30,7 +32,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: lint code
+      - name: install solhint
+        run: npm install -g solhint && solhint --version
+
+      - name: lint solidity code
+        run: solhint 'contracts/**/*.sol' 'lib/bonsai-lib-sol/src/**/*.sol'
+
+      - name: lint rust code
         run: cargo fmt --all -- --check
 
       - name: lint cargo files
