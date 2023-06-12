@@ -84,6 +84,7 @@ jobs:
           repository: risc0/bpn
           ref: main
           path: bpn
+          ssh-key: ${{ secrets.GHBOT_SSH_PRIVATE_KEY }}
 
       - name: Prune Dangling Docker Resources
         run: |
