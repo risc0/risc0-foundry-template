@@ -50,7 +50,30 @@ jobs:
         run: cargo build
 
       - name: run foundry tests
+        env:
+          BONSAI_BACKEND=omega
         run: forge test -vvv
+
+  alpha:
+    name: test with bonsai-alpha backend
+    runs-on: [self-hosted, prod, Linux, X64]
+
+    steps:
+      - name: clone repository
+        uses: actions/checkout@v3
+
+      - name: install rust
+        uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
+
+      - name: Install Foundry
+        uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
+
+      - name: run foundry tests
+        env:
+          BONSAI_ENDPOINT=${{ secrets.BONSAI_ALPHA_ENDPOINT }}
+          BONSAI_BACKEND=alpha
+        run: forge test -vvv
+
   e2e:
     name: e2e bonsai proving tests
     runs-on: [self-hosted, prod, Linux, X64, docker]
@@ -100,7 +123,10 @@ jobs:
         run: cargo build
 
       - name: run foundry tests
-        run: BONSAI_ENDPOINT=http://localhost:8080 forge test -vvv
+        env:
+          BONSAI_BACKEND=omega
+          BONSAI_ENDPOINT=http://localhost:8080
+        run: forge test -vvv
 
       - name: Post Run Docker
         if: always()
