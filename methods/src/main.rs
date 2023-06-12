@@ -17,9 +17,10 @@
 use std::{env, io, io::Write, time::Duration};
 
 use bonsai_sdk::Client;
+use bonsai_sdk_alpha::alpha::Client as AlphaClient;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
-use risc0_zkvm::{Executor, ExecutorEnv};
+use risc0_zkvm::{recursion::SessionRollupReceipt, Executor, ExecutorEnv};
 
 /// Runs the RISC-V ELF binary.
 #[derive(Parser)]
@@ -43,6 +44,39 @@ fn prove_locally(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     session.journal
 }
 
+const POLL_INTERVAL_SEC: u64 = 15;
+
+#[derive(serde::Deserialize)]
+pub struct AlphaRes {
+    pub alpha: bool,
+}
+
+async fn alpha_selector() -> bool {
+    if let Ok(backend) = env::var("BONSAI_BACKEND") {
+        backend == "alpha"
+    } else {
+        let endpoint = env::var("BONSAI_ENDPOINT").expect("Missing BONSAI_ENDPOINT env var");
+        let parts = endpoint.split('|').collect::<Vec<&str>>();
+        if parts.len() != 2 {
+            panic!("Invalid BONSAI_ENDPOINT env var format, expected: '<api_url>|<api_key'");
+        }
+        let api_key = parts[1];
+
+        let client = reqwest::Client::new();
+        let res: AlphaRes = client
+            .get("https://36c2brqrq4.execute-api.us-west-2.amazonaws.com/stage/alpha")
+            .header("x-api-key", api_key)
+            .send()
+            .await
+            .expect("Failed to get /alpha route")
+            .json()
+            .await
+            .expect("Failed to deserialize alpha response");
+
+        res.alpha
+    }
+}
+
 async fn prove_remotely(api_url: String, elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     let api_key = match env::var("API_KEY") {
         Ok(api_key) => api_key,
@@ -62,7 +96,56 @@ async fn prove_remotely(api_url: String, elf: &[u8], input: Vec<u8>) -> Vec<u8> 
     loop {
         match client.get_receipt(receipt_id).await {
             Ok(receipt) => return receipt.journal,
-            Err(_) => std::thread::sleep(Duration::from_secs(15)),
+            Err(_) => std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC)),
+        }
+    }
+}
+
+fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
+    let client = AlphaClient::from_env().expect("Failed to create client from env var");
+
+    let img_id = client
+        .upload_img(elf.to_vec())
+        .expect("Failed to upload ELF image");
+
+    // let input = risc0_zkvm::serde::to_vec(&input).expect("Failed to serialize
+    // input for zkvm"); let input = bytemuck::cast_slice(&input).to_vec();
+
+    let input_id = client
+        .upload_input(input)
+        .expect("Failed to upload input data");
+
+    let session = client
+        .create_session(img_id, input_id)
+        .expect("Failed to create remote proving session");
+
+    loop {
+        let res = match session.status(&client) {
+            Ok(res) => res,
+            Err(err) => {
+                eprint!("Failed to get session status: {err}");
+                std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+                continue;
+            }
+        };
+        match res.status.as_str() {
+            "RUNNING" => {
+                std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+            }
+            "SUCCEEDED" => {
+                let receipt_buf = client
+                    .download(
+                        &res.receipt_url
+                            .expect("Missing 'receipt_url' on status response"),
+                    )
+                    .expect("Failed to download receipt");
+                let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
+                    .expect("Failed to deserialize SessionRollupReceipt");
+                return receipt.journal;
+            }
+            _ => {
+                panic!("Proving session exited with bad status: {}", res.status);
+            }
         }
     }
 }
@@ -89,7 +172,15 @@ pub async fn main() {
         Some(input) => {
             let input = hex::decode(&input[2..]).expect("Failed to decode input");
             match env::var("BONSAI_ENDPOINT") {
-                Ok(api_url) => prove_remotely(api_url, guest_entry.elf, input).await,
+                Ok(api_url) => {
+                    if alpha_selector().await {
+                        tokio::task::spawn_blocking(move || prove_alpha(guest_entry.elf, input))
+                            .await
+                            .expect("Failed to run alpha sub-task")
+                    } else {
+                        prove_remotely(api_url, guest_entry.elf, input).await
+                    }
+                }
                 Err(_) => prove_locally(guest_entry.elf, input),
             }
         }
