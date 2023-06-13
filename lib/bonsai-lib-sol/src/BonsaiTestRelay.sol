@@ -52,7 +52,11 @@ contract BonsaiTestRelay is IBonsaiRelay, Test {
         vm.resumeGasMetering();
     }
 
-    function invoke_callback(address callback_contract, bytes calldata payload, uint64 gas_limit) external returns (bool, bytes memory) {
+    function invoke_callback(
+        address callback_contract,
+        bytes calldata payload,
+        uint64 gas_limit
+    ) external returns (bool, bytes memory) {
         return callback_contract.call{gas: gas_limit}(payload);
     }
 }

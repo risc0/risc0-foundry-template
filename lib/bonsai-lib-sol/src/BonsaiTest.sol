@@ -35,7 +35,7 @@ abstract contract BonsaiTest is Test {
         _;
     }
 
-    /// @notice Returns the journal resulting from running the guest with the specified imageId using the provided input.
+    /// @notice Returns the journal resulting from running the guest with @imageId using @input.
     function queryImageOutput(bytes32 imageId, bytes memory input) internal returns (bytes memory) {
         string[] memory imageRunnerInput = new string[](5);
         uint i = 0;

@@ -25,7 +25,7 @@ fn fibonacci(n: U256) -> U256 {
     for _ in 2..=n.as_u32() {
         (prev, curr) = (curr, prev + curr);
     }
-    return curr;
+    curr
 }
 
 const INPUT_LEN: usize = core::mem::size_of::<U256>();
