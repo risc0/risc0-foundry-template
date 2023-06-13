@@ -45,7 +45,7 @@ contract BonsaiStarterLowLevelTest is BonsaiTest {
         (bool success, ) = relayCallback();
         assertTrue(success, "Callback failed");
 
-        // Validate the Fibonnaci solution value
+        // Validate the Fibonacci solution value
         uint256 result = starter.fibonacci(128);
         assertEq(result, uint256(407305795904080553832073954));
     }
