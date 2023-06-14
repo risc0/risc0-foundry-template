@@ -70,8 +70,8 @@ jobs:
 
       - name: run foundry tests
         env:
-          BONSAI_ENDPOINT=${{ secrets.BONSAI_ALPHA_ENDPOINT }}
-          BONSAI_BACKEND=alpha
+          BONSAI_ENDPOINT: ${{ secrets.BONSAI_ALPHA_ENDPOINT }}
+          BONSAI_BACKEND: alpha
         run: forge test -vvv
 
   e2e:
