@@ -123,8 +123,8 @@ jobs:
 
       - name: run foundry tests
         env:
-          BONSAI_BACKEND=omega
-          BONSAI_ENDPOINT=http://localhost:8080
+          BONSAI_BACKEND: omega
+          BONSAI_ENDPOINT: http://localhost:8080
         run: forge test -vvv
 
       - name: Post Run Docker
