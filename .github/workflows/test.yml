@@ -51,7 +51,7 @@ jobs:
 
       - name: run foundry tests
         env:
-          BONSAI_BACKEND=omega
+          BONSAI_BACKEND: omega
         run: forge test -vvv
 
   alpha:
