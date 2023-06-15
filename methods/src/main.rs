@@ -16,7 +16,6 @@
 
 use std::{env, io, io::Write, time::Duration};
 
-use bonsai_sdk::Client;
 use bonsai_sdk_alpha::alpha::Client as AlphaClient;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
@@ -44,7 +43,7 @@ fn prove_locally(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     session.journal
 }
 
-const POLL_INTERVAL_SEC: u64 = 15;
+const POLL_INTERVAL_SEC: u64 = 4;
 
 #[derive(serde::Deserialize)]
 pub struct AlphaRes {
@@ -77,39 +76,12 @@ async fn alpha_selector() -> bool {
     }
 }
 
-async fn prove_remotely(api_url: String, elf: &[u8], input: Vec<u8>) -> Vec<u8> {
-    let api_key = match env::var("API_KEY") {
-        Ok(api_key) => api_key,
-        _ => "test_key".to_string(),
-    };
-    let client = Client::new(api_url, api_key).expect("Failed to instantiate Bonsai client");
-    let image_id = client
-        .put_image_from_elf(elf)
-        .await
-        .expect("Failed to upload elf to Bonsai")
-        .image_id;
-    let receipt_id = client
-        .request_receipt(image_id, input)
-        .await
-        .expect("Failed to request receipt from Bonsai")
-        .receipt_id;
-    loop {
-        match client.get_receipt(receipt_id).await {
-            Ok(receipt) => return receipt.journal,
-            Err(_) => std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC)),
-        }
-    }
-}
-
 fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     let client = AlphaClient::from_env().expect("Failed to create client from env var");
 
     let img_id = client
         .upload_img(elf.to_vec())
         .expect("Failed to upload ELF image");
-
-    // let input = risc0_zkvm::serde::to_vec(&input).expect("Failed to serialize
-    // input for zkvm"); let input = bytemuck::cast_slice(&input).to_vec();
 
     let input_id = client
         .upload_input(input)
@@ -172,13 +144,13 @@ pub async fn main() {
         Some(input) => {
             let input = hex::decode(&input[2..]).expect("Failed to decode input");
             match env::var("BONSAI_ENDPOINT") {
-                Ok(api_url) => {
+                Ok(_) => {
                     if alpha_selector().await {
                         tokio::task::spawn_blocking(move || prove_alpha(guest_entry.elf, input))
                             .await
                             .expect("Failed to run alpha sub-task")
                     } else {
-                        prove_remotely(api_url, guest_entry.elf, input).await
+                        panic!("unsupported backend");
                     }
                 }
                 Err(_) => prove_locally(guest_entry.elf, input),
