@@ -29,6 +29,8 @@ jobs:
 
       - name: clone repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: install rust
         uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
@@ -36,10 +38,70 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
+      - name: build solidity contracts
+        run: forge build
+
       - name: configure ssh agent
         uses: risc0/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.GHBOT_SSH_PRIVATE_KEY }}
 
-      - name: run tests
+      - name: build rust guest
+        run: cargo build
+
+      - name: run foundry tests
         run: forge test -vvv
+  e2e:
+    name: e2e bonsai proving tests
+    runs-on: [self-hosted, prod, Linux, X64, docker]
+    steps:
+      # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
+      - name: checkout dummy commit (submodule bug workaround)
+        run: "git checkout -f $(git -c user.name=x -c user.email=x@x commit-tree $(git hash-object -t tree /dev/null) < /dev/null) || :"
+
+      - name: clone repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: install rust
+        uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
+
+      - name: Install Foundry
+        uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
+
+      - name: build solidity contracts
+        run: forge build
+
+      - name: configure ssh agent
+        uses: risc0/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.GHBOT_SSH_PRIVATE_KEY }}
+
+      - name: Pull Bonsai Repository
+        uses: actions/checkout@v3
+        with:
+          repository: risc0/bpn
+          ref: main
+          path: bpn
+          ssh-key: ${{ secrets.GHBOT_SSH_PRIVATE_KEY }}
+
+      - name: Prune Dangling Docker Resources
+        run: |
+          docker system prune -af --filter "until=120h" # 5 days
+          docker system prune -f --volumes
+
+      - name: Create Bonsai Docker Instance
+        working-directory: ./bpn
+        run: make up
+
+      - name: build rust guest
+        run: cargo build
+
+      - name: run foundry tests
+        run: BONSAI_ENDPOINT=http://localhost:8080 forge test -vvv
+
+      - name: Post Run Docker
+        if: always()
+        working-directory: ./bpn
+        run: make down
