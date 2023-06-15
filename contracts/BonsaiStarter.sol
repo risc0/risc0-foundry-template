@@ -24,7 +24,7 @@ import {BonsaiCallbackReceiver} from "bonsai-lib-sol/BonsaiCallbackReceiver.sol"
 //       or difficult to implement function to a RISC Zero guest running on Bonsai.
 contract BonsaiStarter is BonsaiCallbackReceiver {
   // Cache of the results calculated by our guest program in Bonsai.
-  mapping(uint256 => uint256) public fibonnaciCache;
+  mapping(uint256 => uint256) public fibonacciCache;
 
   // The image id of the only binary we accept callbacks from
   bytes32 public immutable fibImageId;
@@ -40,10 +40,10 @@ contract BonsaiStarter is BonsaiCallbackReceiver {
   event CalculateFibonacciCallback(uint256 indexed n, uint256 result);
 
   /// @notice Returns nth number in the Fibonacci sequence.
-  /// @dev The sequence is defined as 1, 1, 2, 3, 5 ... with fibonnacci(0) == 1.
+  /// @dev The sequence is defined as 1, 1, 2, 3, 5 ... with fibonacci(0) == 1.
   ///      Only precomputed results can be returned. Call calculate_fibonacci(n) to precompute.
   function fibonacci(uint256 n) external view returns (uint256) {
-    uint256 result = fibonnaciCache[n];
+    uint256 result = fibonacciCache[n];
     require(result != 0, "value not available in cache");
     return result;
   }
@@ -57,7 +57,7 @@ contract BonsaiStarter is BonsaiCallbackReceiver {
     onlyBonsaiCallback(fibImageId)
   {
     emit CalculateFibonacciCallback(n, result);
-    fibonnaciCache[n] = result;
+    fibonacciCache[n] = result;
   }
 
   /// @notice Sends a request to Bonsai to have have the nth Fibonacci number calculated.
