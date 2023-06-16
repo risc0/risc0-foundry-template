@@ -17,6 +17,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
+***Hint:*** *If you're installing Foundry for the first time, be sure to quit your terminal before reopening it and running the `foundryup` command.*
+
 ## Project Setup
 1. `cd` into the directory of your chosing and clone this template repo locally to get started. 
 
@@ -48,7 +50,7 @@ If you've written tests in your zkVM progam, run them with
 ```bash
 cargo test
 ```
-*To learn more about our RISC-V zkVM [visit the docs](https://www.dev.risczero.com/docs) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).* 
+***Hint:*** *To learn more about our RISC-V zkVM [visit the docs](https://www.dev.risczero.com/docs) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
 
 ### Test your project end to end
 To test your project, end to end, including both your Solidity contracts and their interaction with your zkVM program, run
@@ -57,7 +59,7 @@ To test your project, end to end, including both your Solidity contracts and the
 forge test
 ```
 
-*To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
+***Hint:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
 
 ## Proving Modes
 The foundry template supports three different proving modes:
