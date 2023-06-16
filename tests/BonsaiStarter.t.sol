@@ -21,8 +21,7 @@ import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
 import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 
 contract BonsaiStarterTest is BonsaiTest {
-
-    function setUp() public withRelayMock { }
+    function setUp() public withRelayMock {}
 
     function testMockCall() public {
         // Deploy a new starter instance
@@ -31,18 +30,14 @@ contract BonsaiStarterTest is BonsaiTest {
             queryImageId('FIBONACCI'));
 
         // Anticipate a callback request to the relay
-        vm.expectCall(
-            address(MOCK_BONSAI_RELAY),
-            abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
+        vm.expectCall(address(MOCK_BONSAI_RELAY), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
         // Request the callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
-        vm.expectCall(
-            address(starter),
-            abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
+        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
-        (bool success, ) = relayCallback();
+        (bool success,) = relayCallback();
         assertTrue(success, "Callback failed");
 
         // Validate the Fibonacci solution value
