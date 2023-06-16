@@ -7,6 +7,8 @@ edition = "2021"
 name = "fibonacci"
 path = "src/bin/fibonacci.rs"
 
+[workspace]
+
 [dependencies]
 ethabi = { version = "18.0", default-features = false }
 risc0-zkvm = { git = "https://github.com/risc0/risc0", branch = "parker/sdk-env-vars", default-features = false }
@@ -15,4 +17,5 @@ risc0-zkvm = { git = "https://github.com/risc0/risc0", branch = "parker/sdk-env-
 lto = true
 opt-level = 3
 
-[workspace]
+[patch.crates-io]
+radium = { git = "https://github.com/bitvecto-rs/radium", rev = "723bed5abd75994ee4b7221b8b12c9f4e77ce408" }
