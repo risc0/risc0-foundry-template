@@ -118,8 +118,8 @@ Build configuration for the methods is included in `methods/build.rs`.
 [RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
 [waitlist]: https://fmree464va4.typeform.com/to/t6hZD54Z
 [Foundry]: https://getfoundry.sh/
-[zkVM]: https://www.dev.risczero.com/docs/terminology#zero-knowledge-virtual-machine-zkvm
-[zkVM guest program]: https://www.dev.risczero.com/docs/terminology#guest-program
-[zkVM guest programs]: https://www.dev.risczero.com/docs/terminology#guest-program
-[guest program]: https://www.dev.risczero.com/docs/terminology#guest-program
-[proof]: https://www.dev.risczero.com/docs/terminology#validity-proof
+[zkVM]: https://www.dev.risczero.com/terminology#zero-knowledge-virtual-machine-zkvm
+[zkVM guest program]: https://www.dev.risczero.com/terminology#guest-program
+[zkVM guest programs]: https://www.dev.risczero.com/terminology#guest-program
+[guest program]: https://www.dev.risczero.com/terminology#guest-program
+[proof]: https://www.dev.risczero.com/terminology#validity-proof
