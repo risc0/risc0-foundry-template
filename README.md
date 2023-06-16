@@ -18,6 +18,7 @@ Start building your application by forking this template.
 ### Write Your App
 
 Get started writing your application by modifying these key files:
+
 * Replace `contracts/BonsaiStarter.sol` with your on-chain application logic.
 * Replace `methods/guest/src/bin/fibonacci.rs` with your Bonsai coprocessor logic.
 
@@ -39,25 +40,22 @@ forge build
 
 ### Test
 
-Running the following will run the RISC Zero guest program tests.
-
-```bash
-cargo test
-```
-
 Running the following will run the Ethereum contract tests using your RISC Zero guest program, but without running
 the expensive computations required to prove its behavior in zero-knowledge.
 
+<!-- TODO: Update to use the new `PROVE` envvar when implemented -->
 ```bash
 forge test
 ```
 
 For testing with proof generation, which might take some time to complete, execute the following command instead:
+
 ```bash
 PROVE_MODE=local forge test
 ```
 
 For offloading your proof requests to a local Bonsai instance, you can execute the tests as follows:
+
 ```bash
 export BONSAI_API_URL='<URL>'
 export BONSAI_API_KEY='<KEY>'
@@ -114,9 +112,6 @@ Build configuration for the methods is included in `methods/build.rs`.
 
 [Bonsai]: https://dev.bonsai.xyz/
 [RISC Zero]: https://www.risczero.com/
-[ethers]: https://docs.rs/ethers/latest/ethers/
-[Cargo]: https://doc.rust-lang.org/cargo/
 [RISC Zero examples]: https://github.com/risc0/risc0/tree/main/examples
 [RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
-[waitlist]: https://fmree464va4.typeform.com/to/t6hZD54Z
 [Foundry]: https://getfoundry.sh/
