@@ -18,7 +18,7 @@ pragma solidity ^0.8.17;
 
 import {BonsaiTest} from "bonsai-lib-sol/BonsaiTest.sol";
 import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
-import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
+import {BonsaiStarter} from "contracts/BonsaiStarter.sol";
 
 contract BonsaiStarterTest is BonsaiTest {
     function setUp() public withRelayMock {}
@@ -38,7 +38,7 @@ contract BonsaiStarterTest is BonsaiTest {
         vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
         (bool success,) = relayCallback();
-        assertTrue(success, "Callback failed");
+        require(success, "Callback failed");
 
         // Validate the Fibonacci solution value
         uint256 result = starter.fibonacci(128);

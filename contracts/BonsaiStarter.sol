@@ -23,13 +23,17 @@ import {BonsaiCallbackReceiver} from "bonsai-lib-sol/BonsaiCallbackReceiver.sol"
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
 //       or difficult to implement function to a RISC Zero guest running on Bonsai.
 contract BonsaiStarter is BonsaiCallbackReceiver {
-    // Cache of the results calculated by our guest program in Bonsai.
+    /// @notice Cache of the results calculated by our guest program in Bonsai.
+    /// @dev Using a cache is one way to handle the callback from Bonsai. Upon callback, the
+    ///      information from the journal is stored in the cache for later use by the contract.
     mapping(uint256 => uint256) public fibonacciCache;
 
-    // The image id of the only binary we accept callbacks from
+    /// @notice Image ID of the only zkVM binary to accept callbacks from.
     bytes32 public immutable fibImageId;
 
-    uint64 private constant BONSAI_CALLBACK_GAS_LIMIT = 30000;
+    /// @notice Gas limit set on the callback from Bonsai.
+    /// @dev Should be set to the maximum amount of gas your callback might reasonably consume.
+    uint64 private constant BONSAI_CALLBACK_GAS_LIMIT = 100000;
 
     /// @notice Initialize the contract, binding it to a specified Bonsai relay and RISC Zero guest image.
     constructor(IBonsaiRelay bonsaiRelay, bytes32 _fibImageId) BonsaiCallbackReceiver(bonsaiRelay) {
