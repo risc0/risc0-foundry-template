@@ -29,7 +29,7 @@ dependencies = [
 [[package]]
 name = "bonsai-guest-sdk"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=rkhalil/guest-sdk#97eb1d455b41484dadacf33edebb264c061147a6"
+source = "git+https://github.com/risc0/risc0?branch=rkhalil/guest-sdk#eebce09772f9c99c6e710ff20fc90a4f5bc11863"
 dependencies = [
  "ethabi",
  "risc0-zkvm",
@@ -259,7 +259,7 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
+source = "git+https://github.com/risc0//risc0.git?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "log",
@@ -272,7 +272,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
+source = "git+https://github.com/risc0//risc0.git?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -281,7 +281,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
+source = "git+https://github.com/risc0//risc0.git?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "blake2",
@@ -301,7 +301,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
+source = "git+https://github.com/risc0//risc0.git?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -322,7 +322,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
+source = "git+https://github.com/risc0//risc0.git?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 
 [[package]]
 name = "rustc-hex"

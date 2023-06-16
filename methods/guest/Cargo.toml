@@ -12,6 +12,9 @@ bonsai-guest-sdk = { git = "https://github.com/risc0/risc0", branch = "rkhalil/g
 ethabi = { version = "18.0", default-features = false }
 risc0-zkvm = { git = "https://github.com/risc0/risc0", branch = "release-0.15", default-features = false }
 
+[patch.'https://github.com/risc0/risc0']
+risc0-zkvm = { git = "https://github.com/risc0//risc0.git", branch = "release-0.15" }
+
 [profile.release]
 lto = true
 opt-level = 3
