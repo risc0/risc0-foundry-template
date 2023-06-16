@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![allow(clippy::expect_used)]
-
 use std::{env, io, io::Write, time::Duration};
 
+use anyhow::{Result, Context};
 use bonsai_sdk_alpha::alpha::Client as AlphaClient;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
@@ -32,38 +31,44 @@ struct Args {
     input: Option<String>,
 }
 
-fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Vec<u8> {
+/// Execute and prove the guest locally, on this machine, as opposed to sending the proof request
+/// to the Bonsai service.
+// TODO(victor): Rename this function, as it only produces a proof if an envvar is set.
+fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
+    // Execute the guest program, generating the session trace needed to prove the computation.
     let env = ExecutorEnv::builder()
         .add_input(&input)
         .build()
-        .expect("Failed to build ExecEnv");
-    let mut exec = Executor::from_elf(env, elf).expect("Failed to instantiate executor");
-    let session = exec.run().expect("Failed to run executor");
+        .with_context(|| "Failed to build ExecEnv")?;
+    let mut exec = Executor::from_elf(env, elf).with_context(|| "Failed to instantiate executor")?;
+    let session = exec.run().with_context(|| "Failed to run executor")?;
+
+    // Locally prove resulting journal
     if prove {
-        session.prove().expect("Failed to prove session");
+        session.prove().with_context(|| "Failed to prove session")?;
         // eprintln!("Completed proof locally");
     } else {
         // eprintln!("Completed execution without a proof locally");
     }
-    session.journal
+    Ok(session.journal)
 }
 
 const POLL_INTERVAL_SEC: u64 = 4;
 
-fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
-    let client = AlphaClient::from_env().expect("Failed to create client from env var");
+fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
+    let client = AlphaClient::from_env().with_context(|| "Failed to create client from env var")?;
 
     let img_id = client
         .upload_img(elf.to_vec())
-        .expect("Failed to upload ELF image");
+        .with_context(|| "Failed to upload ELF image")?;
 
     let input_id = client
         .upload_input(input)
-        .expect("Failed to upload input data");
+        .with_context(|| "Failed to upload input data")?;
 
     let session = client
         .create_session(img_id, input_id)
-        .expect("Failed to create remote proving session");
+        .with_context(|| "Failed to create remote proving session")?;
 
     loop {
         let res = match session.status(&client) {
@@ -82,13 +87,13 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
                 let receipt_buf = client
                     .download(
                         &res.receipt_url
-                            .expect("Missing 'receipt_url' on status response"),
+                            .with_context(|| "Missing 'receipt_url' on status response")?,
                     )
-                    .expect("Failed to download receipt");
+                    .with_context(|| "Failed to download receipt")?;
                 let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
-                    .expect("Failed to deserialize SessionRollupReceipt");
+                    .with_context(|| "Failed to deserialize SessionRollupReceipt")?;
                 // eprintln!("Completed proof on bonsai alpha backend!");
-                return receipt.journal;
+                return Ok(receipt.journal);
             }
             _ => {
                 panic!("Proving session exited with bad status: {}", res.status);
@@ -98,7 +103,7 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
 }
 
 #[tokio::main]
-pub async fn main() {
+pub async fn main() -> Result<()> {
     // Parse arguments
     let args = Args::parse();
     // Search list for requested binary name
@@ -113,7 +118,8 @@ pub async fn main() {
             entry.name == args.guest_binary.to_uppercase()
                 || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
         })
-        .expect("Unknown guest binary");
+        .ok_or_else(|| "Unknown guest binary")?;
+
     // Execute or return image id
     let output_bytes = match &args.input {
         Some(input) => {
@@ -127,9 +133,11 @@ pub async fn main() {
                 _ => prove_locally(guest_entry.elf, input, false),
             }
         }
-        None => Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id)),
-    };
+        None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id))),
+    }?;
+
     let output = hex::encode(output_bytes);
     print!("{output}");
-    io::stdout().flush().expect("Failed to flush stdout buffer");
+    io::stdout().flush().with_context(|| "Failed to flush stdout buffer")?;
+    Ok(())
 }
