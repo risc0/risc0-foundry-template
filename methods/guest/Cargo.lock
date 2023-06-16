@@ -9,6 +9,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c7d0618f0e0b7e8ff11427422b64564d5fb0be1940354bfe2e0529b18a9d9b8"
 
 [[package]]
+name = "autocfg"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
 name = "blake2"
 version = "0.10.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -202,6 +208,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "num-traits"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "578ede34cf02f8924ab9447f50c28075b4d3e5b269972345e7e0372b38c6cdcd"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
 name = "paste"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -254,8 +269,9 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/sdk-env-vars#ffcd7de53648d20337586bf42a91d30b99211b99"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d76805638054894ca2657d4e649ce0ab9c3891af5c9d2bbf137b7b020bbfb7d"
 dependencies = [
  "anyhow",
  "log",
@@ -267,8 +283,9 @@ dependencies = [
 
 [[package]]
 name = "risc0-core"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/sdk-env-vars#ffcd7de53648d20337586bf42a91d30b99211b99"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38892fcc9e5c5dca0a8c51738a7287adce681d20bcb5f1c7470e6a405aa59d8f"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -276,8 +293,9 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkp"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/sdk-env-vars#ffcd7de53648d20337586bf42a91d30b99211b99"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29e789cb1d165b47f94e9b482ed3a866f662e3af3b01ebbfeb623ab81ae26f16"
 dependencies = [
  "anyhow",
  "blake2",
@@ -296,8 +314,9 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/sdk-env-vars#ffcd7de53648d20337586bf42a91d30b99211b99"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0a55e52c7e95116315094e48ff094085a9b83467734a9db51eced54daa105d0"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -307,6 +326,7 @@ dependencies = [
  "libm",
  "log",
  "num-derive",
+ "num-traits",
  "risc0-circuit-rv32im",
  "risc0-core",
  "risc0-zkp",
@@ -317,8 +337,9 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm-platform"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/sdk-env-vars#ffcd7de53648d20337586bf42a91d30b99211b99"
+version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c55a94911b4827596b5267caf0915790be1a9e5be77ad3b64e89934485f652f9"
 
 [[package]]
 name = "rustc-hex"
