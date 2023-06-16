@@ -28,13 +28,9 @@ fn fibonacci(n: U256) -> U256 {
     curr
 }
 
-const INPUT_LEN: usize = core::mem::size_of::<U256>();
-
 pub fn main() {
     // NOTE: Reads must be of known length. https://github.com/risc0/risc0/issues/402
-    let mut input_bytes = [0u8; INPUT_LEN];
-    env::read_slice(&mut input_bytes);
-    let input = ethabi::decode_whole(&[ParamType::Uint(256)], &input_bytes).unwrap();
+    let input = bonsai_guest_sdk::decode_whole_eth_abi_input(&[ParamType::Uint(256)]).unwrap();
     let n: U256 = input[0].clone().into_uint().unwrap();
 
     // Run the computation.

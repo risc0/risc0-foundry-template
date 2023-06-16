@@ -27,9 +27,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "bonsai-guest-sdk"
+version = "0.1.0"
+source = "git+https://github.com/risc0/risc0?branch=rkhalil/guest-sdk#f9b94afa11139ad4c7b6277f78020feec3aba2c9"
+dependencies = [
+ "ethabi",
+ "risc0-zkvm",
+]
+
+[[package]]
 name = "bonsai-starter-methods-guest"
 version = "0.1.0"
 dependencies = [
+ "bonsai-guest-sdk",
  "ethabi",
  "risc0-zkvm",
 ]
@@ -68,9 +78,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "cpufeatures"
-version = "0.2.7"
+version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3e4c1eaa2012c47becbbad2ab175484c2a84d1185b566fb2cc5b8707343dfe58"
+checksum = "03e69e28e9f7f77debdedbaafa2866e1de9ba56df55a8bd7cfc724c25a09987c"
 dependencies = [
  "libc",
 ]
@@ -147,9 +157,9 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.2.9"
+version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c85e1d9ab2eadba7e5040d4e09cbd6d072b76a557ad64e797c2cb9d4da21d7e4"
+checksum = "be4136b2a15dd319360be1c07d9933517ccf0be8f16bf62a3bee4f0d618df427"
 dependencies = [
  "cfg-if",
  "libc",
@@ -173,9 +183,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.145"
+version = "0.2.146"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc86cde3ff845662b8f4ef6cb50ea0e20c524eb3d29ae048287e06a1b3fa6a81"
+checksum = "f92be4933c13fd498862a9e02a3055f8a8d9c039ce33db97306fd5a6caa7f29b"
 
 [[package]]
 name = "libm"
@@ -185,9 +195,9 @@ checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
 
 [[package]]
 name = "log"
-version = "0.4.18"
+version = "0.4.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "518ef76f2f87365916b142844c16d8fefd85039bc5699050210a7778ee1cd1de"
+checksum = "b06a4cde4c0f271a446782e3eff8de789548ce57dbc8eca9292c27f4a42004b4"
 
 [[package]]
 name = "num-derive"
@@ -224,9 +234,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.59"
+version = "1.0.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aeca18b86b413c660b781aa319e4e2648a3e6f9eadc9b47e9038e6fe9f3451b"
+checksum = "dec2b086b7a862cf4de201096214fa870344cf922b2b30c167badb3af3195406"
 dependencies = [
  "unicode-ident",
 ]
@@ -248,8 +258,8 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.15.2"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
+version = "0.15.3"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "log",
@@ -261,8 +271,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-core"
-version = "0.15.2"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
+version = "0.15.3"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -270,8 +280,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkp"
-version = "0.15.2"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
+version = "0.15.3"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "blake2",
@@ -290,8 +300,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.15.2"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
+version = "0.15.3"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -311,8 +321,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm-platform"
-version = "0.15.2"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#99000d1086df0a4a7919ef9077d804cfbf8270f0"
+version = "0.15.3"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#8094bf8f105031e5c31c1ca749eab3723df54550"
 
 [[package]]
 name = "rustc-hex"
@@ -322,18 +332,18 @@ checksum = "3e75f6a532d0fd9f7f13144f392b6ad56a32696bfcd9c78f797f16bbb6f072d6"
 
 [[package]]
 name = "serde"
-version = "1.0.163"
+version = "1.0.164"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2113ab51b87a539ae008b5c6c02dc020ffa39afd2d83cffcb3f4eb2722cebec2"
+checksum = "9e8c8cf938e98f769bc164923b06dce91cea1751522f46f8466461af04c9027d"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.163"
+version = "1.0.164"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c805777e3930c8883389c602315a24224bcc738b63905ef87cd1420353ea93e"
+checksum = "d9735b638ccc51c28bf6914d90a2e9725b377144fc612c49a611fddd1b631d68"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -342,9 +352,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.10.6"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82e6b795fe2e3b1e845bafcb27aa35405c4d47cdfc92af5fc8d3002f76cebdc0"
+checksum = "479fb9d862239e610720565ca91403019f2f00410f1864c5aa7479b950a76ed8"
 dependencies = [
  "cfg-if",
  "cpufeatures",
