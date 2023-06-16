@@ -29,7 +29,7 @@ dependencies = [
 [[package]]
 name = "bonsai-guest-sdk"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=rkhalil/guest-sdk#f9b94afa11139ad4c7b6277f78020feec3aba2c9"
+source = "git+https://github.com/risc0/risc0?branch=rkhalil/guest-sdk#97eb1d455b41484dadacf33edebb264c061147a6"
 dependencies = [
  "ethabi",
  "risc0-zkvm",
