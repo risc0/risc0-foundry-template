@@ -50,10 +50,6 @@ cargo test
 ```
 *To learn more about our RISC-V zkVM [visit the docs](https://www.dev.risczero.com/docs) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).* 
 
-```bash
-cargo test
-```
-
 ### Test your project end to end
 To test your project, end to end, including both your Solidity contracts and their interaction with your zkVM program, run
 
@@ -61,7 +57,7 @@ To test your project, end to end, including both your Solidity contracts and the
 forge test
 ```
 
-*To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests*
+*To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
 
 ## Proving Modes
 The foundry template supports three different proving modes:
@@ -75,7 +71,7 @@ export PROVE_MODE="local"
 ``` 
 
 ### Configuring Bonsai for Eth Waterloo
-If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) #waterloo channel. 
+If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) *#waterloo* channel. 
 
 To prove in `bonsai` mode, two additional environment variables are required
 ```bash
