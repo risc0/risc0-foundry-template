@@ -14,7 +14,7 @@
 
 use std::{env, io, io::Write, time::Duration};
 
-use anyhow::{Result, Context};
+use anyhow::{anyhow, Result, Context};
 use bonsai_sdk_alpha::alpha::Client as AlphaClient;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
@@ -39,7 +39,7 @@ fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
     let env = ExecutorEnv::builder()
         .add_input(&input)
         .build()
-        .with_context(|| "Failed to build ExecEnv")?;
+        .map_err(|e| anyhow!("Failed to build ExecEnv: {:?}", e))?;
     let mut exec = Executor::from_elf(env, elf).with_context(|| "Failed to instantiate executor")?;
     let session = exec.run().with_context(|| "Failed to run executor")?;
 
@@ -118,7 +118,7 @@ pub async fn main() -> Result<()> {
             entry.name == args.guest_binary.to_uppercase()
                 || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
         })
-        .ok_or_else(|| "Unknown guest binary")?;
+        .ok_or_else(|| anyhow!("Unknown guest binary"))?;
 
     // Execute or return image id
     let output_bytes = match &args.input {
