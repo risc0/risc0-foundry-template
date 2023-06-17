@@ -43,7 +43,6 @@ forge build
 Running the following will run the Ethereum contract tests using your RISC Zero guest program, but without running
 the expensive computations required to prove its behavior in zero-knowledge.
 
-<!-- TODO: Update to use the new `PROVE` envvar when implemented -->
 ```bash
 forge test
 ```
@@ -55,6 +54,8 @@ PROVE_MODE=local forge test
 ```
 
 For offloading your proof requests to a local Bonsai instance, you can execute the tests as follows:
+
+> Get a Bonsai API key by: ...
 
 ```bash
 export BONSAI_API_URL='<URL>'
