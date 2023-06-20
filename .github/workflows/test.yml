@@ -17,6 +17,9 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  RUST_BACKTRACE: "1"
+
 jobs:
   e2e:
     name: end 2 end tests
