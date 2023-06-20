@@ -19,8 +19,8 @@ permissions:
   contents: read
 
 jobs:
-  integration:
-    name: integration tests
+  e2e:
+    name: end 2 end tests
     runs-on: [self-hosted, prod, Linux, X64]
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
@@ -44,9 +44,16 @@ jobs:
       - name: build rust guest
         run: cargo build
 
-      - name: run foundry tests
+      - name: run foundry tests with local exec
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          PROVE: bonsai
+          PROVE_MODE: none
+        run: forge test -vvv
+
+      - name: run foundry tests with bonsai alpha proving
+        env:
+          BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
+          BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
+          PROVE_MODE: bonsai
         run: forge test -vvv
