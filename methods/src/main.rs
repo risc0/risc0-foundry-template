@@ -33,10 +33,7 @@ struct Args {
 }
 
 fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Vec<u8> {
-    let env = ExecutorEnv::builder()
-        .add_input(&input)
-        .build()
-        .expect("Failed to build ExecEnv");
+    let env = ExecutorEnv::builder().add_input(&input).build();
     let mut exec = Executor::from_elf(env, elf).expect("Failed to instantiate executor");
     let session = exec.run().expect("Failed to run executor");
     if prove {
