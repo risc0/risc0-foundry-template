@@ -14,7 +14,7 @@
 
 use std::{env, io, io::Write, time::Duration};
 
-use anyhow::{anyhow, Result, Context};
+use anyhow::{anyhow, Context, Result};
 use bonsai_sdk_alpha::alpha::Client as AlphaClient;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
@@ -31,16 +31,14 @@ struct Args {
     input: Option<String>,
 }
 
-/// Execute and prove the guest locally, on this machine, as opposed to sending the proof request
-/// to the Bonsai service.
-// TODO(victor): Rename this function, as it only produces a proof if an envvar is set.
+/// Execute and prove the guest locally, on this machine, as opposed to sending
+/// the proof request to the Bonsai service.
 fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
-    // Execute the guest program, generating the session trace needed to prove the computation.
-    let env = ExecutorEnv::builder()
-        .add_input(&input)
-        .build()
-        .map_err(|e| anyhow!("Failed to build ExecEnv: {:?}", e))?;
-    let mut exec = Executor::from_elf(env, elf).with_context(|| "Failed to instantiate executor")?;
+    // Execute the guest program, generating the session trace needed to prove the
+    // computation.
+    let env = ExecutorEnv::builder().add_input(&input).build();
+    let mut exec =
+        Executor::from_elf(env, elf).with_context(|| "Failed to instantiate executor")?;
     let session = exec.run().with_context(|| "Failed to run executor")?;
 
     // Locally prove resulting journal
@@ -133,11 +131,15 @@ pub async fn main() -> Result<()> {
                 _ => prove_locally(guest_entry.elf, input, false),
             }
         }
-        None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(guest_entry.image_id))),
+        None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
+            guest_entry.image_id,
+        ))),
     }?;
 
     let output = hex::encode(output_bytes);
     print!("{output}");
-    io::stdout().flush().with_context(|| "Failed to flush stdout buffer")?;
+    io::stdout()
+        .flush()
+        .with_context(|| "Failed to flush stdout buffer")?;
     Ok(())
 }
