@@ -14,8 +14,8 @@
 
 use std::{env, io, io::Write, time::Duration};
 
-use anyhow::{anyhow, Context, Result};
-use bonsai_sdk_alpha::alpha::Client as AlphaClient;
+use anyhow::{anyhow, bail, Context, Result};
+use bonsai_sdk_alpha::alpha::Client;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
 use risc0_zkvm::{recursion::SessionRollupReceipt, Executor, ExecutorEnv};
@@ -38,12 +38,12 @@ fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
     // computation.
     let env = ExecutorEnv::builder().add_input(&input).build();
     let mut exec =
-        Executor::from_elf(env, elf).with_context(|| "Failed to instantiate executor")?;
-    let session = exec.run().with_context(|| "Failed to run executor")?;
+        Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let session = exec.run().context("Failed to run executor")?;
 
     // Locally prove resulting journal
     if prove {
-        session.prove().with_context(|| "Failed to prove session")?;
+        session.prove().context("Failed to prove session")?;
         // eprintln!("Completed proof locally");
     } else {
         // eprintln!("Completed execution without a proof locally");
@@ -54,19 +54,19 @@ fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
 const POLL_INTERVAL_SEC: u64 = 4;
 
 fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
-    let client = AlphaClient::from_env().with_context(|| "Failed to create client from env var")?;
+    let client = Client::from_env().context("Failed to create client from env var")?;
 
     let img_id = client
         .upload_img(elf.to_vec())
-        .with_context(|| "Failed to upload ELF image")?;
+        .context("Failed to upload ELF image")?;
 
     let input_id = client
         .upload_input(input)
-        .with_context(|| "Failed to upload input data")?;
+        .context("Failed to upload input data")?;
 
     let session = client
         .create_session(img_id, input_id)
-        .with_context(|| "Failed to create remote proving session")?;
+        .context("Failed to create remote proving session")?;
 
     loop {
         let res = match session.status(&client) {
@@ -85,16 +85,16 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                 let receipt_buf = client
                     .download(
                         &res.receipt_url
-                            .with_context(|| "Missing 'receipt_url' on status response")?,
+                            .context("Missing 'receipt_url' on status response")?,
                     )
-                    .with_context(|| "Failed to download receipt")?;
+                    .context("Failed to download receipt")?;
                 let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
-                    .with_context(|| "Failed to deserialize SessionRollupReceipt")?;
+                    .context("Failed to deserialize SessionRollupReceipt")?;
                 // eprintln!("Completed proof on bonsai alpha backend!");
                 return Ok(receipt.journal);
             }
             _ => {
-                panic!("Proving session exited with bad status: {}", res.status);
+                bail!("Proving session exited with bad status: {}", res.status);
             }
         }
     }
@@ -121,14 +121,13 @@ pub async fn main() -> Result<()> {
     // Execute or return image id
     let output_bytes = match &args.input {
         Some(input) => {
-            let input = hex::decode(&input[2..]).expect("Failed to decode input");
+            let input = hex::decode(&input[2..]).context("Failed to decode input")?;
             let prover = env::var("PROVE_MODE").unwrap_or("".to_string());
 
             match prover.as_str() {
                 "bonsai" => prove_alpha(guest_entry.elf, input),
                 "local" => prove_locally(guest_entry.elf, input, true),
-                "none" => prove_locally(guest_entry.elf, input, false),
-                _ => prove_locally(guest_entry.elf, input, false),
+                "none" | _ => prove_locally(guest_entry.elf, input, false),
             }
         }
         None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
@@ -140,6 +139,6 @@ pub async fn main() -> Result<()> {
     print!("{output}");
     io::stdout()
         .flush()
-        .with_context(|| "Failed to flush stdout buffer")?;
+        .context("Failed to flush stdout buffer")?;
     Ok(())
 }
