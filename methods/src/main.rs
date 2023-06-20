@@ -94,8 +94,7 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Vec<u8> {
     }
 }
 
-#[tokio::main]
-pub async fn main() {
+fn main() {
     // Parse arguments
     let args = Args::parse();
     // Search list for requested binary name
