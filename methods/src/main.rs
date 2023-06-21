@@ -120,7 +120,7 @@ fn main() -> Result<()> {
     let output_bytes = match &args.input {
         Some(input) => {
             let input = hex::decode(&input[2..]).context("Failed to decode input")?;
-            let prover = env::var("PROVE_MODE").unwrap_or("".to_string());
+            let prover = env::var("BONSAI_PROVING").unwrap_or("".to_string());
 
             match prover.as_str() {
                 "bonsai" => prove_alpha(guest_entry.elf, input),

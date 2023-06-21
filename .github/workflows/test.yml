@@ -50,12 +50,12 @@ jobs:
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          PROVE_MODE: none
+          BONSAI_PROVING: none
         run: forge test -vvv
 
       - name: run foundry tests with bonsai alpha proving
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          PROVE_MODE: bonsai
+          BONSAI_PROVING: bonsai
         run: forge test -vvv

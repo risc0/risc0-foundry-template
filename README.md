@@ -49,7 +49,7 @@ forge test
 
 For testing with [proof] generation, which might take some time to complete, execute the following command instead:
 ```bash
-PROVE_MODE=local forge test
+BONSAI_PROVING=local forge test
 ```
 
 For offloading your [proof] requests to a local Bonsai instance, you can execute the tests as follows:
@@ -59,7 +59,7 @@ For offloading your [proof] requests to a local Bonsai instance, you can execute
 ```bash
 export BONSAI_API_URL='<URL>'
 export BONSAI_API_KEY='<KEY>'
-PROVE_MODE=bonsai forge test
+BONSAI_PROVING=bonsai forge test
 ```
 
 ## Project Structure
