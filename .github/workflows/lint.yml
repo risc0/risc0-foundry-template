@@ -29,10 +29,18 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: lint rust code
+      - name: lint methods rust code
         run: cargo fmt --all -- --check
 
-      - name: lint cargo files
+      - name: lint guest rust code
+        working-directory: methods/guest
+        run: cargo fmt --all -- --check
+
+      - name: lint methods cargo files
+        run: cargo sort --workspace --check
+
+      - name: lint guest cargo files
+        working-directory: methods/guest
         run: cargo sort --workspace --check
 
       - name: check solidity code formatting
