@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  cargo:
+  cargo-forge:
     name: cargo lint
     runs-on: ubuntu-latest
     steps:
@@ -26,26 +26,22 @@ jobs:
           crate: cargo-sort
           version: "^1.0.9"
 
-      - name: install node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: install solhint
-        run: npm install -g solhint && solhint --version
-
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: lint solidity code
-        run: solhint 'contracts/**/*.sol' 'lib/bonsai-lib-sol/src/**/*.sol'
-
-      - name: lint rust code
+      - name: lint methods rust code
         run: cargo fmt --all -- --check
 
-      - name: lint cargo files
+      - name: lint guest rust code
+        working-directory: methods/guest
+        run: cargo fmt --all -- --check
+
+      - name: lint methods cargo files
+        run: cargo sort --workspace --check
+
+      - name: lint guest cargo files
+        working-directory: methods/guest
         run: cargo sort --workspace --check
 
       - name: check solidity code formatting
         run: forge fmt --check
-
