@@ -11,7 +11,7 @@ It provides a starting point for building powerful new applications on Ethereum 
 Start building your application by forking this template. Or if you already have Foundry installed running:
 
 ```bash
-forge init -t https://github.com/risc0/bonsai-foundry-template.git ./my-project
+forge init -t risc0/bonsai-foundry-template ./my-project
 ```
 
 ### Dependencies
