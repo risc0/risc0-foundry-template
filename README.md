@@ -54,12 +54,14 @@ forge test
 
 For testing with [proof] generation, which might take some time to complete, execute the following command instead:
 ```bash
-PROVE_LOCALLY=1 forge test
+PROVE_MODE=local forge test
 ```
 
 For offloading your [proof] requests to a local Bonsai instance, you can execute the tests as follows:
 ```bash
-BONSAI_ENDPOINT=http://localhost:8080 API_KEY=test_key forge test
+export BONSAI_API_URL='<URL>'
+export BONSAI_API_KEY='<KEY>'
+PROVE_MODE=bonsai forge test
 ```
 
 ## Project Structure
@@ -77,14 +79,14 @@ Below are the primary files in the project directory
 │   ├── BonsaiStarter.t.sol         // Tests for basic callback contract
 │   └── BonsaiStarterLowLevel.t.sol // Tests for low-level callback contract
 └── methods                         // [zkVM guest programs] are built here
-    ├── Cargo.toml                  
+    ├── Cargo.toml
     ├── build.rs                    // Instructions for the risc0-build rust crate
     ├── guest                       // A rust crate containing your [zkVM guest programs]
-    │   ├── Cargo.toml              
-    │   └── src                     
+    │   ├── Cargo.toml
+    │   └── src
     │       └── bin                 // Your [zkVM guest programs] live here
     │           └── fibonacci.rs    // Example [guest program] for fibonacci number calculation
-    └── src                         
+    └── src
         ├── main.rs                 // Glue binary for locally testing Bonsai applications
         └── lib.rs                  // Built RISC Zero guest programs are compiled into here
 ```
