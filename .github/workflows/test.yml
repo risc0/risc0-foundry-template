@@ -12,11 +12,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-## https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#adding-permissions-settings
-permissions:
-  id-token: write
-  contents: read
-
 env:
   RUST_BACKTRACE: "1"
 
