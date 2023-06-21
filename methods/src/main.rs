@@ -37,8 +37,7 @@ fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
     let env = ExecutorEnv::builder().add_input(&input).build();
-    let mut exec =
-        Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec.run().context("Failed to run executor")?;
 
     // Locally prove resulting journal
@@ -100,8 +99,7 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     // Parse arguments
     let args = Args::parse();
     // Search list for requested binary name
@@ -127,7 +125,7 @@ async fn main() -> Result<()> {
             match prover.as_str() {
                 "bonsai" => prove_alpha(guest_entry.elf, input),
                 "local" => prove_locally(guest_entry.elf, input, true),
-                "none" | _ => prove_locally(guest_entry.elf, input, false),
+                _ => prove_locally(guest_entry.elf, input, false),
             }
         }
         None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
