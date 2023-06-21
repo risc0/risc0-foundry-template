@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
   workflow_dispatch:
 
@@ -35,6 +34,9 @@ jobs:
       - name: install solhint
         run: npm install -g solhint && solhint --version
 
+      - name: Install Foundry
+        uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
+
       - name: lint solidity code
         run: solhint 'contracts/**/*.sol' 'lib/bonsai-lib-sol/src/**/*.sol'
 
@@ -43,3 +45,7 @@ jobs:
 
       - name: lint cargo files
         run: cargo sort --workspace --check
+
+      - name: check solidity code formatting
+        run: forge fmt --check
+

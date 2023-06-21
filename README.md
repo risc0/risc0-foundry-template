@@ -18,6 +18,7 @@ Start building your application by forking this template.
 ### Write Your App
 
 Get started writing your application by modifying these key files:
+
 * Replace `contracts/BonsaiStarter.sol` with your on-chain application logic.
 * Replace `methods/guest/src/bin/fibonacci.rs` with your [zkVM guest program].
 
@@ -39,12 +40,6 @@ forge build
 
 ### Test
 
-Running the following will run the [zkVM guest program] tests.
-
-```bash
-cargo test
-```
-
 Running the following will run the Ethereum contract tests using your [zkVM guest program], but without running
 the expensive computations required to prove its behavior in zero-knowledge.
 
@@ -54,14 +49,17 @@ forge test
 
 For testing with [proof] generation, which might take some time to complete, execute the following command instead:
 ```bash
-PROVE_MODE=local forge test
+BONSAI_PROVING=local forge test
 ```
 
 For offloading your [proof] requests to a local Bonsai instance, you can execute the tests as follows:
+
+> Get a Bonsai API key by: ...
+
 ```bash
 export BONSAI_API_URL='<URL>'
 export BONSAI_API_KEY='<KEY>'
-PROVE_MODE=bonsai forge test
+BONSAI_PROVING=bonsai forge test
 ```
 
 ## Project Structure
@@ -114,11 +112,8 @@ Build configuration for the methods is included in `methods/build.rs`.
 
 [Bonsai]: https://dev.bonsai.xyz/
 [RISC Zero]: https://www.risczero.com/
-[ethers]: https://docs.rs/ethers/latest/ethers/
-[Cargo]: https://doc.rust-lang.org/cargo/
 [RISC Zero examples]: https://github.com/risc0/risc0/tree/main/examples
 [RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
-[waitlist]: https://fmree464va4.typeform.com/to/t6hZD54Z
 [Foundry]: https://getfoundry.sh/
 [zkVM]: https://www.dev.risczero.com/terminology#zero-knowledge-virtual-machine-zkvm
 [zkVM guest program]: https://www.dev.risczero.com/terminology#guest-program

@@ -13,7 +13,8 @@
 // limitations under the License.
 
 #![no_main]
-#![no_std]
+
+use std::io::Read;
 
 use ethabi::{ethereum_types::U256, ParamType, Token};
 use risc0_zkvm::guest::env;
@@ -28,18 +29,19 @@ fn fibonacci(n: U256) -> U256 {
     curr
 }
 
-const INPUT_LEN: usize = core::mem::size_of::<U256>();
-
-pub fn main() {
-    // NOTE: Reads must be of known length. https://github.com/risc0/risc0/issues/402
-    let mut input_bytes = [0u8; INPUT_LEN];
-    env::read_slice(&mut input_bytes);
+fn main() {
+    // Read data sent from the application contract.
+    let mut input_bytes = Vec::<u8>::new();
+    env::stdin().read_to_end(&mut input_bytes).unwrap();
+    // Type array passed to `ethabi::decode_whole` should match the types encoded in
+    // the application contract.
     let input = ethabi::decode_whole(&[ParamType::Uint(256)], &input_bytes).unwrap();
     let n: U256 = input[0].clone().into_uint().unwrap();
 
     // Run the computation.
     let result = fibonacci(n);
 
-    // Commit the journal that will be decoded in the application contract.
+    // Commit the journal that will be received by the application contract.
+    // Encoded types should match the args expected by the application callback.
     env::commit_slice(&ethabi::encode(&[Token::Uint(n), Token::Uint(result)]));
 }

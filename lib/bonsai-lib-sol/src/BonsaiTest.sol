@@ -59,19 +59,20 @@ abstract contract BonsaiTest is Test {
     }
 
     /// @notice Process a single callback request and invoke its receiver contract with the results.
+    /// @return A boolean, true is the callback was successful and false otherwise, and the return
+    ///         data from the callback. Note that the Bonsai relay will not process return data.
     function relayCallback() internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
         // read logs, parse event, get image output, invoke proper callback
         bytes memory logEntry = MOCK_BONSAI_RELAY.dequeue_cbr_event_data();
 
         (
-            , // address account
             bytes32 image_id,
             bytes memory input,
             address callback_contract,
             bytes4 function_selector,
             uint64 gas_limit
-        ) = abi.decode(logEntry, (address, bytes32, bytes, address, bytes4, uint64));
+        ) = abi.decode(logEntry, (bytes32, bytes, address, bytes4, uint64));
 
         bytes memory journal = queryImageOutput(image_id, input);
         bytes memory payload = abi.encodePacked(

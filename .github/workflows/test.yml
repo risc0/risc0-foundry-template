@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,6 +16,9 @@ concurrency:
 permissions:
   id-token: write
   contents: read
+
+env:
+  RUST_BACKTRACE: "1"
 
 jobs:
   e2e:
@@ -48,12 +50,12 @@ jobs:
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          PROVE_MODE: none
+          BONSAI_PROVING: none
         run: forge test -vvv
 
       - name: run foundry tests with bonsai alpha proving
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          PROVE_MODE: bonsai
+          BONSAI_PROVING: bonsai
         run: forge test -vvv
