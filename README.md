@@ -71,7 +71,7 @@ export BONSAI_PROVING="local"
 ``` 
 
 ### Configuring Bonsai for Eth Waterloo
-If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) *#waterloo* channel. 
+If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) **#eth-waterloo** channel.
 
 To prove in `bonsai` mode, two additional environment variables are required
 ```bash
