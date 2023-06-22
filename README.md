@@ -69,7 +69,7 @@ Configure your preferred mode by setting the `BONSAI_PROVING` env variable.
 ```bash
 export BONSAI_PROVING=local
 ```
-
+After setting your preferred proving mode, use `forge test` to build and run your application. 
 ### Configuring Bonsai for Eth Waterloo
 If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) **#eth-waterloo** channel.
 
