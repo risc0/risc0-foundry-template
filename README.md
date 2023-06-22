@@ -75,8 +75,8 @@ If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the f
 
 To prove in `bonsai` mode, two additional environment variables are required
 ```bash
-export BONSAI_API_KEY: "YOUR_API_KEY" #see form linked above
-export BONSAI_API_URL: "BONSAI_URL" #provided with your api key
+export BONSAI_API_KEY="YOUR_API_KEY" #see form linked above
+export BONSAI_API_URL="BONSAI_URL" #provided with your api key
 BONSAI_PROVING=bonsai forge test
 ```
 
