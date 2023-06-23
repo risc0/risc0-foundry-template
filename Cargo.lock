@@ -159,8 +159,8 @@ dependencies = [
 
 [[package]]
 name = "bonsai-sdk"
-version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.1.1"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "reqwest",
@@ -299,9 +299,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.3.5"
+version = "4.3.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2686c4115cb0810d9a984776e197823d08ec94f176549a89a9efded477c456dc"
+checksum = "d9394150f5b4273a1763355bd1c2ec54cc5a2593f790587bcd6b2c947cfa9211"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -310,9 +310,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.3.5"
+version = "4.3.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e53afce1efce6ed1f633cf0e57612fe51db54a1ee4fd8f8503d078fe02d69ae"
+checksum = "9a78fbdd3cc2914ddf37ba444114bc7765bbdcb55ec9cbe6fa054f0137400717"
 dependencies = [
  "anstream",
  "anstyle",
@@ -1324,9 +1324,8 @@ dependencies = [
 
 [[package]]
 name = "radium"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
+version = "0.7.1"
+source = "git+https://github.com/bitvecto-rs/radium?rev=723bed5abd75994ee4b7221b8b12c9f4e77ce408#723bed5abd75994ee4b7221b8b12c9f4e77ce408"
 
 [[package]]
 name = "rand"
@@ -1472,7 +1471,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cargo_metadata",
  "directories",
@@ -1489,7 +1488,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "directories",
@@ -1502,7 +1501,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "log",
@@ -1519,7 +1518,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "glob",
@@ -1531,7 +1530,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -1540,7 +1539,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "glob",
@@ -1551,7 +1550,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "blake2",
@@ -1577,7 +1576,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1609,7 +1608,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 
 [[package]]
 name = "rrs-lib"
@@ -1937,9 +1936,9 @@ dependencies = [
 
 [[package]]
 name = "tracing-attributes"
-version = "0.1.25"
+version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8803eee176538f94ae9a14b55b2804eb7e1441f8210b1c31290b3bccdccff73b"
+checksum = "5f4f31f56159e98206da9efd823404b79b6ef3143b4a7ab76e67b1751b25a4ab"
 dependencies = [
  "proc-macro2",
  "quote",

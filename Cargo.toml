@@ -1,7 +1,13 @@
 [workspace]
+default-members = [
+    "methods"
+]
 members = [
     "methods"
 ]
+
+[patch.crates-io]
+radium = { git = "https://github.com/bitvecto-rs/radium", rev = "723bed5abd75994ee4b7221b8b12c9f4e77ce408" }
 
 # Always optimize; building and running the guest takes much longer without optimization.
 [profile.dev]
