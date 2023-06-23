@@ -3,7 +3,8 @@ default-members = [
     "methods"
 ]
 members = [
-    "methods"
+    "methods",
+    "relay"
 ]
 
 [patch.crates-io]
