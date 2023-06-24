@@ -30,9 +30,13 @@ contract Deploy is Script, BonsaiCheats {
         BonsaiRelayContract relayContract = new BonsaiRelayContract();
 
         // Deploy a new starter instance
-        new BonsaiStarter(
-            IBonsaiRelay(address(relayContract)),
-            queryImageId('FIBONACCI'));
+        IBonsaiRelay bonsaiRelay = IBonsaiRelay(address(relayContract));
+        bytes32 imageId = queryImageId('FIBONACCI');
+        BonsaiStarter starter = new BonsaiStarter(bonsaiRelay, imageId);
+
+        console.logAddress(address(bonsaiRelay));
+        console.logBytes32(imageId);
+        console.logAddress(address(starter));
 
         vm.stopBroadcast();
     }

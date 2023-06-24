@@ -28,7 +28,6 @@ use ethers::{
 };
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{recursion::SessionRollupReceipt, Executor, ExecutorEnv};
-use tracing::info;
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
 /// the proof request to the Bonsai service.
@@ -173,25 +172,30 @@ where
 
         // Execute or return image id
         let input = hex::encode(event.input);
-        let output_bytes =
-            resolve_image_output(&input, guest_entry).expect("Failed to compute journal output");
+        let journal_bytes: Vec<u8> = resolve_image_output(&input, guest_entry)
+            .expect("Failed to compute journal output")
+            .into();
+
+        let payload = [
+            event.function_selector.as_slice(),
+            journal_bytes.as_slice(),
+            event.image_id.as_slice(),
+        ]
+        .concat();
 
         // Broadcast callback transaction
-        let proof_batch = vec![Callback {
+        let proof_batch: Vec<Callback> = vec![Callback {
             callback_contract: event.callback_contract,
             journal_inclusion_proof: vec![],
-            payload: output_bytes.into(),
+            payload: payload.into(),
             gas_limit: event.gas_limit,
         }];
 
-        info!("sending batch");
-        let contract_call = proxy.invoke_callbacks(proof_batch);
-        let pending_tx = contract_call
+        proxy
+            .invoke_callbacks(proof_batch)
             .send()
             .await
-            .expect("failed to send callback transaction");
-
-        pending_tx
+            .expect("failed to send callback transaction")
             .await
             .expect("Failed to confirm callback transaction");
     }
