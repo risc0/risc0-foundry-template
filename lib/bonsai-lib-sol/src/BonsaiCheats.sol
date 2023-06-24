@@ -30,15 +30,12 @@ abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
 
     /// @notice Returns the journal resulting from running the guest with @imageId using @input.
     function queryImageOutput(bytes32 imageId, bytes memory input) internal returns (bytes memory) {
-        string[] memory imageRunnerInput = new string[](9);
+        string[] memory imageRunnerInput = new string[](6);
         uint i = 0;
         imageRunnerInput[i++] = 'cargo';
         imageRunnerInput[i++] = 'run';
-        imageRunnerInput[i++] = '--package';
-        imageRunnerInput[i++] = 'bonsai-starter-methods';
-        imageRunnerInput[i++] = '--bin';
-        imageRunnerInput[i++] = 'bonsai-starter-methods';
         imageRunnerInput[i++] = '-q';
+        imageRunnerInput[i++] = 'query';
         imageRunnerInput[i++] = abi.encodePacked(imageId).toHexString();
         imageRunnerInput[i++] = input.toHexString();
         return vm.ffi(imageRunnerInput);
@@ -46,15 +43,12 @@ abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
 
     /// @notice Returns the image id of the guest with the specified name.
     function queryImageId(string memory binaryName) internal returns (bytes32) {
-        string[] memory imageRunnerInput = new string[](8);
+        string[] memory imageRunnerInput = new string[](5);
         uint i = 0;
         imageRunnerInput[i++] = 'cargo';
         imageRunnerInput[i++] = 'run';
-        imageRunnerInput[i++] = '--package';
-        imageRunnerInput[i++] = 'bonsai-starter-methods';
-        imageRunnerInput[i++] = '--bin';
-        imageRunnerInput[i++] = 'bonsai-starter-methods';
         imageRunnerInput[i++] = '-q';
+        imageRunnerInput[i++] = 'query';
         imageRunnerInput[i++] = binaryName;
         return bytes32(vm.ffi(imageRunnerInput));
     }

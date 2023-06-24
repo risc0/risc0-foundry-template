@@ -327,10 +327,12 @@ dependencies = [
 name = "bonsai-ethereum-relay"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-trait",
  "bincode",
  "bonsai-sdk",
  "bonsai-starter-methods",
+ "bytemuck",
  "clap",
  "displaydoc",
  "ethers",
@@ -340,6 +342,7 @@ dependencies = [
  "hex",
  "pin-project",
  "reqwest",
+ "risc0-build",
  "risc0-zkvm",
  "rusoto_core",
  "rusoto_kms",
@@ -370,12 +373,6 @@ dependencies = [
 name = "bonsai-starter-methods"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "bincode",
- "bonsai-sdk",
- "bytemuck",
- "clap",
- "hex",
  "risc0-build",
  "risc0-zkvm",
 ]

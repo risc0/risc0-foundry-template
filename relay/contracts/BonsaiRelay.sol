@@ -42,7 +42,7 @@ contract BonsaiRelayContract {
         invocation_results = new bool[](callbacks.length);
         for (uint i = 0; i < callbacks.length; i++) {
             // invoke callback
-            (invocation_results[i], ) =callbacks[i].callback_contract.call{gas: callbacks[i].gas_limit}(callbacks[i].payload);
+            (invocation_results[i], ) = callbacks[i].callback_contract.call{gas: callbacks[i].gas_limit}(callbacks[i].payload);
         }
     }
 }
