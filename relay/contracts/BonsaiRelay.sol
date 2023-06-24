@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-contract Proxy {
+contract BonsaiRelayContract {
     // Initial config
     address public owner;
     // Events

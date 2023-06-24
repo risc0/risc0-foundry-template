@@ -73,12 +73,9 @@ async fn main() {
         log_status_interval: args.log_status_interval,
     };
 
-    let ethers_client = create_ethers_client_private_key(
-        &args.eth_node_url,
-        &args.private_key,
-        args.eth_chain_id,
-    )
-    .await;
+    let ethers_client =
+        create_ethers_client_private_key(&args.eth_node_url, &args.private_key, args.eth_chain_id)
+            .await;
 
     run_with_ethers_client(config, ethers_client).await
 }
@@ -91,8 +88,8 @@ async fn create_ethers_client_private_key(
     let web3_provider = Provider::<Ws>::connect(eth_node_url)
         .await
         .expect("unable to connect to websocket");
-    let web3_wallet_sk_bytes = hex::decode(private_key)
-        .expect("wallet_key_identifier should be valid hex string");
+    let web3_wallet_sk_bytes =
+        hex::decode(private_key).expect("private_key should be valid hex string");
     let web3_wallet_secret_key =
         SecretKey::from_slice(&web3_wallet_sk_bytes).expect("invalid private key");
     let web3_wallet_signing_key = SigningKey::from(web3_wallet_secret_key);

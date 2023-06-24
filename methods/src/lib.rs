@@ -105,7 +105,17 @@ pub fn resolve_guest_entry<'a>(
             entry.name == guest_binary.to_uppercase()
                 || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
         })
-        .ok_or_else(|| anyhow!("Unknown guest binary"))
+        .ok_or_else(|| {
+            let found_guests: Vec<String> = guest_list
+                .iter()
+                .map(|g| hex::encode(bytemuck::cast::<[u32; 8], [u8; 32]>(g.image_id)))
+                .collect();
+            anyhow!(
+                "Unknown guest binary {}, found: {:?}",
+                guest_binary,
+                found_guests
+            )
+        })
 }
 
 pub fn resolve_image_output(input: &String, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
