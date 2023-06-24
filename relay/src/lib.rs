@@ -128,14 +128,17 @@ pub fn resolve_guest_entry<'a>(
         })
 }
 
-pub fn resolve_image_output(input: &String, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
+pub async fn resolve_image_output(input: &String, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;
     let prover = env::var("BONSAI_PROVING").unwrap_or("".to_string());
+    let elf = guest_entry.elf.clone();
 
     match prover.as_str() {
-        "bonsai" => prove_alpha(guest_entry.elf, input),
-        "local" => prove_locally(guest_entry.elf, input, true),
-        _ => prove_locally(guest_entry.elf, input, false),
+        "bonsai" => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
+            .await
+            .expect("Failed to run alpha sub-task"),
+        "local" => prove_locally(elf, input, true),
+        _ => prove_locally(elf, input, false),
     }
 }
 
@@ -173,6 +176,7 @@ where
         // Execute or return image id
         let input = hex::encode(event.input);
         let journal_bytes: Vec<u8> = resolve_image_output(&input, guest_entry)
+            .await
             .expect("Failed to compute journal output")
             .into();
 

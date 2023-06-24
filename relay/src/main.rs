@@ -73,7 +73,7 @@ async fn main() {
 
             // Execute or return image id
             let output_bytes = match &input {
-                Some(input) => resolve_image_output(input, guest_entry),
+                Some(input) => resolve_image_output(input, guest_entry).await,
                 None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
                     guest_entry.image_id,
                 ))),
