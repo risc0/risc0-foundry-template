@@ -329,11 +329,13 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "bincode",
- "bonsai-proxy-contract",
+ "bonsai-sdk",
+ "bonsai-starter-methods",
  "clap",
  "displaydoc",
  "ethers",
  "ethers-signers",
+ "ethers-solc 1.0.2",
  "futures",
  "hex",
  "pin-project",
@@ -355,24 +357,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "bonsai-proxy-contract"
-version = "0.1.0"
-dependencies = [
- "ethers",
- "ethers-solc 1.0.2",
- "hex",
- "risc0-zkvm",
- "serde",
- "sha2 0.10.7",
- "tempfile",
- "tokio",
- "tracing",
-]
-
-[[package]]
 name = "bonsai-sdk"
 version = "0.1.1"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "reqwest",
@@ -3268,7 +3255,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cargo_metadata",
  "directories",
@@ -3285,7 +3272,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "directories",
@@ -3298,7 +3285,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "log",
@@ -3315,7 +3302,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "glob",
@@ -3327,7 +3314,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "bytemuck",
  "rand_core 0.6.4",
@@ -3336,7 +3323,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "cc",
  "glob",
@@ -3347,7 +3334,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3373,7 +3360,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 dependencies = [
  "anyhow",
  "bincode",
@@ -3405,7 +3392,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.15.3"
-source = "git+https://github.com/risc0/risc0.git?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
+source = "git+https://github.com/risc0/risc0?branch=release-0.15#ca87fec8890103087b01ba51772c791889aaf89b"
 
 [[package]]
 name = "rlp"

@@ -1,8 +1,21 @@
+// Copyright 2023 RISC Zero, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 use std::sync::Arc;
 
-use bonsai_common_log::init_logging;
+use bonsai_ethereum_relay::{run_with_ethers_client, Config};
 use clap::Parser;
-use ethereum_relay::{run_with_ethers_client, Config};
 use ethers::{
     core::{
         k256::{ecdsa::SigningKey, SecretKey},
@@ -11,25 +24,13 @@ use ethers::{
     middleware::SignerMiddleware,
     prelude::*,
     providers::{Provider, Ws},
-    signers::AwsSigner,
 };
-use rusoto_core::Region;
-use rusoto_kms::KmsClient;
 
-const DEFAULT_BONSAI_URL: &str = "http://localhost:8080";
 const DEFAULT_LOG_LEVEL: &str = "info";
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// The Bonsai endpoint to connect to
-    #[arg(short, long, default_value_t = DEFAULT_BONSAI_URL.to_string())]
-    bonsai_url: String,
-
-    /// The Bonsai API KEY
-    #[arg(long, env = "API_KEY")]
-    api_key: Option<String>,
-
     /// Ethereum Proxy address
     #[arg(short, long)]
     proxy_address: Address,
@@ -46,12 +47,6 @@ struct Args {
     #[arg(short, long)]
     wallet_key_identifier: String,
 
-    #[arg(short, long)]
-    use_kms: bool,
-
-    // /// Bonsai contract address
-    // #[arg(long)]
-    // bonsai_contract_address: Address,
     /// Log status interval [in seconds]
     #[arg(long, default_value_t = 600)]
     log_status_interval: u64,
@@ -73,42 +68,19 @@ struct Args {
 async fn main() {
     let args = Args::parse();
 
-    init_logging(
-        env!("CARGO_PKG_NAME"),
-        env!("CARGO_PKG_VERSION"),
-        args.log_to_file.clone(),
-        args.log_url.clone(),
-    )
-    .await
-    .expect("error setting up logging");
-
     let config = Config {
-        bonsai_url: args.bonsai_url,
-        bonsai_api_key: args.api_key.expect("API_KEY not set"),
         proxy_address: args.proxy_address,
         log_status_interval: args.log_status_interval,
     };
 
-    if args.use_kms {
-        let kms_client = KmsClient::new(Region::default());
-        let ethers_client = create_ethers_client_proxy_kms(
-            &args.eth_node_url,
-            &args.wallet_key_identifier,
-            kms_client,
-            args.eth_chain_id,
-        )
-        .await;
-        run_with_ethers_client(config, ethers_client).await
-    } else {
-        let ethers_client = create_ethers_client_private_key(
-            &args.eth_node_url,
-            &args.wallet_key_identifier,
-            args.eth_chain_id,
-        )
-        .await;
+    let ethers_client = create_ethers_client_private_key(
+        &args.eth_node_url,
+        &args.wallet_key_identifier,
+        args.eth_chain_id,
+    )
+    .await;
 
-        run_with_ethers_client(config, ethers_client).await
-    }
+    run_with_ethers_client(config, ethers_client).await
 }
 
 async fn create_ethers_client_private_key(
@@ -129,20 +101,4 @@ async fn create_ethers_client_private_key(
         web3_provider,
         web3_wallet.with_chain_id(eth_chain_id),
     ))
-}
-
-async fn create_ethers_client_proxy_kms(
-    eth_node_url: &str,
-    wallet_key_identifier: &str,
-    kms_client: KmsClient,
-    eth_chain_id: u64,
-) -> Arc<SignerMiddleware<Provider<Ws>, AwsSigner>> {
-    let web3_provider = Provider::<Ws>::connect(eth_node_url)
-        .await
-        .expect("unable to connect to websocket");
-    let aws_signer = AwsSigner::new(kms_client, wallet_key_identifier, eth_chain_id)
-        .await
-        .expect("error creating aws signer");
-
-    Arc::new(SignerMiddleware::new(web3_provider, aws_signer))
 }
