@@ -1,6 +1,6 @@
 [workspace]
 default-members = [
-    "methods"
+    "relay"
 ]
 members = [
     "methods",
