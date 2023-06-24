@@ -39,7 +39,7 @@ struct Args {
     #[arg(long)]
     eth_node_url: String,
 
-    // TODO(Cardosaum): Which is the best description for this value?
+    /// Ethereum Chain ID
     #[arg(long, default_value_t = 5)]
     eth_chain_id: u64,
 
