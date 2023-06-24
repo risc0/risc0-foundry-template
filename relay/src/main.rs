@@ -33,7 +33,7 @@ const DEFAULT_LOG_LEVEL: &str = "info";
 struct Args {
     /// Ethereum Proxy address
     #[arg(short, long)]
-    proxy_address: Address,
+    relay_contract_address: Address,
 
     /// Ethereum Node endpoint
     #[arg(long)]
@@ -43,9 +43,9 @@ struct Args {
     #[arg(long, default_value_t = 5)]
     eth_chain_id: u64,
 
-    // Wallet Key Identifier. Can be a private key as a hex string, or an AWS KMS key identifier
+    /// Wallet private key.
     #[arg(short, long)]
-    wallet_key_identifier: String,
+    private_key: String,
 
     /// Log status interval [in seconds]
     #[arg(long, default_value_t = 600)]
@@ -69,13 +69,13 @@ async fn main() {
     let args = Args::parse();
 
     let config = Config {
-        proxy_address: args.proxy_address,
+        proxy_address: args.relay_contract_address,
         log_status_interval: args.log_status_interval,
     };
 
     let ethers_client = create_ethers_client_private_key(
         &args.eth_node_url,
-        &args.wallet_key_identifier,
+        &args.private_key,
         args.eth_chain_id,
     )
     .await;
@@ -85,13 +85,13 @@ async fn main() {
 
 async fn create_ethers_client_private_key(
     eth_node_url: &str,
-    wallet_key_identifier: &str,
+    private_key: &str,
     eth_chain_id: u64,
 ) -> Arc<SignerMiddleware<Provider<Ws>, LocalWallet>> {
     let web3_provider = Provider::<Ws>::connect(eth_node_url)
         .await
         .expect("unable to connect to websocket");
-    let web3_wallet_sk_bytes = hex::decode(wallet_key_identifier)
+    let web3_wallet_sk_bytes = hex::decode(private_key)
         .expect("wallet_key_identifier should be valid hex string");
     let web3_wallet_secret_key =
         SecretKey::from_slice(&web3_wallet_sk_bytes).expect("invalid private key");
