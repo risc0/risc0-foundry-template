@@ -266,7 +266,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     }
 
     function governor(VoteToken token) internal override returns (IBonsaiGovernor) {
-        return new BonsaiGovernor(token, IBonsaiRelay(address(0)), bytes32(0));
+        return new BonsaiGovernor(token, IBonsaiRelay(address(this)), bytes32(0));
     }
 
     /// @notice collect the ballots and reconstruct ballot box commit by iterating through events.
@@ -349,7 +349,23 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         if (bytes(expectedRevert).length != 0) {
             vm.expectRevert(bytes(expectedRevert));
         }
-        BonsaiGovernor(payable(address(gov))).finalizeVotes(proposalId, commit, ballots);
+        // Bonsai Relay callbacks use a non-stardard call encoding of
+        // { bytes4(selector) || journal bytes || bytes32(imageId) }
+        // Here we are mocking the Relay and so assemble to call to be same structure.
+        BonsaiGovernor bonsaiGov = BonsaiGovernor(payable(address(gov)));
+        bytes memory payload = abi.encodePacked(
+            bonsaiGov.bonsaiLowLevelCallbackReceiver.selector,
+            proposalId,
+            commit,
+            ballots,
+            bytes32(0) // imageId
+        );
+        (bool success, bytes memory data) = address(bonsaiGov).call(payload);
+        if (!success) {
+            assembly {
+              revert(add(data,32),mload(data))
+            }
+        }
     }
 
     function testFinalize() public {

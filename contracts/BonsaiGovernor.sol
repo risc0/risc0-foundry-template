@@ -49,9 +49,6 @@ contract BonsaiGovernor is
         return superState;
     }
 
-    // TODO(victor): What are the effects of not being able to return the voting weight from
-    //               castVoteBySig functions.
-
     /**
      * @dev See {IGovernor-castVote}.
      *      Does not return the voter's balance, since balance lookups are deferred.
@@ -139,7 +136,7 @@ contract BonsaiGovernor is
     ///   bytes instead of any decoded form such that it can be processed without copying the
     ///   calldata to memory.
     function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes calldata encodedBallots)
-        public // TODO: Make this method internal.
+        internal
     {
         _finalizeVotes(proposalId, finalBallotBoxAccum, encodedBallots);
     }
