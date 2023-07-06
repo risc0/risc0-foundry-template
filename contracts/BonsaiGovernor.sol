@@ -6,8 +6,10 @@ import "openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 
-import "./IBonsaiGovernor.sol";
 import "./BonsaiGovernorCounting.sol";
+import "./IBonsaiGovernor.sol";
+import {BonsaiLowLevelCallbackReceiver} from "bonsai-lib-sol/BonsaiLowLevelCallbackReceiver.sol";
+import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
 
 /// @custom:security-contact security@risczero.com
 contract BonsaiGovernor is
@@ -15,14 +17,21 @@ contract BonsaiGovernor is
     GovernorSettings,
     BonsaiGovernorCounting,
     GovernorVotes,
-    GovernorVotesQuorumFraction
+    GovernorVotesQuorumFraction,
+    BonsaiLowLevelCallbackReceiver
 {
-    constructor(IVotes _token)
+    /// @notice RISC Zero zkVM image ID for the vote finalization program.
+    bytes32 public immutable imageId;
+
+    constructor(IVotes token_, IBonsaiRelay relay_, bytes32 imageId_)
         Governor("BonsaiGovernor")
         GovernorSettings(300, /* blocks */ 21000, /* blocks */ 0)
-        GovernorVotes(_token)
+        GovernorVotes(token_)
         GovernorVotesQuorumFraction(20)
-    {}
+        BonsaiLowLevelCallbackReceiver(relay_)
+    {
+        imageId = imageId_;
+    }
 
     /**
      * @notice Calculate the current state of the proposal.
@@ -38,13 +47,6 @@ contract BonsaiGovernor is
             return ProposalState.Active;
         }
         return superState;
-    }
-
-    function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes24[] calldata ballots)
-        external
-        override
-    {
-        _finalizeVotes(proposalId, finalBallotBoxAccum, ballots);
     }
 
     // TODO(victor): What are the effects of not being able to return the voting weight from
@@ -127,6 +129,35 @@ contract BonsaiGovernor is
         bytes32 digest = voteHashWithReasonAndParamsBySig(proposalId, support, reason, params);
         _commitVoteBySig(proposalId, support, v, r, s, digest);
         return 0;
+    }
+
+    /// @notice finalize the vote count, to be called by the zkVM vote finalization program.
+    /// @param proposalId the proposal identifier to be finalized.
+    /// @param finalBallotBoxAccum hash of the ballot inputs, which must match the proposal.
+    /// @param encodedBallots a packed byte array containing the deduplicated list of validated
+    ///   ballots is a 24-byte { uint32(support) || address } format. Note that it is provided as
+    ///   bytes instead of any decoded form such that it can be processed without copying the
+    ///   calldata to memory.
+    function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes calldata encodedBallots)
+        public // TODO: Make this method internal.
+    {
+        _finalizeVotes(proposalId, finalBallotBoxAccum, encodedBallots);
+    }
+
+    /// @notice Upon callback from the Bonsai Relay contract, this function is invoked with the
+    /// image ID and journal data.
+    /// @dev The image ID must be checked here to match the expected caller.
+    function bonsaiLowLevelCallback(bytes calldata journal, bytes32 imageId_)
+        internal
+        override
+        returns (bytes memory)
+    {
+        require(imageId_ == imageId, "callback does not come from the expected imageId");
+        uint256 proposalId = uint256(bytes32(journal[0:32]));
+        bytes32 finalBallotBoxAccum = bytes32(journal[32:64]);
+        bytes calldata encodedBallots = journal[64:];
+        finalizeVotes(proposalId, finalBallotBoxAccum, encodedBallots);
+        return new bytes(0);
     }
 
     function _castVote(uint256, address, uint8, string memory, bytes memory) internal pure override returns (uint256) {

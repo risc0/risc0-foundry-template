@@ -228,7 +228,7 @@ abstract contract BaselineGovernorTest is GovernorTest {
         return new BaselineGovernor(token);
     }
 
-    function finalizeVotes(uint256 proposalId) internal override {}
+    function finalizeVotes(uint256) internal override {}
 
     function setUp() public {
         token = new VoteToken();
@@ -254,7 +254,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
 
     /// @notice mapping of proposals to ballot boxes.
     /// @dev ballots are persisted to storage because evnts can only ever be obtained once from vm.getRecordedLogs().
-    mapping(uint256 => BallotBox) ballotBoxes;
+    mapping(uint256 => BallotBox) internal ballotBoxes;
 
     function setUp() public {
         token = new VoteToken();
@@ -266,12 +266,12 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     }
 
     function governor(VoteToken token) internal override returns (IBonsaiGovernor) {
-        return new BonsaiGovernor(token);
+        return new BonsaiGovernor(token, IBonsaiRelay(address(0)), bytes32(0));
     }
 
     /// @notice collect the ballots and reconstruct ballot box commit by iterating through events.
     /// @dev this function mocks what the zkVM guest will do.
-    function collectBallots(uint256 proposalId) internal returns (bytes32, bytes24[] memory) {
+    function collectBallots(uint256 proposalId) internal returns (bytes32, bytes memory) {
         // This function normally executes off-chain in the guest.
         vm.pauseGasMetering();
 
@@ -323,22 +323,33 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             box.support[voter] = support;
         }
 
-        bytes24[] memory ballots = new bytes24[](box.voters.length);
+        bytes memory encodedBallots = new bytes(box.voters.length.mul(24));
         for (uint256 i = 0; i < box.voters.length; i = i.add(1)) {
             address voter = box.voters[i];
             uint8 support = box.support[voter];
 
-            // Encode the address and support to 24 bytes and push it to the ballots array.
-            ballots[i] = bytes24((uint192(support) << 160) | uint192(uint160(voter)));
+            // Encode the address and support to 24 bytes and then copy it into the encoded array.
+            bytes24 ballot = bytes24((uint192(support) << 160) | uint192(uint160(voter)));
+            uint256 offset = i.mul(24);
+            for (uint256 j = 0; j < 24; j = j.add(1)) {
+                encodedBallots[offset + j] = ballot[j];
+            }
         }
 
         vm.resumeGasMetering();
-        return (box.commit, ballots);
+        return (box.commit, encodedBallots);
     }
 
     function finalizeVotes(uint256 proposalId) internal override {
-        (bytes32 commit, bytes24[] memory ballots) = collectBallots(proposalId);
-        gov.finalizeVotes(proposalId, commit, ballots);
+        finalizeVotes(proposalId, "");
+    }
+
+    function finalizeVotes(uint256 proposalId, string memory expectedRevert) internal {
+        (bytes32 commit, bytes memory ballots) = collectBallots(proposalId);
+        if (bytes(expectedRevert).length != 0) {
+            vm.expectRevert(bytes(expectedRevert));
+        }
+        BonsaiGovernor(payable(address(gov))).finalizeVotes(proposalId, commit, ballots);
     }
 
     function testFinalize() public {
@@ -347,11 +358,8 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         vm.roll(block.number + gov.votingDelay() + 1);
         scene.castVotes(proposalId);
 
-        (bytes32 commit, bytes24[] memory ballots) = collectBallots(proposalId);
-
         // Finalize can only be called after voting concludes.
-        vm.expectRevert();
-        gov.finalizeVotes(proposalId, commit, ballots);
+        finalizeVotes(proposalId, "voting has not ended");
 
         // Move the block number forward past the voting deadline.
         vm.roll(gov.proposalDeadline(proposalId) + 1);
@@ -359,7 +367,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         // Check that before finalization, the state is active and after it is success.
         require(gov.state(proposalId) == IGovernor.ProposalState.Active, "expected proposal state active");
 
-        gov.finalizeVotes(proposalId, commit, ballots);
+        finalizeVotes(proposalId);
         if (scene.success()) {
             require(gov.state(proposalId) == IGovernor.ProposalState.Succeeded, "expected proposal state Succeeded");
         } else {
@@ -367,8 +375,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         }
 
         // Finalize can only be called once.
-        vm.expectRevert();
-        gov.finalizeVotes(proposalId, commit, ballots);
+        finalizeVotes(proposalId, "votes have already been finalized");
     }
 }
 
@@ -437,4 +444,3 @@ contract BenchBaselineTest is BaselineGovernorTest, BenchTest {
 contract BenchBonsaiTest is BonsaiGovernorTest, BenchTest {
     constructor() BenchTest(100) {}
 }
-

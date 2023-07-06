@@ -24,11 +24,4 @@ abstract contract IBonsaiGovernor is IGovernor, Governor {
             )
         );
     }
-
-    /// @dev Optional. If not implemented, this function is a no-op and it is assumed it does not
-    /// need to be called for the final vote count to be available.
-    function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes24[] calldata ballots)
-        external
-        virtual
-    {}
 }

@@ -138,24 +138,24 @@ abstract contract BonsaiGovernorCounting is Governor {
         return id;
     }
 
-    function _finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxCommit, bytes24[] calldata ballots) internal {
+    function _finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxCommit, bytes calldata encodedBallots) internal {
         require(clock() > proposalDeadline(proposalId), "voting has not ended");
-
         ProposalVote memory proposalVote = _proposalVotes[proposalId];
         require(!proposalVote.finalized, "votes have already been finalized");
-        proposalVote.finalized = true;
-
         require(proposalVote.ballotBoxCommit == finalBallotBoxCommit, "ballot box accumulator mismatch");
+        require(encodedBallots.length % 24 == 0, "must encode a whole number of encoded ballots");
+        proposalVote.finalized = true;
 
         uint256 snapshot = proposalSnapshot(proposalId);
         bytes memory params = _defaultParams();
 
-        for (uint256 i = 0; i < ballots.length; i = i.add(1)) {
+        // Iterate through the encoded ballots in chunks of 24 bytes.
+        for (uint256 offset = 0; offset < encodedBallots.length; offset = offset.add(24)) {
             // Decode the packed ballot encoding.
             // { bytes3(0), uint8(support), address }
-            bytes24 ballot = ballots[i];
-            address account = address(uint160(uint192(ballot)));
+            bytes24 ballot = bytes24(encodedBallots[offset:offset + 24]);
             uint8 support = uint8(uint192(ballot) >> 160);
+            address account = address(uint160(uint192(ballot)));
 
             // Look up the voting weight for the account associated with the ballot.
             // NOTE: If a singature was invalid, it will likely result in a lookup for a random
