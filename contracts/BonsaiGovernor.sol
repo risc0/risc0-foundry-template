@@ -135,9 +135,7 @@ contract BonsaiGovernor is
     ///   ballots is a 24-byte { uint32(support) || address } format. Note that it is provided as
     ///   bytes instead of any decoded form such that it can be processed without copying the
     ///   calldata to memory.
-    function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes calldata encodedBallots)
-        internal
-    {
+    function finalizeVotes(uint256 proposalId, bytes32 finalBallotBoxAccum, bytes calldata encodedBallots) internal {
         _finalizeVotes(proposalId, finalBallotBoxAccum, encodedBallots);
     }
 

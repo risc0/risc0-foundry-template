@@ -247,9 +247,14 @@ abstract contract BonsaiGovernorTest is GovernorTest {
 
     struct BallotBox {
         bytes32 commit;
-        mapping(address => bool) hasVoted;
         mapping(address => uint8) support;
+        mapping(address => bool) hasVoted;
         address[] voters;
+        /// Bytes that can be sent to the zkVM vote finalization guest.
+        /// Given this input, the zkVM guest should return the same result as the Solidity
+        /// implementation in this contract, modulo any permutation of the output ballots list which
+        /// does not have a defined ordering.
+        bytes guestInput;
     }
 
     /// @notice mapping of proposals to ballot boxes.
@@ -278,6 +283,9 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         BallotBox storage box = ballotBoxes[proposalId];
         if (box.commit == bytes32(0)) {
             box.commit = bytes32(proposalId);
+
+            // Add proposal ID to the start of the guest input.
+            box.guestInput.concatStorage(abi.encodePacked(bytes32(proposalId)));
         }
 
         // Retrieve the recorded events. Note that this consumes them.
@@ -290,6 +298,13 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             require(uint256(entry.topics[1]) == proposalId, "proposal id mismatch in event");
             bytes memory encodedBallot = abi.decode(entry.data, (bytes));
             box.commit = sha256(bytes.concat(box.commit, encodedBallot));
+
+            // Add the guest-input-encoded ballot to the guest input bytes.
+            // Pad the length of the encoded bytes to 100.
+            box.guestInput.concatStorage(encodedBallot);
+            if (encodedBallot.length < 100) {
+                box.guestInput.concatStorage(new bytes(100 - encodedBallot.length));
+            }
 
             // Decode the custom encoding format for ballots.
             // TODO(victor): Use a more standard encoding format?
@@ -322,6 +337,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             box.hasVoted[voter] = true;
             box.support[voter] = support;
         }
+        // console.log("guest input:", vm.toString(box.guestInput));
 
         bytes memory encodedBallots = new bytes(box.voters.length.mul(24));
         for (uint256 i = 0; i < box.voters.length; i = i.add(1)) {
@@ -364,7 +380,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         (bool success, bytes memory data) = address(bonsaiGov).call(payload);
         if (!success) {
             assembly {
-              revert(add(data,32),mload(data))
+                revert(add(data, 32), mload(data))
             }
         }
     }

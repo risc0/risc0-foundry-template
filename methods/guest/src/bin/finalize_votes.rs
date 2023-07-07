@@ -71,7 +71,7 @@ fn into_recovery_id(v: u8) -> Option<RecoveryId> {
 /// the hash of a known message.
 fn ecrecover(v: u8, rs: [u8; 64], digest: [u8; 32]) -> [u8; 20] {
     let recovery_id = into_recovery_id(v).expect("value for v is invalid");
-    let signature = Signature::try_from(&rs[..]).expect("signature encoding is invalid");
+    let signature = Signature::from_slice(&rs[..]).expect("signature encoding is invalid");
     let recovered_pk: PublicKey =
         VerifyingKey::recover_from_prehash(&digest[..], &signature, recovery_id)
             .expect("signature is invalid")
@@ -114,8 +114,8 @@ fn main() {
         .map(|(i, chunk)| (i * ENCODED_INPUT_CHUNK_SIZE, chunk))
     {
         assert_zero(&chunk[0..1], offset);
-        let support: u8 = chunk[1];
-        let signed: u8 = chunk[2];
+        let signed: u8 = chunk[1];
+        let support: u8 = chunk[2];
         let voter: [u8; 20] = match signed {
             0 => {
                 assert_zero(&chunk[3..4], offset);
