@@ -128,10 +128,10 @@ pub fn resolve_guest_entry<'a>(
         })
 }
 
-pub async fn resolve_image_output(input: &String, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
+pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;
     let prover = env::var("BONSAI_PROVING").unwrap_or("".to_string());
-    let elf = guest_entry.elf.clone();
+    let elf = guest_entry.elf;
 
     match prover.as_str() {
         "bonsai" => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
@@ -160,7 +160,7 @@ where
     let mut proxy_stream = ethers_client
         .subscribe_logs(&filter)
         .await
-        .unwrap()
+        .expect("Failed to subscribe to ethereum event logs")
         .map(|log| {
             ethers::contract::parse_log::<CallbackRequestFilter>(log)
                 .expect("must be a callback proof request log")
@@ -175,10 +175,9 @@ where
 
         // Execute or return image id
         let input = hex::encode(event.input);
-        let journal_bytes: Vec<u8> = resolve_image_output(&input, guest_entry)
+        let journal_bytes = resolve_image_output(&input, guest_entry)
             .await
-            .expect("Failed to compute journal output")
-            .into();
+            .expect("Failed to compute journal output");
 
         let payload = [
             event.function_selector.as_slice(),
