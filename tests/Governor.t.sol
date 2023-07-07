@@ -349,6 +349,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
         if (bytes(expectedRevert).length != 0) {
             vm.expectRevert(bytes(expectedRevert));
         }
+
         // Bonsai Relay callbacks use a non-stardard call encoding of
         // { bytes4(selector) || journal bytes || bytes32(imageId) }
         // Here we are mocking the Relay and so assemble to call to be same structure.
