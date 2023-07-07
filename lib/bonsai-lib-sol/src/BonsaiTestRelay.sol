@@ -47,18 +47,17 @@ contract BonsaiTestRelay is IBonsaiRelay, Test {
         uint64 gas_limit
     ) external {
         emit CallbackRequest(msg.sender, image_id, input, callback_contract, function_selector, gas_limit);
-        // Permanently store the callback request in memory to avoid interference from vm.getRecordedLogs calls
+        // Permanently store the callback request in storage to avoid interference from vm.getRecordedLogs calls
         vm.pauseGasMetering();
         bytes memory cbrData = abi.encode(image_id, input, callback_contract, function_selector, gas_limit);
         cbr_queue.push(cbrData);
         vm.resumeGasMetering();
     }
 
-    function invoke_callback(
-        address callback_contract,
-        bytes calldata payload,
-        uint64 gas_limit
-    ) external returns (bool, bytes memory) {
+    function invoke_callback(address callback_contract, bytes calldata payload, uint64 gas_limit)
+        external
+        returns (bool, bytes memory)
+    {
         return callback_contract.call{gas: gas_limit}(payload);
     }
 }

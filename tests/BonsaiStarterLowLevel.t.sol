@@ -26,18 +26,18 @@ contract BonsaiStarterLowLevelTest is BonsaiTest {
     function testMockLowLevelCall() public {
         // Deploy a new starter instance
         BonsaiStarterLowLevel starter = new BonsaiStarterLowLevel(
-            IBonsaiRelay(MOCK_BONSAI_RELAY),
+            IBonsaiRelay(mockBonsaiRelay),
             queryImageId('FIBONACCI'));
 
         // Anticipate a callback request to the relay
-        vm.expectCall(address(MOCK_BONSAI_RELAY), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
+        vm.expectCall(address(mockBonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
         // Request the callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
         vm.expectCall(address(starter), abi.encodeWithSelector(starter.bonsaiLowLevelCallbackReceiver.selector));
         // Relay the solution as a callback
-        (bool success,) = relayCallback();
+        (bool success,) = runPendingCallbackRequest();
         assertTrue(success, "Callback failed");
 
         // Validate the Fibonacci solution value

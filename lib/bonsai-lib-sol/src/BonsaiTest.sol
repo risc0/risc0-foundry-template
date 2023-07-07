@@ -24,14 +24,13 @@ import "./BonsaiCheats.sol";
 
 /// @notice A base contract for testing a Bonsai callback receiver contract
 abstract contract BonsaiTest is Test, BonsaiCheats {
-
     using Strings2 for bytes;
 
-    BonsaiTestRelay internal MOCK_BONSAI_RELAY;
+    BonsaiTestRelay internal mockBonsaiRelay;
 
     /// @notice Instantiates a mock relay contract for testing
     modifier withRelayMock() {
-        MOCK_BONSAI_RELAY = new BonsaiTestRelay();
+        mockBonsaiRelay = new BonsaiTestRelay();
         vm.recordLogs();
         _;
     }
@@ -39,27 +38,35 @@ abstract contract BonsaiTest is Test, BonsaiCheats {
     /// @notice Process a single callback request and invoke its receiver contract with the results.
     /// @return A boolean, true is the callback was successful and false otherwise, and the return
     ///         data from the callback. Note that the Bonsai relay will not process return data.
-    function relayCallback() internal returns (bool, bytes memory) {
+    function runPendingCallbackRequest() internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
         // read logs, parse event, get image output, invoke proper callback
-        bytes memory logEntry = MOCK_BONSAI_RELAY.dequeue_cbr_event_data();
+        bytes memory logEntry = mockBonsaiRelay.dequeue_cbr_event_data();
 
-        (
-            bytes32 image_id,
-            bytes memory input,
-            address callback_contract,
-            bytes4 function_selector,
-            uint64 gas_limit
-        ) = abi.decode(logEntry, (bytes32, bytes, address, bytes4, uint64));
-
-        bytes memory journal = queryImageOutput(image_id, input);
-        bytes memory payload = abi.encodePacked(
-            function_selector,
-            journal,
-            image_id
-        );
+        (bytes32 image_id, bytes memory input, address callback_contract, bytes4 function_selector, uint64 gas_limit) =
+            abi.decode(logEntry, (bytes32, bytes, address, bytes4, uint64));
         vm.resumeGasMetering();
 
-        return MOCK_BONSAI_RELAY.invoke_callback(callback_contract, payload, gas_limit);
+        return runCallbackRequest(image_id, input, callback_contract, function_selector, gas_limit);
+    }
+
+    /// @notice Process the given callback request, executing the guest and invoking the indicated
+    ///   callback function with the resulting journal and image ID.
+    /// @return A boolean, true is the callback was successful and false otherwise, and the return
+    ///         data from the callback. Note that the Bonsai relay will not process return data.
+    function runCallbackRequest(
+        bytes32 image_id,
+        bytes memory input,
+        address callback_contract,
+        bytes4 function_selector,
+        uint64 gas_limit
+    ) internal returns (bool, bytes memory) {
+        vm.pauseGasMetering();
+
+        bytes memory journal = queryImageOutput(image_id, input);
+        bytes memory payload = abi.encodePacked(function_selector, journal, image_id);
+        vm.resumeGasMetering();
+
+        return mockBonsaiRelay.invoke_callback(callback_contract, payload, gas_limit);
     }
 }

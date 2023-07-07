@@ -26,18 +26,18 @@ contract BonsaiStarterTest is BonsaiTest {
     function testMockCall() public {
         // Deploy a new starter instance
         BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(MOCK_BONSAI_RELAY),
+            IBonsaiRelay(mockBonsaiRelay),
             queryImageId('FIBONACCI'));
 
         // Anticipate a callback request to the relay
-        vm.expectCall(address(MOCK_BONSAI_RELAY), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
+        vm.expectCall(address(mockBonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
         // Request the callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
         vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
-        (bool success,) = relayCallback();
+        (bool success,) = runPendingCallbackRequest();
         require(success, "Callback failed");
 
         // Validate the Fibonacci solution value

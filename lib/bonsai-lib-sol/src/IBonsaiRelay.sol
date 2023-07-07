@@ -18,11 +18,11 @@ pragma solidity ^0.8.17;
 
 /// @notice The interface for the Bonsai relay contract
 interface IBonsaiRelay {
-	function requestCallback(
-		bytes32 image_id,
-		bytes calldata input,
-		address callback_contract,
-		bytes4 function_selector,
-		uint64 gas_limit
-	) external;
+    function requestCallback(
+        bytes32 image_id,
+        bytes calldata input,
+        address callback_contract,
+        bytes4 function_selector,
+        uint64 gas_limit
+    ) external;
 }
