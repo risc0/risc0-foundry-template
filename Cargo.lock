@@ -291,7 +291,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1bc2832c24239b0141d5674bb9174f9d68a8b5b3f2753311927c172ca46f7e9c"
 dependencies = [
  "funty",
- "radium 0.7.1",
+ "radium 0.7.0",
  "tap",
  "wyz",
 ]
@@ -2999,8 +2999,9 @@ checksum = "def50a86306165861203e7f84ecffbbdfdea79f0e51039b33de1e952358c47ac"
 
 [[package]]
 name = "radium"
-version = "0.7.1"
-source = "git+https://github.com/bitvecto-rs/radium?rev=723bed5abd75994ee4b7221b8b12c9f4e77ce408#723bed5abd75994ee4b7221b8b12c9f4e77ce408"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
 name = "rand"
