@@ -322,7 +322,6 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
     /// @notice implments the vote finalization logic matching the zkVM guest.
     ///   Can be used to test the Governor contract with running the zkVM.
     function finalizeVotesSolidityImpl(bytes memory guestInput) internal returns (bytes memory) {
-        revert("what?! don't look at me");
         // This function normally executes off-chain in the guest.
         vm.pauseGasMetering();
 
