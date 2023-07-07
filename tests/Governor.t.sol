@@ -1,21 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.13;
 
-import "openzeppelin/contracts/utils/Strings.sol";
-import "openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import "openzeppelin/contracts/governance/IGovernor.sol";
-import "openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "openzeppelin/contracts/utils/math/SafeMath.sol";
+import {GovernorCountingSimple} from "openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
+import {IGovernor} from "openzeppelin/contracts/governance/IGovernor.sol";
+import {ECDSA} from "openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {SafeMath} from "openzeppelin/contracts/utils/math/SafeMath.sol";
 
-import "forge-std/Vm.sol";
-import "forge-std/Test.sol";
-import "forge-std/console2.sol";
-import "solidity-bytes-utils//BytesLib.sol";
+import {Vm} from "forge-std/Vm.sol";
+import {Test} from "forge-std/Test.sol";
+import {console2} from "forge-std/console2.sol";
+import {BytesLib} from "solidity-bytes-utils//BytesLib.sol";
 
-import "../contracts/BonsaiGovernor.sol";
-import "../contracts/BaselineGovernor.sol";
-import "../contracts/IBonsaiGovernor.sol";
-import "../contracts/VoteToken.sol";
+import {BonsaiTest} from "bonsai-lib-sol/BonsaiTest.sol";
+import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
+
+import {BonsaiGovernor} from "../contracts/BonsaiGovernor.sol";
+import {BaselineGovernor} from "../contracts/BaselineGovernor.sol";
+import {IBonsaiGovernor} from "../contracts/IBonsaiGovernor.sol";
+import {VoteToken} from "../contracts/VoteToken.sol";
 
 /// @notice Voter to be included in a test scenario.
 contract Voter is Test {
@@ -237,13 +239,18 @@ abstract contract BaselineGovernorTest is GovernorTest {
     }
 }
 
-abstract contract BonsaiGovernorTest is GovernorTest {
+abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
     using SafeMath for uint256;
     using BytesLib for bytes;
     using VoteLib for Vote;
 
     // Copied from BonsaiGovernorCounting
     event CommittedBallot(uint256 indexed proposalId, bytes encoded);
+
+    uint64 constant UINT64_MAX = 0xffffffffffffffff;
+
+    bool useZkvmGuest;
+    bytes32 imageId;
 
     struct BallotBox {
         bytes32 commit;
@@ -261,7 +268,12 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     /// @dev ballots are persisted to storage because evnts can only ever be obtained once from vm.getRecordedLogs().
     mapping(uint256 => BallotBox) internal ballotBoxes;
 
-    function setUp() public {
+    function setUp() public withRelayMock {
+        useZkvmGuest = vm.envOr("USE_ZKVM_GUEST", false);
+        if (useZkvmGuest) {
+            imageId = queryImageId("FINALIZE_VOTES");
+        }
+
         token = new VoteToken();
         gov = governor(token);
         scene = scenario(gov, token);
@@ -271,19 +283,16 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     }
 
     function governor(VoteToken token) internal override returns (IBonsaiGovernor) {
-        return new BonsaiGovernor(token, IBonsaiRelay(address(this)), bytes32(0));
+        return new BonsaiGovernor(token, mockBonsaiRelay, imageId);
     }
 
-    /// @notice collect the ballots and reconstruct ballot box commit by iterating through events.
-    /// @dev this function mocks what the zkVM guest will do.
-    function collectBallots(uint256 proposalId) internal returns (bytes32, bytes memory) {
+    /// @notice collect the ballots and assemble zkVM guest input.
+    function collectBallots(uint256 proposalId) internal returns (bytes memory) {
         // This function normally executes off-chain in the guest.
         vm.pauseGasMetering();
 
         BallotBox storage box = ballotBoxes[proposalId];
-        if (box.commit == bytes32(0)) {
-            box.commit = bytes32(proposalId);
-
+        if (box.guestInput.length == uint256(0)) {
             // Add proposal ID to the start of the guest input.
             box.guestInput.concatStorage(abi.encodePacked(bytes32(proposalId)));
         }
@@ -297,7 +306,6 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             }
             require(uint256(entry.topics[1]) == proposalId, "proposal id mismatch in event");
             bytes memory encodedBallot = abi.decode(entry.data, (bytes));
-            box.commit = sha256(bytes.concat(box.commit, encodedBallot));
 
             // Add the guest-input-encoded ballot to the guest input bytes.
             // Pad the length of the encoded bytes to 100.
@@ -305,9 +313,28 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             if (encodedBallot.length < 100) {
                 box.guestInput.concatStorage(new bytes(100 - encodedBallot.length));
             }
+        }
+
+        vm.resumeGasMetering();
+        return (box.guestInput);
+    }
+
+    /// @notice implments the vote finalization logic matching the zkVM guest.
+    ///   Can be used to test the Governor contract with running the zkVM.
+    function finalizeVotesSolidityImpl(bytes memory guestInput) internal returns (bytes memory) {
+        revert("what?! don't look at me");
+        // This function normally executes off-chain in the guest.
+        vm.pauseGasMetering();
+
+        uint256 proposalId = abi.decode(guestInput.slice(0, 32), (uint256));
+        BallotBox storage box = ballotBoxes[proposalId];
+        box.commit = bytes32(proposalId);
+
+        // Iterate over chunks of 100-bytes and decode the input ballots.
+        for (uint256 offset = 32; offset < guestInput.length; offset = offset.add(100)) {
+            bytes memory encodedBallot = guestInput.slice(offset, 100);
 
             // Decode the custom encoding format for ballots.
-            // TODO(victor): Use a more standard encoding format?
             require(encodedBallot[0] == bytes1(0), "upper byte of signed is non-zero");
             uint8 signed = uint8(encodedBallot[1]);
             uint8 support = uint8(encodedBallot[2]);
@@ -322,12 +349,15 @@ abstract contract BonsaiGovernorTest is GovernorTest {
                 // NOTE: It is almost never safe to "verify" a signature on a provided digest.
                 // Here we guarantee that the hashing in this context what was observed on-chain through the ballot box commitments.
                 voter = ECDSA.recover(sigDigest, v, r, s);
-            } else {
+                box.commit = sha256(bytes.concat(box.commit, encodedBallot));
+            } else if (signed == uint8(0)) {
                 // Decode a ballot with no attached signature.
-                require(encodedBallot.length == uint256(24), "encoded ballot w/o signature must be 24 bytes");
                 require(signed == uint16(0), "value of signed is not boolean");
                 require(encodedBallot[3] == bytes1(0), "padding bytes is non-zero");
                 voter = encodedBallot.toAddress(4);
+                box.commit = sha256(bytes.concat(box.commit, encodedBallot.slice(0, 24)));
+            } else {
+                revert("value of signed on encoded ballot is invalid");
             }
 
             // If someone votes twice, we allow it by updating their vote.
@@ -337,7 +367,6 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             box.hasVoted[voter] = true;
             box.support[voter] = support;
         }
-        // console.log("guest input:", vm.toString(box.guestInput));
 
         bytes memory encodedBallots = new bytes(box.voters.length.mul(24));
         for (uint256 i = 0; i < box.voters.length; i = i.add(1)) {
@@ -352,8 +381,9 @@ abstract contract BonsaiGovernorTest is GovernorTest {
             }
         }
 
+        bytes memory journal = abi.encodePacked(proposalId, box.commit, encodedBallots);
         vm.resumeGasMetering();
-        return (box.commit, encodedBallots);
+        return journal;
     }
 
     function finalizeVotes(uint256 proposalId) internal override {
@@ -361,23 +391,30 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     }
 
     function finalizeVotes(uint256 proposalId, string memory expectedRevert) internal {
-        (bytes32 commit, bytes memory ballots) = collectBallots(proposalId);
+        bytes memory guestInput = collectBallots(proposalId);
+
+        BonsaiGovernor bonsaiGov = BonsaiGovernor(payable(address(gov)));
+        bytes4 callbackSelector = bonsaiGov.bonsaiLowLevelCallbackReceiver.selector;
+        bool success;
+        bytes memory data;
+        if (useZkvmGuest) {
+            (success, data) = runCallbackRequest(imageId, guestInput, address(gov), callbackSelector, UINT64_MAX);
+        } else {
+            bytes memory journal = finalizeVotesSolidityImpl(guestInput);
+
+            // Bonsai Relay callbacks use a non-stardard call encoding of
+            // { bytes4(selector) || journal bytes || bytes32(imageId) }
+            // Here we are calling through the Relay and so assemble to call to be same structure.
+            bytes memory payload = abi.encodePacked(callbackSelector, journal, imageId);
+            (success, data) = mockBonsaiRelay.invoke_callback(address(bonsaiGov), payload, UINT64_MAX);
+        }
+
+        // Check the callback result and revert if the callback failed.
+        // NOTE: When the revert is expected, the vm.expectRevert call will prevent this function
+        // from reverting, thereby ensuring the results from collectBallots is preserved.
         if (bytes(expectedRevert).length != 0) {
             vm.expectRevert(bytes(expectedRevert));
         }
-
-        // Bonsai Relay callbacks use a non-stardard call encoding of
-        // { bytes4(selector) || journal bytes || bytes32(imageId) }
-        // Here we are mocking the Relay and so assemble to call to be same structure.
-        BonsaiGovernor bonsaiGov = BonsaiGovernor(payable(address(gov)));
-        bytes memory payload = abi.encodePacked(
-            bonsaiGov.bonsaiLowLevelCallbackReceiver.selector,
-            proposalId,
-            commit,
-            ballots,
-            bytes32(0) // imageId
-        );
-        (bool success, bytes memory data) = address(bonsaiGov).call(payload);
         if (!success) {
             assembly {
                 revert(add(data, 32), mload(data))
@@ -412,7 +449,7 @@ abstract contract BonsaiGovernorTest is GovernorTest {
     }
 }
 
-abstract contract BasicTest is GovernorTest {
+abstract contract BasicScenario is GovernorTest {
     function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
         scene = new Scenario(gov, token, true);
 
@@ -426,7 +463,7 @@ abstract contract BasicTest is GovernorTest {
     }
 }
 
-abstract contract BasicFailingTest is GovernorTest {
+abstract contract BasicFailingScenario is GovernorTest {
     function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
         scene = new Scenario(gov, token, false);
 
@@ -440,7 +477,7 @@ abstract contract BasicFailingTest is GovernorTest {
     }
 }
 
-abstract contract BenchTest is GovernorTest {
+abstract contract BenchScenario is GovernorTest {
     using SafeMath for uint256;
 
     uint256 internal voteCount;
@@ -462,18 +499,18 @@ abstract contract BenchTest is GovernorTest {
     }
 }
 
-contract BasicBaselineGovernorTest is BaselineGovernorTest, BasicTest {}
+contract BasicBaselineGovernorTest is BaselineGovernorTest, BasicScenario {}
 
-contract BasicBonsaiGovernorTest is BonsaiGovernorTest, BasicTest {}
+contract BasicBonsaiGovernorTest is BonsaiGovernorTest, BasicScenario {}
 
-contract BasicFailingBaselineGovernorTest is BaselineGovernorTest, BasicFailingTest {}
+contract BasicFailingBaselineGovernorTest is BaselineGovernorTest, BasicFailingScenario {}
 
-contract BasicFailingBonsaiGovernorTest is BonsaiGovernorTest, BasicFailingTest {}
+contract BasicFailingBonsaiGovernorTest is BonsaiGovernorTest, BasicFailingScenario {}
 
-contract BenchBaselineTest is BaselineGovernorTest, BenchTest {
-    constructor() BenchTest(100) {}
+contract BenchBaselineGovernorTest is BaselineGovernorTest, BenchScenario {
+    constructor() BenchScenario(100) {}
 }
 
-contract BenchBonsaiTest is BonsaiGovernorTest, BenchTest {
-    constructor() BenchTest(100) {}
+contract BenchBonsaiGovernorTest is BonsaiGovernorTest, BenchScenario {
+    constructor() BenchScenario(100) {}
 }
