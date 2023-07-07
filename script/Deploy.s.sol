@@ -30,7 +30,7 @@ contract Deploy is Script, BonsaiCheats {
         // Deploy a Relay contract instance
         BonsaiRelayContract relayContract = new BonsaiRelayContract();
 
-        // Deploy a new starter instance
+        // Deploy a new starter instance (or replace with deployment of your own contract here)
         IBonsaiRelay bonsaiRelay = IBonsaiRelay(address(relayContract));
         bytes32 imageId = queryImageId("FIBONACCI");
         BonsaiStarter starter = new BonsaiStarter(bonsaiRelay, imageId);
