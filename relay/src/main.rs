@@ -46,7 +46,11 @@ pub enum Command {
         eth_chain_id: u64,
 
         /// Wallet private key.
-        #[arg(short, long)]
+        #[arg(
+            short,
+            long,
+            default_value = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+        )]
         private_key: String,
     },
 }

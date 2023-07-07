@@ -69,17 +69,24 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 ```
 anvil
 ```
+If you do use anvil, then you will need to specify a private key to use for deployment:
+```
+export RELAY_PRIVATE_KEY=0x..
+```
+Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
 2. Run the provided deploy script to deploy the local relay and the starter contract:
 ```
-RELAY_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --broadcast
+forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --broadcast
 ```
 You should modify this script to correctly deploy your application's solidity contract instead of the starter contract if you have changed things.
 
 3. Run the local relay binary (replace the relay contract address and Ethereum node parameters if needed):
 ```
-cargo run relay --relay-contract-address 0x5fbdb2315678afecb367f032d93f642f64180aa3 --eth-node-url ws://localhost:8545 --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+cargo run relay --relay-contract-address 0x5fbdb2315678afecb367f032d93f642f64180aa3 --eth-node-url ws://localhost:8545
 ```
+You can set the `--private-key` parameter if you do not wish to use the default anvil account.
+
 The relay binary will keep monitoring the chain for callback requests and relay their result back after computing them.
 You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
 
