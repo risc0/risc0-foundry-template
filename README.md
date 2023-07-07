@@ -52,14 +52,47 @@ cargo test
 ```
 ***Hint:*** *To learn more about our RISC-V zkVM [visit the docs](https://dev.risczero.com/zkvm) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
 
-### Test your project end to end
-To test your project, end to end, including both your Solidity contracts and their interaction with your zkVM program, run
+### Test your solidity integration with the zkVM
+To test both your Solidity contracts and their interaction with your zkVM program, run
 
 ```bash
 forge test
 ```
 
 ***Hint:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
+
+### Test your project end-to-end
+
+You can deploy your contracts and run an end-to-end test or demo as follows:
+
+1. Start an anvil instance (if you want a local testnet):
+```
+anvil
+```
+
+2. Run the provided deploy script to deploy the local relay and the starter contract:
+```
+RELAY_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --broadcast
+```
+You should modify this script to correctly deploy your application's solidity contract instead of the starter contract if you have changed things.
+
+3. Run the local relay binary (replace the relay contract address and Ethereum node parameters if needed):
+```
+cargo run relay --relay-contract-address 0x5fbdb2315678afecb367f032d93f642f64180aa3 --eth-node-url ws://localhost:8545 --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+The relay binary will keep monitoring the chain for callback requests and relay their result back after computing them.
+You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
+
+**Now you can test your deployment in a new terminal as follows:**
+1. Send a transaction to the starter contract:
+```
+cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
+```
+
+2. Check the relayed result:
+```
+cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
+```
 
 ## Proving Modes
 The foundry template supports three different proving modes:
