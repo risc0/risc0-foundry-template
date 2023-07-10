@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+  anvil:
+    image: ghcr.io/foundry-rs/foundry:latest
+    profiles: ["main", "setup"]
+    expose:
+      - "8545"
+    ports:
+      - "8545:8545"
+    command: ["anvil --host 0.0.0.0 --port 8545"]
+
+  relayer:
+    image: relayer:latest
+    profiles: ["main"]
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    environment:
+      - API_KEY=${BONSAI_API_KEY}
+    entrypoint:
+      - ethereum-relay
+      - --bonsai-url
+      - ${BONSAI_API_URL}
+      - --proxy-address
+      - ${RELAY_CONTRACT_ADDRESS}
+      - --eth-node-url
+      - "ws://anvil:8545"
+      - --wallet-key-identifier
+      - ${PRIVATE_KEY}
+    depends_on:
+      - anvil
+
+  contract-deployer:
+    image: ghcr.io/foundry-rs/foundry:latest
+    profiles: ["setup"]
+    working_dir: /bonsai-lib-sol
+    volumes:
+      - ./lib/bonsai-lib-sol:/bonsai-lib-sol
+    entrypoint:
+      - forge
+      - create
+      - --force
+      - --rpc-url
+      - "http://anvil:8545"
+      - --private-key
+      - ${PRIVATE_KEY}
+      - "./src/BonsaiTestRelay.sol:BonsaiTestRelay"
+    depends_on:
+      - anvil
