@@ -6,10 +6,11 @@ import "openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
 import "openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 
-import "./BonsaiGovernorCounting.sol";
-import "./IBonsaiGovernor.sol";
 import {BonsaiLowLevelCallbackReceiver} from "bonsai-lib-sol/BonsaiLowLevelCallbackReceiver.sol";
 import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
+
+import "./BonsaiGovernorCounting.sol";
+import "./IBonsaiGovernor.sol";
 
 /// @custom:security-contact security@risczero.com
 contract BonsaiGovernor is
