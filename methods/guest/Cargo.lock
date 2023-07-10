@@ -269,8 +269,8 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.15.0"
+source = "git+https://github.com/risc0/risc0?rev=44c67ee83a021686b95722b30b8b1f9b1dc81b7e#44c67ee83a021686b95722b30b8b1f9b1dc81b7e"
 dependencies = [
  "anyhow",
  "log",
@@ -282,8 +282,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-core"
-version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.15.0"
+source = "git+https://github.com/risc0/risc0?rev=44c67ee83a021686b95722b30b8b1f9b1dc81b7e#44c67ee83a021686b95722b30b8b1f9b1dc81b7e"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -291,8 +291,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkp"
-version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.15.0"
+source = "git+https://github.com/risc0/risc0?rev=44c67ee83a021686b95722b30b8b1f9b1dc81b7e#44c67ee83a021686b95722b30b8b1f9b1dc81b7e"
 dependencies = [
  "anyhow",
  "blake2",
@@ -311,8 +311,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.15.0"
+source = "git+https://github.com/risc0/risc0?rev=44c67ee83a021686b95722b30b8b1f9b1dc81b7e#44c67ee83a021686b95722b30b8b1f9b1dc81b7e"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -333,8 +333,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm-platform"
-version = "0.15.3"
-source = "git+https://github.com/risc0/risc0?branch=release-0.15#109ff3e13a85aa6feff1a6da4dc4581cb99c707b"
+version = "0.15.0"
+source = "git+https://github.com/risc0/risc0?rev=44c67ee83a021686b95722b30b8b1f9b1dc81b7e#44c67ee83a021686b95722b30b8b1f9b1dc81b7e"
 
 [[package]]
 name = "rustc-hex"
