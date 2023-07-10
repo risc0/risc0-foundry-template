@@ -15,7 +15,7 @@
 use std::{env, sync::Arc, time::Duration};
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk_alpha::alpha::Client;
+use bonsai_sdk_alpha::alpha::{Client, SdkErr};
 use bonsai_starter_methods::GUEST_LIST;
 use ethers::{
     core::{
@@ -27,14 +27,20 @@ use ethers::{
     providers::{Provider, Ws},
 };
 use risc0_build::GuestListEntry;
-use risc0_zkvm::{recursion::SessionRollupReceipt, Executor, ExecutorEnv};
+use risc0_zkvm::{
+    recursion::SessionRollupReceipt, Executor, ExecutorEnv, MemoryImage, Program, MEM_SIZE,
+    PAGE_SIZE,
+};
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
 /// the proof request to the Bonsai service.
 pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
-    let env = ExecutorEnv::builder().add_input(&input).build();
+    let env = ExecutorEnv::builder()
+        .add_input(&input)
+        .build()
+        .expect("Failed to build exec env");
     let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
@@ -52,12 +58,22 @@ pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>>
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
 
+fn get_digest(elf: &[u8]) -> Result<String> {
+    let program = Program::load_elf(elf, MEM_SIZE as u32)?;
+    let image = MemoryImage::new(&program, PAGE_SIZE as u32)?;
+    Ok(hex::encode(image.compute_id()))
+}
+
 pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
     let client = Client::from_env().context("Failed to create client from env var")?;
 
-    let img_id = client
-        .upload_img(elf.to_vec())
-        .context("Failed to upload ELF image")?;
+    let img_id = get_digest(elf).context("Failed to generate elf memory image")?;
+
+    match client.upload_img(&img_id, elf.to_vec()) {
+        Ok(()) => (),
+        Err(SdkErr::ImageIdExists) => (),
+        Err(err) => return Err(err.into()),
+    }
 
     let input_id = client
         .upload_input(input)
