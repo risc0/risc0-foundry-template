@@ -49,8 +49,9 @@ contract RiscZeroVerifierTest is Test {
         )
     );
 
-    bytes32 internal constant IMAGE_ID = bytes32(0xe2b04686f6e65a64d253c8dc8c29df2470b678047635fbb5cada801165d0cb1a);
-    bytes internal constant JOURNAL =
+    bytes32 internal constant TEST_IMAGE_ID =
+        bytes32(0xe2b04686f6e65a64d253c8dc8c29df2470b678047635fbb5cada801165d0cb1a);
+    bytes internal constant TEST_JOURNAL =
         hex"5818100a2105c60d4f73044fe09a9cb0ba9801a4f5775e79cbb8934b23caab652d80a7843825f9cafc685d8307c8b06969e0f55bbec95ec79c8ca4131b3e29980000000105da591290223f1702e67293b817f5393e019ead000000019ace4afab142fbcbc90e317977a6800076bd64ba";
 
     RiscZeroVerifier internal verifier;
@@ -60,6 +61,14 @@ contract RiscZeroVerifierTest is Test {
     }
 
     function testVerifyKnownGoodReceipt() external view {
-        require(verifier.verify(TEST_RECEIPT), "known good receipt verification failed");
+        require(verifier.verify(TEST_RECEIPT), "verification failed");
+    }
+
+    function testVerifyKnownGoodReceiptWithJournal() external view {
+        require(verifier.verify(TEST_RECEIPT, TEST_JOURNAL), "verification failed");
+    }
+
+    function testVerifyKnownGoodImageIdAndJournal() external view {
+        require(verifier.verify(TEST_RECEIPT.seal, TEST_RECEIPT.meta.pre, TEST_RECEIPT.meta.post, TEST_IMAGE_ID, TEST_JOURNAL), "verification failed");
     }
 }

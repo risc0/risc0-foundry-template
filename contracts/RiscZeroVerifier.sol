@@ -67,11 +67,6 @@ library SystemStateLib {
     function digest(SystemState memory state) internal pure returns (bytes32) {
         return sha256(abi.encodePacked(TAG_DIGEST, state.merkleRoot, reverseByteOrderUint32(state.pc), uint16(1) << 8));
     }
-
-    /// @notice Return the RISC Zero image ID computed from the memory root and program counter.
-    function imageId(SystemState memory state) internal pure returns (bytes32) {
-        return sha256(abi.encodePacked(state.merkleRoot, uint256(reverseByteOrderUint32(state.pc))));
-    }
 }
 
 /// @notice Indicator for the overall system at the end of execution covered by this proof.
@@ -98,7 +93,6 @@ struct ReceiptMetadata {
     /// The exit code for a segment
     ExitCode exitCode;
     /// A digest of the input, from the viewpoint of the guest.
-    /// TODO(victor): Does the input ever get set?
     bytes32 input;
     /// A digest of the journal, from the viewpoint of the guest.
     bytes32 output;
@@ -142,6 +136,7 @@ struct Receipt {
 }
 
 contract RiscZeroVerifier is Groth16Verifier {
+    using SystemStateLib for SystemState;
     using ReceiptMetadataLib for ReceiptMetadata;
     using SafeCast for uint256;
 
@@ -158,10 +153,44 @@ contract RiscZeroVerifier is Groth16Verifier {
         return (uint256(uint128(uint256(reversed))), uint256(reversed >> 128));
     }
 
+    /// @notice verify that the given receipt is a valid Groth16 RISC Zero recursion receipt.
+    /// @return true if the receipt passes the verification checks.
     function verify(Receipt memory receipt) public view returns (bool) {
         bytes32 metadataDigest = receipt.meta.digest();
         (uint256 meta0, uint256 meta1) = splitDigest(metadataDigest);
         return
             this.verifyProof(receipt.seal.a, receipt.seal.b, receipt.seal.c, [CONTROL_ID_0, CONTROL_ID_1, meta0, meta1]);
+    }
+
+    /// @notice verify that the given receipt is a valid Groth16 RISC Zero recursion receipt with a
+    ///     journal output equal to the given journal.
+    /// @return true if the receipt passes the verification checks.
+    function verify(Receipt memory receipt, bytes calldata journal) public view returns (bool) {
+        // Verify that the Receipt's output field is equal to the journal hash.
+        if (receipt.meta.output != sha256(journal)) {
+            return false;
+        }
+        return verify(receipt);
+    }
+
+    /// @notice verifies that the given seal is a valid Groth16 RISC Zero proof of execution over the
+    ///     given pre-state (i.e. image ID), post-state, and journal. Requires that the input hash
+    //      is all-zeros (i.e. no committed input) and the exit code is (Halted, 0).
+    /// @return true if the receipt passes the verification checks.
+    function verify(Seal memory seal, SystemState memory pre, SystemState memory post, bytes32 imageId, bytes calldata journal)
+        public
+        view
+        returns (bool)
+    {
+        // Check that the pre-state matches the given image ID.
+        if (pre.imageId() != imageId) {
+            console2.log(Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D).toString(pre.imageId()));
+            console2.log(Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D).toString(imageId));
+            revert("image ID mismatch");
+            // return false;
+        }
+        Receipt memory receipt =
+            Receipt(seal, ReceiptMetadata(pre, post, ExitCode(SystemExitCode.Halted, 0), bytes32(0), sha256(journal)));
+        return verify(receipt);
     }
 }
