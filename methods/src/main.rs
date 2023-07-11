@@ -18,9 +18,8 @@ use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk_alpha::alpha::{Client, SdkErr};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
-use risc0_zkvm::{
-    recursion::SessionRollupReceipt, Executor, ExecutorEnv, MemoryImage, Program, MEM_SIZE,
-    PAGE_SIZE,
+use risc0_zkvm::{ Executor, ExecutorEnv, MemoryImage, Program, MEM_SIZE,
+    PAGE_SIZE, SessionReceipt,
 };
 
 /// Runs the RISC-V ELF binary.
@@ -103,7 +102,7 @@ fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                             .context("Missing 'receipt_url' on status response")?,
                     )
                     .context("Failed to download receipt")?;
-                let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
+                let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
                     .context("Failed to deserialize SessionRollupReceipt")?;
                 // eprintln!("Completed proof on bonsai alpha backend!");
                 return Ok(receipt.journal);
