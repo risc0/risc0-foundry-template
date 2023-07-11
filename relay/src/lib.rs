@@ -28,8 +28,7 @@ use ethers::{
 };
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    recursion::SessionRollupReceipt, Executor, ExecutorEnv, MemoryImage, Program, MEM_SIZE,
-    PAGE_SIZE,
+    Executor, ExecutorEnv, MemoryImage, Program, SessionReceipt, MEM_SIZE, PAGE_SIZE,
 };
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
@@ -103,8 +102,8 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                             .context("Missing 'receipt_url' on status response")?,
                     )
                     .context("Failed to download receipt")?;
-                let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
-                    .context("Failed to deserialize SessionRollupReceipt")?;
+                let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
+                    .context("Failed to deserialize SessionReceipt")?;
                 // eprintln!("Completed proof on bonsai alpha backend!");
                 return Ok(receipt.journal);
             }
