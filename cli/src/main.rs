@@ -14,10 +14,13 @@
 
 use std::io::Write;
 
-use bonsai_ethereum_cli::{get_ethers_client, get_ws_provider, get_wallet, deploy_starter_contract};
+use bonsai_ethereum_cli::{
+    deploy_starter_contract, get_ethers_client, get_wallet, get_ws_provider,
+};
 use bonsai_starter_methods::{FIBONACCI_ELF, FIBONACCI_ID};
 use clap::{Parser, Subcommand};
 use ethers::core::types::Address;
+use risc0_zkvm::{MemoryImage, Program, MEM_SIZE, PAGE_SIZE};
 
 const DEFAULT_ETH_NODE_URL: &str = "ws://anvil:8545";
 
@@ -28,6 +31,8 @@ pub enum Command {
         /// The input to provide to the guest binary
         input: String,
     },
+    /// Prints the Image ID of the ELF.
+    ImageId {},
     Deploy {
         /// Ethereum Proxy address
         #[arg(short, long)]
@@ -63,11 +68,19 @@ async fn main() {
     let args = Args::parse();
 
     match args.command {
-        Command::Execute {
-            input,
-        } => {
-            // Execute
-            
+        Command::ImageId {} => {
+            let program =
+                Program::load_elf(FIBONACCI_ELF, MEM_SIZE as u32).expect("could not load elf");
+            let image =
+                MemoryImage::new(&program, PAGE_SIZE as u32).expect("could not get memory image");
+            let image_id = hex::encode(image.compute_id());
+
+            println!("image id: {}", image_id);
+            std::io::stdout()
+                .flush()
+                .expect("Failed to flush stdout buffer");
+        }
+        Command::Execute { input } => {
             std::io::stdout()
                 .flush()
                 .expect("Failed to flush stdout buffer");
@@ -78,14 +91,11 @@ async fn main() {
             eth_chain_id,
             private_key,
         } => {
-          
             let eth_provider = get_ws_provider(&eth_node_url).await;
             let wallet = get_wallet(&private_key, eth_chain_id);
-            let ethers_client =
-                get_ethers_client(eth_provider, wallet).await;
-            
-            let starter_contract = deploy_starter_contract(ethers_client.clone()).await;
+            let ethers_client = get_ethers_client(eth_provider, wallet).await;
 
+            let starter_contract = deploy_starter_contract(ethers_client.clone()).await;
         }
     }
 }

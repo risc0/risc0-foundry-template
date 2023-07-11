@@ -34,17 +34,9 @@ services:
   contract-deployer:
     image: ghcr.io/foundry-rs/foundry:latest
     profiles: ["setup"]
-    working_dir: /bonsai-lib-sol
+    working_dir: /src
     volumes:
-      - ./lib/bonsai-lib-sol:/bonsai-lib-sol
-    entrypoint:
-      - forge
-      - create
-      - --force
-      - --rpc-url
-      - "http://anvil:8545"
-      - --private-key
-      - ${PRIVATE_KEY}
-      - "./src/BonsaiTestRelay.sol:BonsaiTestRelay"
+      - .:/src
+    command: ["forge create --force --rpc-url http://anvil:8545 --private-key ${PRIVATE_KEY} ${CONTRACT_PATH} --constructor-args ${CONSTRUCTOR_ARGS}"]
     depends_on:
       - anvil
