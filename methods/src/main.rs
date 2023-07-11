@@ -18,7 +18,10 @@ use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk_alpha::alpha::{Client, SdkErr};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::Parser;
-use risc0_zkvm::{recursion::SessionRollupReceipt, Executor, ExecutorEnv, Program, MEM_SIZE, MemoryImage, PAGE_SIZE};
+use risc0_zkvm::{
+    recursion::SessionRollupReceipt, Executor, ExecutorEnv, MemoryImage, Program, MEM_SIZE,
+    PAGE_SIZE,
+};
 
 /// Runs the RISC-V ELF binary.
 #[derive(Parser)]

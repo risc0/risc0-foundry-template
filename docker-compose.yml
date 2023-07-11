@@ -12,12 +12,12 @@ services:
   relayer:
     image: relayer:latest
     profiles: ["main"]
-    expose:
-      - "8080"
     ports:
       - "8080:8080"
+      - "8081:8081"
     environment:
       - API_KEY=${BONSAI_API_KEY}
+      - RUST_LOG=info
     entrypoint:
       - ethereum-relay
       - --bonsai-url
