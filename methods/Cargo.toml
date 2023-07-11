@@ -7,7 +7,7 @@ edition = "2021"
 methods = ["guest"]
 
 [build-dependencies]
-risc0-build = { git = "https://github.com/risc0/risc0", rev = "44c67ee83a021686b95722b30b8b1f9b1dc81b7e", features = ["guest-list"] }
+risc0-build = { git = "https://github.com/risc0/risc0", rev = "b35e1faa37fb4b60cf8dd849cf46b14d1713c881", features = ["guest-list"] }
 
 [dependencies]
 anyhow = "1.0"
@@ -16,8 +16,8 @@ bonsai-sdk-alpha = { package = "bonsai-sdk", git = "https://github.com/risc0/ris
 bytemuck = "1.13.1"
 clap = { version = "4.2.7", features = ["derive"] }
 hex = "0.4.3"
-risc0-build = { git = "https://github.com/risc0/risc0", rev = "44c67ee83a021686b95722b30b8b1f9b1dc81b7e", features = ["guest-list"] }
-risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "44c67ee83a021686b95722b30b8b1f9b1dc81b7e" }
+risc0-build = { git = "https://github.com/risc0/risc0", rev = "b35e1faa37fb4b60cf8dd849cf46b14d1713c881", features = ["guest-list"] }
+risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "b35e1faa37fb4b60cf8dd849cf46b14d1713c881" }
 
 [patch.crates-io]
 radium = { git = "https://github.com/bitvecto-rs/radium", rev = "723bed5abd75994ee4b7221b8b12c9f4e77ce408" }

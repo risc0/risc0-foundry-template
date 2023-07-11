@@ -10,7 +10,7 @@ bonsai-sdk = { package = "bonsai-sdk", git = "https://github.com/risc0/risc0", b
 bonsai-starter-methods = { path = "../methods"}
 clap = { version = "4.3", features = ["derive", "env"] }
 hex = "0.4.3"
-risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "44c67ee83a021686b95722b30b8b1f9b1dc81b7e" }
+risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "b35e1faa37fb4b60cf8dd849cf46b14d1713c881" }
 
 [features]
 solidity_compile = []
