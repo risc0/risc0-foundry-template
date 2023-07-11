@@ -28,6 +28,8 @@ services:
       - "ws://anvil:8545"
       - --wallet-key-identifier
       - ${PRIVATE_KEY}
+      - --eth-chain-id
+      - ${ETH_CHAIN_ID}
     depends_on:
       - anvil
 
