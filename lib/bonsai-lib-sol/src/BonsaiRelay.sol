@@ -59,13 +59,7 @@ contract BonsaiRelay is IBonsaiRelay {
     function invoke_callback(Callback[] calldata callbacks) external returns (bool[] memory invocation_results) {
         require(msg.sender == owner, "Denied");
         invocation_results = new bool[](callbacks.length);
-        for (uint i = 0; i < callbacks.length; i++) {
-            // uint payload_size = callbacks[i].payload.length;
-            // // Validate Bonsai proof
-            // bytes32 image_id = bytes32(callbacks[i].payload[payload_size-32:]);
-            // bytes32 journal_hash = sha256(callbacks[i].payload[4:payload_size-32]);
-            // require(bpn_contract.verify(image_id, journal_hash, callbacks[i].journal_inclusion_proof), "Invalid Bonsai Proof");
-            
+        for (uint i = 0; i < callbacks.length; i++) {            
             // invoke callback
             (invocation_results[i], ) =callbacks[i].callback_contract.call{gas: callbacks[i].gas_limit}(callbacks[i].payload);
         }
