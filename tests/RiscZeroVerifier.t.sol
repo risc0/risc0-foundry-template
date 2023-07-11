@@ -1,0 +1,120 @@
+// SPDX-License-Identifier: Apache-2.0
+pragma solidity ^0.8.13;
+
+import {Test} from "forge-std/Test.sol";
+import {console2} from "forge-std/console2.sol";
+
+import {
+    RiscZeroVerifier,
+    Seal,
+    Receipt as RiscZeroReceipt,
+    ReceiptMetadata,
+    ReceiptMetadataLib,
+    SystemState,
+    ExitCode,
+    SystemExitCode
+} from "../contracts/RiscZeroVerifier.sol";
+
+contract RiscZeroVerifierTest is Test {
+    using ReceiptMetadataLib for ReceiptMetadata;
+
+    // A known-good SNARK proof generated for the BonsaiGovernor contract by Bonsai.
+    RiscZeroReceipt internal TEST_RECEIPT = RiscZeroReceipt(
+        Seal(
+            [
+                0x2c66ed69d8487dcfb7fb5a6471c526a73839f21eadd07bdf4181f6209b3e8026,
+                0x08664749c2d46278b94cc8662a529ebdc059a7244451cb87581e0be5d55b86f9
+            ],
+            [
+                [
+                    0x2a2e27079fa0bf2ed33e7cf66c34f016bfee00d70a5766212e094730dd6a0304,
+                    0x2d6bfd9239208d6b6d8dca568802930f031bee803e70da101c431ced1a9a0070
+                ],
+                [
+                    0x2d7c01523d70f7b7309e71355ace8ad6355122b6abeece9f23458160df95b8e5,
+                    0x1d11d24867746103b3fba77e09db47a93f452753b0a59ff42beb8dca7d4f751b
+                ]
+            ],
+            [
+                0x2c56e66032a383422e57c2ed37786a15eb0f647cf7574816f299e5399dec0c89,
+                0x271eba28989da164e5c6894002004b69ec1d841e7c91d2c3929a7b4b00944308
+            ]
+        ),
+        ReceiptMetadata(
+            SystemState(uint32(130676), bytes32(0xf52658afe73811487d6bc3e1b0f8b2f6b1ff4289a8429c3437c1f17d6b08c2e4)),
+            SystemState(uint32(129360), bytes32(0xd1edd376bb6c494b9f2713d8f675459c9ee23d66c402d8667e2587f1e33bfb15)),
+            ExitCode(SystemExitCode.Halted, 0),
+            bytes32(0x0000000000000000000000000000000000000000000000000000000000000000),
+            bytes32(0x420b84c1a220dc3bb1d61343217fbad879e5cfd72e224896384deb327305242c)
+        )
+    );
+
+    bytes32 internal constant IMAGE_ID = bytes32(0xe2b04686f6e65a64d253c8dc8c29df2470b678047635fbb5cada801165d0cb1a);
+    bytes internal constant JOURNAL =
+        hex"5818100a2105c60d4f73044fe09a9cb0ba9801a4f5775e79cbb8934b23caab652d80a7843825f9cafc685d8307c8b06969e0f55bbec95ec79c8ca4131b3e29980000000105da591290223f1702e67293b817f5393e019ead000000019ace4afab142fbcbc90e317977a6800076bd64ba";
+
+    RiscZeroVerifier internal verifier;
+
+    function setUp() external {
+        verifier = new RiscZeroVerifier();
+    }
+
+    function testVerifyKnownGoodReceipt() external view {
+        require(verifier.verify(TEST_RECEIPT), "known good receipt verification failed");
+    }
+}
+
+/*
+imageId: "0xe2b04686f6e65a64d253c8dc8c29df2470b678047635fbb5cada801165d0cb1a"
+input: "0x5818100a2105c60d4f73044fe09a9cb0ba9801a4f5775e79cbb8934b23caab65000001009ace4afab142fbcbc90e317977a6800076bd64ba000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001011c16dbedaa24f41778652d93ad726b65ba4bf508727e1f748632b316a20639bcca60870c1ff708f3b1f5605fc349c655077cad0411d5589a54d81e74aeffd4f51a0571e4c09c61ded1e054f749348f0071c0b80e47621ea0491e9c045e555607ef"
+journal: 5818100a2105c60d4f73044fe09a9cb0ba9801a4f5775e79cbb8934b23caab652d80a7843825f9cafc685d8307c8b06969e0f55bbec95ec79c8ca4131b3e29980000000105da591290223f1702e67293b817f5393e019ead000000019ace4afab142fbcbc90e317977a6800076bd64ba
+
+SnarkProof {
+a: [\"0x2c66ed69d8487dcfb7fb5a6471c526a73839f21eadd07bdf4181f6209b3e8026\", \"0x08664749c2d46278b94cc8662a529ebdc059a7244451cb87581e0be5d55b86f9\"],
+b: [[\"0x2a2e27079fa0bf2ed33e7cf66c34f016bfee00d70a5766212e094730dd6a0304\", \"0x2d6bfd9239208d6b6d8dca568802930f031bee803e70da101c431ced1a9a0070\"], [\"0x2d7c01523d70f7b7309e71355ace8ad6355122b6abeece9f23458160df95b8e5\", \"0x1d11d24867746103b3fba77e09db47a93f452753b0a59ff42beb8dca7d4f751b\"]],
+c: [\"0x2c56e66032a383422e57c2ed37786a15eb0f647cf7574816f299e5399dec0c89\", \"0x271eba28989da164e5c6894002004b69ec1d841e7c91d2c3929a7b4b00944308\"],
+public: [
+    \"0x000000000000000000000000000000001eece9585d11a13832b205d334d97478\",
+    \"0x0000000000000000000000000000000006b74fed6685c71e0cf31d881093df86\",
+    \"0x0000000000000000000000000000000023615024dcea69decf18d4bc95a92de6\",
+    \"0x00000000000000000000000000000000145fda385c7d5af7e4281daebb7ef499\"
+]
+}"
+
+meta: ReceiptMetadata {
+    pre: SystemState {
+        pc: 130676,
+        merkle_root: Digest(f52658afe73811487d6bc3e1b0f8b2f6b1ff4289a8429c3437c1f17d6b08c2e4) },
+    post: SystemState {
+        pc: 129360,
+        merkle_root: Digest(d1edd376bb6c494b9f2713d8f675459c9ee23d66c402d8667e2587f1e33bfb15) },
+    exit_code: Halted(0),
+    input: Digest(0000000000000000000000000000000000000000000000000000000000000000),
+    output: Digest(420b84c1a220dc3bb1d61343217fbad879e5cfd72e224896384deb327305242c)
+},
+journal: [88, 24, 16, 10, 33, 5, 198, 13, 79, 115, 4, 79, 224, 154, 156, 176, 186, 152, 1, 164, 245, 119, 94, 121, 203, 184, 147, 75, 35, 202, 171, 101, 45, 128, 167, 132, 56, 37, 249, 202, 252, 10, 4, 93, 131, 7, 200, 176, 105, 105, 224, 245, 91, 190, 201, 94, 199, 156, 140, 164, 19, 27, 62, 41, 152, 0, 0, 0, 1, 5, 218, 89, 18, 144, 34, 63, 23, 2, 230, 114, 147, 184, 23, 245, 57, 62, 1, 158, 173, 0, 0, 0, 1, 154, 206, 74, 250, 177, 66, 251, 203, 201, 14, 49, 121, 119, 166, 128, 0, 118, 189, 100, 186]
+
+snark_proof: SnarkProof {
+    a: [
+        0x084f2079a5e21855e96e24af7f10c4e4204a8cc58056d938ae34e4747f503e97,
+        0x0a8255087eff0a3ffd61d911710d9ebf9075dd5e96c76c1d282de9c914194210,
+    b: [
+        [
+            0x2a4223d10c006d5602756a812d460443992cf0ff9757787d76631beda8ba11f7,
+            0x2a2d3c5801b58f2d594450e46364bb42c0bcac69c6092a5ee3d155af9ac5439c
+        ], [
+            0x1df8bca41b0eacdd3126fcff857bc8451309fbc8a59c9c6b15086322a308310e,
+            0x1ab69de13e549868fff316c5eb28ab5fc785a2fc3ce520f78093e578ca0e7316
+            ]
+        ],
+    c: [
+        0x0789920b72f401e48446ed76fbea97d4ac1af7937a068d3653735765f4864022,
+        0x29aebbad37a4f9bb18a6c5bf887f7d56c4405003c964bbc238492e269fcca409
+    ],
+    public: [
+        0x000000000000000000000000000000001eece9585d11a13832b205d334d97478,
+        0x0000000000000000000000000000000006b74fed6685c71e0cf31d881093df86,
+        0x0000000000000000000000000000000023615024dcea69decf18d4bc95a92de6,
+        0x00000000000000000000000000000000145fda385c7d5af7e4281daebb7ef499
+    ]
+*/

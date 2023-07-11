@@ -15,7 +15,7 @@
 use std::{env, sync::Arc, time::Duration};
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk_alpha::alpha::{Client, SdkErr};
+use bonsai_sdk_alpha::alpha::{Client, SdkErr, responses::SnarkProof};
 use bonsai_starter_methods::GUEST_LIST;
 use ethers::{
     core::{
@@ -82,36 +82,68 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
         .create_session(img_id, input_id)
         .context("Failed to create remote proving session")?;
 
-    loop {
-        let res = match session.status(&client) {
-            Ok(res) => res,
-            Err(err) => {
-                eprint!("Failed to get session status: {err}");
-                std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
-                continue;
+    // Poll and await the result of the STARK rollup proving session.
+    let receipt: SessionRollupReceipt = (|| {
+        loop {
+            let res = match session.status(&client) {
+                Ok(res) => res,
+                Err(err) => {
+                    eprint!("Failed to get session status: {err}");
+                    std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+                    continue;
+                }
+            };
+            match res.status.as_str() {
+                "RUNNING" => {
+                    std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+                }
+                "SUCCEEDED" => {
+                    let receipt_buf = client
+                        .download(
+                            &res.receipt_url
+                                .context("Missing 'receipt_url' on status response")?,
+                        )
+                        .context("Failed to download receipt")?;
+                    let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
+                        .context("Failed to deserialize SessionRollupReceipt")?;
+                    // eprintln!("Completed proof on bonsai alpha backend!");
+                    return Ok(receipt);
+                }
+                _ => {
+                    bail!(
+                        "STARK proving session exited with bad status: {}",
+                        res.status
+                    );
+                }
             }
-        };
+        }
+    })()?;
+    eprintln!("receipt.meta: {:?}", receipt.receipt.meta);
+    //eprintln!("receipt.meta.digest(): {:?}", receipt.receipt.meta.digest());
+
+    let snark_session = client.create_snark(session.uuid.clone())?;
+    let snark_proof: SnarkProof = (|| loop {
+        let res = snark_session.status(&client)?;
         match res.status.as_str() {
             "RUNNING" => {
                 std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
             }
             "SUCCEEDED" => {
-                let receipt_buf = client
-                    .download(
-                        &res.receipt_url
-                            .context("Missing 'receipt_url' on status response")?,
-                    )
-                    .context("Failed to download receipt")?;
-                let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
-                    .context("Failed to deserialize SessionReceipt")?;
-                // eprintln!("Completed proof on bonsai alpha backend!");
-                return Ok(receipt.journal);
+                return Ok(res
+                    .output
+                    .expect("output expected to be non-empty on success"));
             }
             _ => {
-                bail!("Proving session exited with bad status: {}", res.status);
+                bail!(
+                    "SNARK proving session exited with bad status: {}",
+                    res.status
+                );
             }
         }
-    }
+    })()?;
+    eprintln!("snark_proof: {:?}", snark_proof);
+
+    return Ok(receipt.journal);
 }
 
 pub fn resolve_guest_entry<'a>(
@@ -153,7 +185,8 @@ pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> 
             .await
             .expect("Failed to run alpha sub-task"),
         "local" => prove_locally(elf, input, true),
-        _ => prove_locally(elf, input, false),
+        "none" => prove_locally(elf, input, false),
+        _ => bail!("BONSAI_PROVING must be 'bonsai', 'local', or 'none'"),
     }
 }
 

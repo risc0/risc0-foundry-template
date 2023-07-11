@@ -272,6 +272,7 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
         useZkvmGuest = vm.envOr("USE_ZKVM_GUEST", false);
         if (useZkvmGuest) {
             imageId = queryImageId("FINALIZE_VOTES");
+            console2.log(vm.toString(imageId));
         }
 
         token = new VoteToken();
