@@ -6,6 +6,9 @@ import {SafeCast} from "openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {Groth16Verifier} from "./Groth16Verifier.sol";
 
+import {console2} from "forge-std/console2.sol";
+import {Vm} from "forge-std/Vm.sol";
+
 /// @notice reverse the byte order of the uint256 value.
 /// @dev Soldity uses a big-endian ABI encoding. Reversing the byte order before encoding
 /// ensure that the encoded value will be little-endian.
@@ -152,13 +155,13 @@ contract RiscZeroVerifier is Groth16Verifier {
     /// then reversing the bytes of each.
     function splitDigest(bytes32 digest) internal pure returns (uint256, uint256) {
         uint256 reversed = reverseByteOrderUint256(uint256(digest));
-        return (uint256(reversed >> 128), uint256(uint128(uint256(reversed))));
+        return (uint256(uint128(uint256(reversed))), uint256(reversed >> 128));
     }
 
     function verify(Receipt memory receipt) public view returns (bool) {
         bytes32 metadataDigest = receipt.meta.digest();
         (uint256 meta0, uint256 meta1) = splitDigest(metadataDigest);
         return
-            this.verifyProof(receipt.seal.a, receipt.seal.b, receipt.seal.c, [meta0, meta1, CONTROL_ID_0, CONTROL_ID_1]);
+            this.verifyProof(receipt.seal.a, receipt.seal.b, receipt.seal.c, [CONTROL_ID_0, CONTROL_ID_1, meta0, meta1]);
     }
 }
