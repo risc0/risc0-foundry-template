@@ -20,9 +20,10 @@ import "forge-std/Test.sol";
 import {Strings2} from "../lib/murky/differential_testing/test/utils/Strings2.sol";
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
+import "./BonsaiCheats.sol";
 
 /// @notice A base contract for testing a Bonsai callback receiver contract
-abstract contract BonsaiTest is Test {
+abstract contract BonsaiTest is Test, BonsaiCheats {
 
     using Strings2 for bytes;
 
@@ -33,29 +34,6 @@ abstract contract BonsaiTest is Test {
         MOCK_BONSAI_RELAY = new BonsaiTestRelay();
         vm.recordLogs();
         _;
-    }
-
-    /// @notice Returns the journal resulting from running the guest with @imageId using @input.
-    function queryImageOutput(bytes32 imageId, bytes memory input) internal returns (bytes memory) {
-        string[] memory imageRunnerInput = new string[](5);
-        uint i = 0;
-        imageRunnerInput[i++] = 'cargo';
-        imageRunnerInput[i++] = 'run';
-        imageRunnerInput[i++] = '-q';
-        imageRunnerInput[i++] = abi.encodePacked(imageId).toHexString();
-        imageRunnerInput[i++] = input.toHexString();
-        return vm.ffi(imageRunnerInput);
-    }
-
-    /// @notice Returns the image id of the guest with the specified name.
-    function queryImageId(string memory binaryName) internal returns (bytes32) {
-        string[] memory imageRunnerInput = new string[](4);
-        uint i = 0;
-        imageRunnerInput[i++] = 'cargo';
-        imageRunnerInput[i++] = 'run';
-        imageRunnerInput[i++] = '-q';
-        imageRunnerInput[i++] = binaryName;
-        return bytes32(vm.ffi(imageRunnerInput));
     }
 
     /// @notice Process a single callback request and invoke its receiver contract with the results.
