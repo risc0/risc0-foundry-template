@@ -14,13 +14,11 @@
 
 use std::io::Write;
 
-use bonsai_ethereum_relay::{
-    create_ethers_client_private_key, resolve_guest_entry, resolve_image_output,
-    run_with_ethers_client, Config,
-};
+use anyhow::Context;
+use bonsai_ethereum_relay::{resolve_guest_entry, resolve_image_output, Output, ProverMode};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::{Parser, Subcommand};
-use ethers::core::types::Address;
+use ethers::abi::{Hash, Tokenizable};
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -31,27 +29,9 @@ pub enum Command {
 
         /// The input to provide to the guest binary
         input: Option<String>,
-    },
-    Relay {
-        /// Ethereum Proxy address
-        #[arg(short, long)]
-        relay_contract_address: Address,
 
-        /// Ethereum Node endpoint
-        #[arg(long)]
-        eth_node_url: String,
-
-        /// Ethereum Chain ID
-        #[arg(long, default_value_t = 31337)]
-        eth_chain_id: u64,
-
-        /// Wallet private key.
-        #[arg(
-            short,
-            long,
-            default_value = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-        )]
-        private_key: String,
+        #[arg(long, env = "BONSAI_PROVING", value_enum, default_value_t = ProverMode::None)]
+        prover_mode: ProverMode,
     },
 }
 
@@ -63,47 +43,51 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     match args.command {
         Command::Query {
             guest_binary,
             input,
+            prover_mode,
         } => {
             // Search list for requested binary name
             let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
-                .expect("failed to resolve guest entry");
+                .context("failed to resolve guest entry")?;
 
             // Execute or return image id
-            let output_bytes = match &input {
-                Some(input) => resolve_image_output(input, guest_entry).await,
-                None => Ok(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
+            let output_tokens = match &input {
+                // Input provided. Return the Ethereum ABI encoded journal and 
+                Some(input) => {
+                    let output = resolve_image_output(input, guest_entry, prover_mode)
+                        .await
+                        .context("failed to resolve image output")?;
+                    match (prover_mode, output) {
+                        (ProverMode::None, Output::Execution { journal }) => vec![journal.into_token()],
+                        (ProverMode::Local, Output::Execution { journal }) => vec![journal.into_token()],
+                        (ProverMode::Bonsai, Output::Bonsai {
+                            journal,
+                            ..
+                        }) => {
+                            vec![journal.into_token() /*, Hash::from(receipt_metadata.post.digest()).into_token()*/] // TODO
+                        }
+                        _ => anyhow::bail!("invalid prover mode and output combination: {:?}", prover_mode),
+                    }
+                }
+                // No input. Return the Ethereum ABI encoded bytes32 image ID.
+                None => vec![Hash::from(bytemuck::cast::<_, [u8; 32]>(
                     guest_entry.image_id,
-                ))),
-            }
-            .expect("failed to compute output");
+                ))
+                .into_token()],
+            };
 
-            let output = hex::encode(output_bytes);
+            let output = hex::encode(ethers::abi::encode(&output_tokens));
             print!("{output}");
             std::io::stdout()
                 .flush()
-                .expect("Failed to flush stdout buffer");
-        }
-        Command::Relay {
-            relay_contract_address,
-            eth_node_url,
-            eth_chain_id,
-            private_key,
-        } => {
-            let config = Config {
-                proxy_address: relay_contract_address,
-            };
-
-            let ethers_client =
-                create_ethers_client_private_key(&eth_node_url, &private_key, eth_chain_id).await;
-
-            run_with_ethers_client(config, ethers_client).await
+                .context("failed to flush stdout buffer")?;
         }
     }
+    Ok(())
 }

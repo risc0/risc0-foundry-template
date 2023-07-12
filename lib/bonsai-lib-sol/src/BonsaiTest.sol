@@ -64,6 +64,8 @@ abstract contract BonsaiTest is Test, BonsaiCheats {
     ) internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
 
+        // TODO Modify the query command to return an ABI encoded athorization object when running
+        // in bonsai proving mode.
         bytes memory journal = queryImageOutput(image_id, input);
         bytes memory payload = abi.encodePacked(function_selector, journal, image_id);
         vm.resumeGasMetering();

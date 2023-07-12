@@ -38,7 +38,7 @@ abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
         imageRunnerInput[i++] = "query";
         imageRunnerInput[i++] = abi.encodePacked(imageId).toHexString();
         imageRunnerInput[i++] = input.toHexString();
-        return vm.ffi(imageRunnerInput);
+        return abi.decode(vm.ffi(imageRunnerInput), (bytes));
     }
 
     /// @notice Returns the image id of the guest with the specified name.
@@ -50,6 +50,6 @@ abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
         imageRunnerInput[i++] = "-q";
         imageRunnerInput[i++] = "query";
         imageRunnerInput[i++] = binaryName;
-        return bytes32(vm.ffi(imageRunnerInput));
+        return abi.decode(vm.ffi(imageRunnerInput), (bytes32));
     }
 }

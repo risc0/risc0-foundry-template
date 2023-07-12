@@ -12,28 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{env, sync::Arc, time::Duration};
+use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk_alpha::alpha::{Client, SdkErr, responses::SnarkProof};
-use bonsai_starter_methods::GUEST_LIST;
-use ethers::{
-    core::{
-        k256::{ecdsa::SigningKey, SecretKey},
-        types::Address,
-    },
-    middleware::SignerMiddleware,
-    prelude::*,
-    providers::{Provider, Ws},
-};
+use bonsai_sdk_alpha::alpha::{responses::SnarkProof, Client, SdkErr};
+use clap::{builder::PossibleValue, ValueEnum};
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    Executor, ExecutorEnv, MemoryImage, Program, SessionReceipt, MEM_SIZE, PAGE_SIZE,
+    Executor, ExecutorEnv, MemoryImage, Program, ReceiptMetadata, SessionReceipt, MEM_SIZE,
+    PAGE_SIZE,
 };
+
+#[derive(Debug, Copy, Clone)]
+pub enum ProverMode {
+    None,
+    Local,
+    Bonsai,
+}
+
+impl ValueEnum for ProverMode {
+    fn value_variants<'a>() -> &'a [Self] {
+        &[Self::None, Self::Local, Self::Bonsai]
+    }
+
+    fn to_possible_value(&self) -> Option<PossibleValue> {
+        Some(match self {
+            Self::None => PossibleValue::new("none"),
+            Self::Local => PossibleValue::new("local"),
+            Self::Bonsai => PossibleValue::new("bonsai"),
+        })
+    }
+}
+
+/// Result of executing a guest image, possibly containing a proof.
+pub enum Output {
+    Execution {
+        journal: Vec<u8>,
+    },
+    Bonsai {
+        journal: Vec<u8>,
+        receipt_metadata: ReceiptMetadata,
+        snark_proof: SnarkProof,
+    },
+}
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
 /// the proof request to the Bonsai service.
-pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>> {
+pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Output> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
     let env = ExecutorEnv::builder()
@@ -52,7 +77,9 @@ pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Vec<u8>>
     } else {
         // eprintln!("Completed execution without a proof locally");
     }
-    Ok(session.journal)
+    Ok(Output::Execution {
+        journal: session.journal,
+    })
 }
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
@@ -63,7 +90,7 @@ fn get_digest(elf: &[u8]) -> Result<String> {
     Ok(hex::encode(image.compute_id()))
 }
 
-pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
+pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
     let client = Client::from_env().context("Failed to create client from env var")?;
 
     let img_id = get_digest(elf).context("Failed to generate elf memory image")?;
@@ -106,7 +133,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                         .context("Failed to download receipt")?;
                     let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
                         .context("Failed to deserialize SessionReceipt")?;
-                    // eprintln!("Completed proof on bonsai alpha backend!");
+                    // eprintln!("Completed STARK proof on bonsai alpha backend!");
                     return Ok(receipt);
                 }
                 _ => {
@@ -118,6 +145,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
             }
         }
     })()?;
+    let metadata = receipt.segments.last().unwrap().get_metadata()?;
 
     let snark_session = client.create_snark(session.uuid.clone())?;
     let snark_proof: SnarkProof = (|| loop {
@@ -127,6 +155,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                 std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
             }
             "SUCCEEDED" => {
+                // eprintln!("Completed SNARK proof on bonsai alpha backend!");
                 return Ok(res
                     .output
                     .expect("output expected to be non-empty on success"));
@@ -139,9 +168,12 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
             }
         }
     })()?;
-    eprintln!("snark_proof: {:?}", snark_proof);
 
-    return Ok(receipt.journal);
+    return Ok(Output::Bonsai {
+        journal: receipt.journal,
+        receipt_metadata: metadata,
+        snark_proof,
+    });
 }
 
 pub fn resolve_guest_entry<'a>(
@@ -173,101 +205,19 @@ pub fn resolve_guest_entry<'a>(
         })
 }
 
-pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
+pub async fn resolve_image_output(
+    input: &str,
+    guest_entry: &GuestListEntry,
+    prover_mode: ProverMode,
+) -> Result<Output> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;
-    let prover = env::var("BONSAI_PROVING").unwrap_or("".to_string());
     let elf = guest_entry.elf;
 
-    match prover.as_str() {
-        "bonsai" => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
+    match prover_mode {
+        ProverMode::Bonsai => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
             .expect("Failed to run alpha sub-task"),
-        "local" => prove_locally(elf, input, true),
-        "none" | "" => prove_locally(elf, input, false),
-        _ => bail!("BONSAI_PROVING must be 'bonsai', 'local', or 'none'"),
+        ProverMode::Local => prove_locally(elf, input, true),
+        ProverMode::None => prove_locally(elf, input, false),
     }
-}
-
-// TODO(victor): Figure out how to use the contract from lib/bonsai-lib-sol instead, and how to use
-// forge to build automatically instead of needing a manual build step.
-abigen!(BonsaiRelayContract, "artifacts/BonsaiRelay.sol/BonsaiRelayContract.json");
-
-pub struct Config {
-    pub proxy_address: Address,
-}
-
-pub async fn run_with_ethers_client<M: Middleware + 'static>(config: Config, ethers_client: Arc<M>)
-where
-    <M as ethers::providers::Middleware>::Provider: PubsubClient,
-    <<M as ethers::providers::Middleware>::Provider as ethers::providers::PubsubClient>::NotificationStream: Sync,
-{
-    let event_name = "CallbackRequest(address,bytes32,bytes,address,bytes4,uint64)";
-    let filter = ethers::types::Filter::new()
-        .address(config.proxy_address)
-        .event(event_name);
-    let mut proxy_stream = ethers_client
-        .subscribe_logs(&filter)
-        .await
-        .expect("Failed to subscribe to ethereum event logs")
-        .map(|log| {
-            ethers::contract::parse_log::<CallbackRequestFilter>(log)
-                .expect("must be a callback proof request log")
-        });
-
-    let proxy: BonsaiRelayContract<M> = BonsaiRelayContract::new(config.proxy_address, ethers_client.clone());
-    while let Some(event) = proxy_stream.next().await {
-        // Search list for requested binary name
-        let image_id = hex::encode(event.image_id);
-        let guest_entry =
-            resolve_guest_entry(GUEST_LIST, &image_id).expect("Failed to resolve guest entry");
-
-        // Execute or return image id
-        let input = hex::encode(event.input);
-        let journal_bytes = resolve_image_output(&input, guest_entry)
-            .await
-            .expect("Failed to compute journal output");
-
-        let payload = [
-            event.function_selector.as_slice(),
-            journal_bytes.as_slice(),
-            event.image_id.as_slice(),
-        ]
-        .concat();
-
-        // Broadcast callback transaction
-        let proof_batch: Vec<Callback> = vec![Callback {
-            callback_contract: event.callback_contract,
-            journal_inclusion_proof: vec![],
-            payload: payload.into(),
-            gas_limit: event.gas_limit,
-        }];
-
-        proxy
-            .invoke_callbacks(proof_batch)
-            .send()
-            .await
-            .expect("failed to send callback transaction")
-            .await
-            .expect("Failed to confirm callback transaction");
-    }
-}
-
-pub async fn create_ethers_client_private_key(
-    eth_node_url: &str,
-    private_key: &str,
-    eth_chain_id: u64,
-) -> Arc<SignerMiddleware<Provider<Ws>, LocalWallet>> {
-    let web3_provider = Provider::<Ws>::connect(eth_node_url)
-        .await
-        .expect("unable to connect to websocket");
-    let web3_wallet_sk_bytes =
-        hex::decode(private_key).expect("private_key should be valid hex string");
-    let web3_wallet_secret_key =
-        SecretKey::from_slice(&web3_wallet_sk_bytes).expect("invalid private key");
-    let web3_wallet_signing_key = SigningKey::from(web3_wallet_secret_key);
-    let web3_wallet = LocalWallet::from(web3_wallet_signing_key);
-    Arc::new(SignerMiddleware::new(
-        web3_provider,
-        web3_wallet.with_chain_id(eth_chain_id),
-    ))
 }
