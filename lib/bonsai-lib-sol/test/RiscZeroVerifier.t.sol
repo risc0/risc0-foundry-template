@@ -73,4 +73,44 @@ contract RiscZeroVerifierTest is Test {
             "verification failed"
         );
     }
+
+    // A no-so-thorough test to make sure changing the bits causes a failure.
+    function testVerifyMangledReceipts() external view {
+        RiscZeroReceipt memory mangled = TEST_RECEIPT;
+
+        mangled.seal.a[0] += 1;
+        require(!verifier.verify(mangled), "verification passed on mangled a value");
+        mangled = TEST_RECEIPT;
+
+        mangled.seal.b[0][0] += 1;
+        require(!verifier.verify(mangled), "verification passed on mangled b value");
+        mangled = TEST_RECEIPT;
+
+        mangled.seal.c[0] += 1;
+        require(!verifier.verify(mangled), "verification passed on mangled c value");
+        mangled = TEST_RECEIPT;
+
+        mangled.meta.preStateDigest ^= bytes32(uint256(1));
+        require(!verifier.verify(mangled), "verification passed on mangled preStateDigest value");
+        mangled = TEST_RECEIPT;
+
+        mangled.meta.postStateDigest ^= bytes32(uint256(1));
+        require(!verifier.verify(mangled), "verification passed on mangled postStateDigest value");
+        mangled = TEST_RECEIPT;
+
+        mangled.meta.exitCode = ExitCode(SystemExitCode.SystemSplit, 0);
+        require(!verifier.verify(mangled), "verification passed on mangled exitCode value");
+        mangled = TEST_RECEIPT;
+
+        mangled.meta.input ^= bytes32(uint256(1));
+        require(!verifier.verify(mangled), "verification passed on mangled input value");
+        mangled = TEST_RECEIPT;
+
+        mangled.meta.output ^= bytes32(uint256(1));
+        require(!verifier.verify(mangled), "verification passed on mangled input value");
+        mangled = TEST_RECEIPT;
+
+        // Just a quick sanity check
+        require(verifier.verify(mangled), "verification failed");
+    }
 }
