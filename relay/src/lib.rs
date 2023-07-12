@@ -83,7 +83,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
         .context("Failed to create remote proving session")?;
 
     // Poll and await the result of the STARK rollup proving session.
-    let receipt: SessionRollupReceipt = (|| {
+    let receipt: SessionReceipt = (|| {
         loop {
             let res = match session.status(&client) {
                 Ok(res) => res,
@@ -104,8 +104,8 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
                                 .context("Missing 'receipt_url' on status response")?,
                         )
                         .context("Failed to download receipt")?;
-                    let receipt: SessionRollupReceipt = bincode::deserialize(&receipt_buf)
-                        .context("Failed to deserialize SessionRollupReceipt")?;
+                    let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
+                        .context("Failed to deserialize SessionReceipt")?;
                     // eprintln!("Completed proof on bonsai alpha backend!");
                     return Ok(receipt);
                 }
@@ -118,8 +118,6 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
             }
         }
     })()?;
-    eprintln!("receipt.meta: {:?}", receipt.receipt.meta);
-    //eprintln!("receipt.meta.digest(): {:?}", receipt.receipt.meta.digest());
 
     let snark_session = client.create_snark(session.uuid.clone())?;
     let snark_proof: SnarkProof = (|| loop {
