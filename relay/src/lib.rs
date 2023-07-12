@@ -183,7 +183,7 @@ pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> 
             .await
             .expect("Failed to run alpha sub-task"),
         "local" => prove_locally(elf, input, true),
-        "none" => prove_locally(elf, input, false),
+        "none" | "" => prove_locally(elf, input, false),
         _ => bail!("BONSAI_PROVING must be 'bonsai', 'local', or 'none'"),
     }
 }
