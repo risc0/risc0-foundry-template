@@ -10,7 +10,6 @@ import {
     Receipt as RiscZeroReceipt,
     ReceiptMetadata,
     ReceiptMetadataLib,
-    SystemState,
     ExitCode,
     SystemExitCode
 } from "../contracts/RiscZeroVerifier.sol";
@@ -41,8 +40,8 @@ contract RiscZeroVerifierTest is Test {
             ]
         ),
         ReceiptMetadata(
-            SystemState(uint32(130676), bytes32(0xf52658afe73811487d6bc3e1b0f8b2f6b1ff4289a8429c3437c1f17d6b08c2e4)),
-            SystemState(uint32(129360), bytes32(0xd1edd376bb6c494b9f2713d8f675459c9ee23d66c402d8667e2587f1e33bfb15)),
+            bytes32(0xfb745ba9d74cce252c57ef0991a2e7cfc46304a1ece848cd98e5e57400f0707c),
+            bytes32(0x79578ad1fa040c6ab66c0a551013f449b021a91fe3fce38e3f89240abe6021e6),
             ExitCode(SystemExitCode.Halted, 0),
             bytes32(0x0000000000000000000000000000000000000000000000000000000000000000),
             bytes32(0x420b84c1a220dc3bb1d61343217fbad879e5cfd72e224896384deb327305242c)
@@ -50,7 +49,7 @@ contract RiscZeroVerifierTest is Test {
     );
 
     bytes32 internal constant TEST_IMAGE_ID =
-        bytes32(0xe2b04686f6e65a64d253c8dc8c29df2470b678047635fbb5cada801165d0cb1a);
+        bytes32(0xfb745ba9d74cce252c57ef0991a2e7cfc46304a1ece848cd98e5e57400f0707c);
     bytes internal constant TEST_JOURNAL =
         hex"5818100a2105c60d4f73044fe09a9cb0ba9801a4f5775e79cbb8934b23caab652d80a7843825f9cafc685d8307c8b06969e0f55bbec95ec79c8ca4131b3e29980000000105da591290223f1702e67293b817f5393e019ead000000019ace4afab142fbcbc90e317977a6800076bd64ba";
 
@@ -69,6 +68,9 @@ contract RiscZeroVerifierTest is Test {
     }
 
     function testVerifyKnownGoodImageIdAndJournal() external view {
-        require(verifier.verify(TEST_RECEIPT.seal, TEST_RECEIPT.meta.pre, TEST_RECEIPT.meta.post, TEST_IMAGE_ID, TEST_JOURNAL), "verification failed");
+        require(
+            verifier.verify(TEST_RECEIPT.seal, TEST_IMAGE_ID, TEST_RECEIPT.meta.postStateDigest, TEST_JOURNAL),
+            "verification failed"
+        );
     }
 }

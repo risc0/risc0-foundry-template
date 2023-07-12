@@ -50,25 +50,6 @@ function reverseByteOrderUint32(uint32 input) pure returns (uint32 v) {
     v = (v >> 16) | (v << 16);
 }
 
-/// @notice Public state of a segment.
-struct SystemState {
-    /// The program counter.
-    /// TODO(victor): What verification needs to be included for the initial pc.
-    uint32 pc;
-    /// @notice Root hash of a Merkle tree which confirms the
-    /// integrity of the memory image.
-    bytes32 merkleRoot;
-}
-
-library SystemStateLib {
-    bytes32 constant TAG_DIGEST = sha256("risc0.SystemState");
-
-    /// @notice Return the RISC Zero structural hash of the SystemState struct.
-    function digest(SystemState memory state) internal pure returns (bytes32) {
-        return sha256(abi.encodePacked(TAG_DIGEST, state.merkleRoot, reverseByteOrderUint32(state.pc), uint16(1) << 8));
-    }
-}
-
 /// @notice Indicator for the overall system at the end of execution covered by this proof.
 enum SystemExitCode {
     Halted,
@@ -86,10 +67,10 @@ struct ExitCode {
 /// @notice Data associated with a receipt which is used for both input and
 /// output of global state.
 struct ReceiptMetadata {
-    /// The SystemState of a segment just before execution has begun.
-    SystemState pre;
-    /// The SystemState of a segment just after execution has completed.
-    SystemState post;
+    /// Digest of the SystemState of a segment just before execution has begun.
+    bytes32 preStateDigest;
+    /// Digest of the SystemState of a segment just after execution has completed.
+    bytes32 postStateDigest;
     /// The exit code for a segment
     ExitCode exitCode;
     /// A digest of the input, from the viewpoint of the guest.
@@ -99,19 +80,16 @@ struct ReceiptMetadata {
 }
 
 library ReceiptMetadataLib {
-    using SystemStateLib for SystemState;
-
     bytes32 constant TAG_DIGEST = sha256("risc0.ReceiptMeta");
 
     function digest(ReceiptMetadata memory meta) internal pure returns (bytes32) {
-        // TODO(victor): Refactor the tagDigest to be a constant.
         return sha256(
             abi.encodePacked(
                 TAG_DIGEST,
                 // down
                 meta.input,
-                meta.pre.digest(),
-                meta.post.digest(),
+                meta.preStateDigest,
+                meta.postStateDigest,
                 meta.output,
                 // data
                 uint32(meta.exitCode.system) << 24,
@@ -136,7 +114,6 @@ struct Receipt {
 }
 
 contract RiscZeroVerifier is Groth16Verifier {
-    using SystemStateLib for SystemState;
     using ReceiptMetadataLib for ReceiptMetadata;
     using SafeCast for uint256;
 
@@ -156,8 +133,7 @@ contract RiscZeroVerifier is Groth16Verifier {
     /// @notice verify that the given receipt is a valid Groth16 RISC Zero recursion receipt.
     /// @return true if the receipt passes the verification checks.
     function verify(Receipt memory receipt) public view returns (bool) {
-        bytes32 metadataDigest = receipt.meta.digest();
-        (uint256 meta0, uint256 meta1) = splitDigest(metadataDigest);
+        (uint256 meta0, uint256 meta1) = splitDigest(receipt.meta.digest());
         return
             this.verifyProof(receipt.seal.a, receipt.seal.b, receipt.seal.c, [CONTROL_ID_0, CONTROL_ID_1, meta0, meta1]);
     }
@@ -174,23 +150,18 @@ contract RiscZeroVerifier is Groth16Verifier {
     }
 
     /// @notice verifies that the given seal is a valid Groth16 RISC Zero proof of execution over the
-    ///     given pre-state (i.e. image ID), post-state, and journal. Requires that the input hash
+    ///     given image ID, post-state digest, and journal. Asserts that the input hash
     //      is all-zeros (i.e. no committed input) and the exit code is (Halted, 0).
     /// @return true if the receipt passes the verification checks.
-    function verify(Seal memory seal, SystemState memory pre, SystemState memory post, bytes32 imageId, bytes calldata journal)
+    function verify(Seal memory seal, bytes32 imageId, bytes32 postStateDigest, bytes calldata journal)
         public
         view
         returns (bool)
     {
-        // Check that the pre-state matches the given image ID.
-        if (pre.imageId() != imageId) {
-            console2.log(Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D).toString(pre.imageId()));
-            console2.log(Vm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D).toString(imageId));
-            revert("image ID mismatch");
-            // return false;
-        }
-        Receipt memory receipt =
-            Receipt(seal, ReceiptMetadata(pre, post, ExitCode(SystemExitCode.Halted, 0), bytes32(0), sha256(journal)));
+        Receipt memory receipt = Receipt(
+            seal,
+            ReceiptMetadata(imageId, postStateDigest, ExitCode(SystemExitCode.Halted, 0), bytes32(0), sha256(journal))
+        );
         return verify(receipt);
     }
 }
