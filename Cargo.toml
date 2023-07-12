@@ -1,12 +1,10 @@
 [workspace]
 default-members = [
-    "cli",
     "relay"
 ]
 
 members = [
     "methods",
-    "cli",
     "relay"
 ]
 

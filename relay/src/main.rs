@@ -14,13 +14,11 @@
 
 use std::io::Write;
 
-use bonsai_ethereum_relay::{
-    create_ethers_client_private_key, resolve_guest_entry, resolve_image_output,
-    run_with_ethers_client, Config,
-};
+use anyhow::{Context, Error, Result};
+use bonsai_ethereum_relay::{resolve_guest_entry, resolve_image_output};
+use bonsai_sdk_alpha::alpha::{Client, SdkErr};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::{Parser, Subcommand};
-use ethers::core::types::Address;
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -32,26 +30,17 @@ pub enum Command {
         /// The input to provide to the guest binary
         input: Option<String>,
     },
-    Relay {
-        /// Ethereum Proxy address
-        #[arg(short, long)]
-        relay_contract_address: Address,
-
-        /// Ethereum Node endpoint
+    /// Upload the RISC-V ELF binary to Bonsai.
+    Upload {
+        /// The name of the guest binary
         #[arg(long)]
-        eth_node_url: String,
-
-        /// Ethereum Chain ID
-        #[arg(long, default_value_t = 31337)]
-        eth_chain_id: u64,
-
-        /// Wallet private key.
-        #[arg(
-            short,
-            long,
-            default_value = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-        )]
-        private_key: String,
+        guest_binary: String,
+        /// Bonsai API URL
+        #[arg(long, env)]
+        bonsai_api_url: String,
+        /// Bonsai API URL
+        #[arg(long, env)]
+        bonsai_api_key: String,
     },
 }
 
@@ -63,7 +52,7 @@ struct Args {
 }
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Error> {
     let args = Args::parse();
 
     match args.command {
@@ -73,7 +62,7 @@ async fn main() {
         } => {
             // Search list for requested binary name
             let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
-                .expect("failed to resolve guest entry");
+                .context("failed to resolve guest entry")?;
 
             // Execute or return image id
             let output_bytes = match &input {
@@ -82,28 +71,46 @@ async fn main() {
                     guest_entry.image_id,
                 ))),
             }
-            .expect("failed to compute output");
+            .context("failed to compute output")?;
 
             let output = hex::encode(output_bytes);
             print!("{output}");
             std::io::stdout()
                 .flush()
-                .expect("Failed to flush stdout buffer");
+                .context("Failed to flush stdout buffer")?;
         }
-        Command::Relay {
-            relay_contract_address,
-            eth_node_url,
-            eth_chain_id,
-            private_key,
+        Command::Upload {
+            guest_binary,
+            bonsai_api_url,
+            bonsai_api_key,
         } => {
-            let config = Config {
-                proxy_address: relay_contract_address,
-            };
+            // Search list for requested binary name
+            let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
+                .context("failed to resolve guest entry")?;
+            let image_id = hex::encode(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
+                guest_entry.image_id,
+            )));
+            let bonsai_client = tokio::task::spawn_blocking(move || {
+                Client::from_parts(bonsai_api_url, bonsai_api_key)
+            })
+            .await
+            .context("could not initialize a Bonsai client")??;
+            let img_id = image_id.clone();
+            match tokio::task::spawn_blocking(move || {
+                bonsai_client.upload_img(&image_id, guest_entry.elf.to_vec())
+            })
+            .await?
+            {
+                Ok(()) => (),
+                Err(SdkErr::ImageIdExists) => (),
+                Err(err) => return Err(err.into()),
+            }
 
-            let ethers_client =
-                create_ethers_client_private_key(&eth_node_url, &private_key, eth_chain_id).await;
-
-            run_with_ethers_client(config, ethers_client).await
+            println!("Uploaded image id: {}", img_id);
+            std::io::stdout()
+                .flush()
+                .context("Failed to flush stdout buffer")?;
         }
     }
+    Ok(())
 }

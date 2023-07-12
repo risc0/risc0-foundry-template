@@ -9,9 +9,10 @@ ifndef BONSAI_API_KEY
 	BONSAI_API_KEY=None
 endif
 
-bonsai_test_relay_path=./lib/bonsai-lib-sol/src/BonsaiRelay.sol:BonsaiRelay
+bonsai_test_relay_path=./relay/contracts/BonsaiRelay.sol:BonsaiRelay
 bonsai_starter_contract_path=./contracts/BonsaiStarter.sol:BonsaiStarter
 constructor_args=None
+guest_binary=FIBONACCI
 
 up:
 	$(MAKE) deploy-contract contract_path=$(bonsai_test_relay_path)
@@ -31,7 +32,7 @@ deploy-bonsai-starter-contract: set-image-id
 	deploy-contract
 
 set-image-id:
-	$(eval image_id = $(shell BONSAI_API_URL=$(BONSAI_API_URL) BONSAI_API_KEY=$(BONSAI_API_KEY) cargo run -q -- upload | grep -E -o '[0-9a-fA-F]{64}'))
+	$(eval image_id = $(shell BONSAI_API_URL=$(BONSAI_API_URL) BONSAI_API_KEY=$(BONSAI_API_KEY) cargo run -q -- upload --guest-binary $(guest_binary) | grep -E -o '[0-9a-fA-F]{64}'))
 
 # make deploy-contract contract_path=<path_to_contract_sol>:<contract_name> constructor_args=[optional] anvil_private_key=[optional]
 deploy-contract:
