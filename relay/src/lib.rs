@@ -188,7 +188,9 @@ pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> 
     }
 }
 
-abigen!(ProxyContract, "artifacts/proxy.sol/Proxy.json");
+// TODO(victor): Figure out how to use the contract from lib/bonsai-lib-sol instead, and how to use
+// forge to build automatically instead of needing a manual build step.
+abigen!(BonsaiRelayContract, "artifacts/BonsaiRelay.sol/BonsaiRelayContract.json");
 
 pub struct Config {
     pub proxy_address: Address,
@@ -212,7 +214,7 @@ where
                 .expect("must be a callback proof request log")
         });
 
-    let proxy: ProxyContract<M> = ProxyContract::new(config.proxy_address, ethers_client.clone());
+    let proxy: BonsaiRelayContract<M> = BonsaiRelayContract::new(config.proxy_address, ethers_client.clone());
     while let Some(event) = proxy_stream.next().await {
         // Search list for requested binary name
         let image_id = hex::encode(event.image_id);

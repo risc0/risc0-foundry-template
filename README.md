@@ -11,10 +11,13 @@ https://github.com/risc0/bonsai-foundry-template/assets/15272444/5f2bc82d-f01a-4
 ## Dependencies
 
 1. [Rust and Cargo](https://rustup.rs)
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
+
 2. [Foundry](https://getfoundry.sh/)
+
 ```bash
 curl -L https://foundry.paradigm.xyz | bash
 ```
@@ -22,7 +25,8 @@ curl -L https://foundry.paradigm.xyz | bash
 ***Hint:*** *If you're installing Foundry for the first time, be sure to quit your terminal before reopening it and running the `foundryup` command.*
 
 ## Project Setup
-1. Use Foundry to create a new project from this template at a location of your choosing (this example command will create it at `./my-project`) 
+
+1. Use Foundry to create a new project from this template at a location of your choosing (this example command will create it at `./my-project`)
 
 ```bash
 forge init -t risc0/bonsai-foundry-template ./my-project
@@ -38,8 +42,11 @@ Get started writing your application by modifying these key files:
 Associated build configuration files and tests are discussed along with the [project structure](#project-structure) below.
 
 ## Test Your Project
+
 With this Foundry template, you can write a zkVM Rust program in the `/methods/guest` directory which Solidity contracts in  `/contracts` can call into and in return receive a proof or 'receipt' of execution.
+
 ### Test your zkVM program
+
 To check if your zkVM program will compile, and generate any errors if not, run the Rust compiler with
 
 ```bash
@@ -47,9 +54,11 @@ cargo build
 ```
 
 If you've written tests in your zkVM progam, run them with
+
 ```bash
 cargo test
 ```
+
 ***Hint:*** *To learn more about our RISC-V zkVM [visit the docs](https://dev.risczero.com/zkvm) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
 
 ### Test your solidity integration with the zkVM

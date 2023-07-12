@@ -16,6 +16,7 @@
 
 pragma solidity ^0.8.17;
 
+/*
 import "forge-std/Script.sol";
 import "../relay/contracts/BonsaiRelay.sol";
 import "../contracts/BonsaiStarter.sol";
@@ -42,3 +43,4 @@ contract Deploy is Script, BonsaiCheats {
         vm.stopBroadcast();
     }
 }
+*/

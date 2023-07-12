@@ -18,6 +18,9 @@ pragma solidity ^0.8.17;
 
 /// @notice The interface for the Bonsai relay contract
 interface IBonsaiRelay {
+    /// @notice Submit request to receive a callback.
+    /// @dev This function will usually be called be the Bonsai user's application contract, and
+    ///     will log an event that the Bonsai Relay will detect and respond to.
     function requestCallback(
         bytes32 image_id,
         bytes calldata input,

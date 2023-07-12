@@ -12,7 +12,7 @@ import {
     ReceiptMetadataLib,
     ExitCode,
     SystemExitCode
-} from "../contracts/RiscZeroVerifier.sol";
+} from "../src/RiscZeroVerifier.sol";
 
 contract RiscZeroVerifierTest is Test {
     using ReceiptMetadataLib for ReceiptMetadata;
