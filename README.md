@@ -59,41 +59,31 @@ To test both your Solidity contracts and their interaction with your zkVM progra
 forge test
 ```
 
-***Hint:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
+***Hint:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: (https://book.getfoundry.sh/forge/tests)[https://book.getfoundry.sh/forge/tests].*
 
-### Test your project end-to-end
+### Deploy your project on a local network
+
+***Hint:*** *Make sure to have `Docker` installed on your system. To install the latest version visit: (https://docs.docker.com/get-docker)[https://docs.docker.com/get-docker].*
 
 You can deploy your contracts and run an end-to-end test or demo as follows:
 
-1. Start an anvil instance (if you want a local testnet):
+1. Start an anvil and Bonsai-relay instances by running:
 ```
-anvil
+make up
 ```
-If you do use anvil, then you will need to specify a private key to use for deployment:
-```
-export RELAY_PRIVATE_KEY=0x..
-```
-Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
-2. Run the provided deploy script to deploy the local relay and the starter contract:
+2. Deploy the starter contract by running:
 ```
-forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --broadcast
+make deploy-bonsai-starter-contract
 ```
-You should modify this script to correctly deploy your application's solidity contract instead of the starter contract if you have changed things.
+***Hint:*** *You should modify the `Makefile` to correctly deploy your application's solidity contract instead of the starter contract if you have changed things*.
 
-3. Run the local relay binary (replace the relay contract address and Ethereum node parameters if needed):
-```
-cargo run relay --relay-contract-address 0x5fbdb2315678afecb367f032d93f642f64180aa3 --eth-node-url ws://localhost:8545
-```
-You can set the `--private-key` parameter if you do not wish to use the default anvil account.
+The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
 
-The relay binary will keep monitoring the chain for callback requests and relay their result back after computing them.
-You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
-
-**Now you can test your deployment in a new terminal as follows:**
+**Now you can test your deployment as follows:**
 1. Send a transaction to the starter contract:
 ```
-cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
+cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --gas-limit 100000 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
 ```
 
 2. Check the relayed result:
