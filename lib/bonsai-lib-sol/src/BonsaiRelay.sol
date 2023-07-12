@@ -74,8 +74,8 @@ contract BonsaiRelay is IBonsaiRelay, RiscZeroVerifier {
             Callback calldata callback = callbacks[i];
 
             // Validate Callback authorization proof.
-            bytes32 imageId = bytes32(callback.payload[callback.payload.length-32:]);
-            bytes calldata journal = callback.payload[4:callback.payload.length-32];
+            bytes32 imageId = bytes32(callback.payload[callback.payload.length - 32:]);
+            bytes calldata journal = callback.payload[4:callback.payload.length - 32];
             require(verify(callback.auth.seal, imageId, callback.auth.postStateDigest, journal));
 
             // invoke callback
