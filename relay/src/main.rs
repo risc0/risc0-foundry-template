@@ -18,7 +18,7 @@ use anyhow::Context;
 use bonsai_ethereum_relay::{resolve_guest_entry, resolve_image_output, Output, ProverMode};
 use bonsai_starter_methods::GUEST_LIST;
 use clap::{Parser, Subcommand};
-use ethers::abi::{Hash, Tokenizable};
+use ethers::abi::{Hash, Token, Tokenizable};
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -64,13 +64,13 @@ async fn main() -> anyhow::Result<()> {
                         .await
                         .context("failed to resolve image output")?;
                     match (prover_mode, output) {
-                        (ProverMode::None, Output::Execution { journal }) => vec![journal.into_token()],
-                        (ProverMode::Local, Output::Execution { journal }) => vec![journal.into_token()],
+                        (ProverMode::None, Output::Execution { journal }) => vec![Token::Bytes(journal)],
+                        (ProverMode::Local, Output::Execution { journal }) => vec![Token::Bytes(journal)],
                         (ProverMode::Bonsai, Output::Bonsai {
                             journal,
                             ..
                         }) => {
-                            vec![journal.into_token() /*, Hash::from(receipt_metadata.post.digest()).into_token()*/] // TODO
+                            vec![Token::Bytes(journal) /*, Hash::from(receipt_metadata.post.digest()).into_token()*/] // TODO
                         }
                         _ => anyhow::bail!("invalid prover mode and output combination: {:?}", prover_mode),
                     }
