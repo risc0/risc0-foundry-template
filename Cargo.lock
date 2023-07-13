@@ -325,7 +325,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bincode",
- "bonsai-sdk",
+ "bonsai-sdk 0.1.0",
  "bonsai-starter-methods",
  "bytemuck",
  "clap",
@@ -342,6 +342,16 @@ dependencies = [
 name = "bonsai-sdk"
 version = "0.1.0"
 source = "git+https://github.com/risc0/risc0?branch=main#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+dependencies = [
+ "reqwest",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "bonsai-sdk"
+version = "0.2.0"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "reqwest",
  "serde",
@@ -3121,8 +3131,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-build"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "cargo_metadata",
  "directories",
@@ -3138,8 +3148,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-build-kernel"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "cc",
  "directories",
@@ -3151,8 +3161,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "anyhow",
  "log",
@@ -3168,8 +3178,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-circuit-rv32im-sys"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -3179,8 +3189,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-core"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3188,8 +3198,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-sys"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "cc",
  "glob",
@@ -3199,8 +3209,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkp"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3220,16 +3230,18 @@ dependencies = [
  "risc0-zkvm-platform",
  "serde",
  "sha2 0.10.7",
+ "thiserror",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 dependencies = [
  "anyhow",
  "bincode",
+ "bonsai-sdk 0.2.0",
  "bytemuck",
  "cfg-if",
  "crypto-bigint 0.5.2",
@@ -3252,14 +3264,15 @@ dependencies = [
  "rrs-lib",
  "serde",
  "sha2 0.10.7",
+ "thiserror",
  "tracing",
  "typetag",
 ]
 
 [[package]]
 name = "risc0-zkvm-platform"
-version = "0.15.0"
-source = "git+https://github.com/risc0/risc0?rev=b35e1faa37fb4b60cf8dd849cf46b14d1713c881#b35e1faa37fb4b60cf8dd849cf46b14d1713c881"
+version = "0.16.1"
+source = "git+https://github.com/risc0/risc0?rev=0d02111b2f84a53cf6198a0064086b281ed0f749#0d02111b2f84a53cf6198a0064086b281ed0f749"
 
 [[package]]
 name = "rlp"
