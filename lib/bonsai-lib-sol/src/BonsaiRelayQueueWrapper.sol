@@ -25,6 +25,8 @@ import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 ///     without the need to parse logs.
 contract BonsaiRelayQueueWrapper is IBonsaiRelay, Proxy, Test {
     // An array of byte arrays storing the queue of callback requests received.
+    // NOTE: Both test and fully-verifying versions of the BonsaiRelay and stateless. If they are
+    // ever modified to store state, then these storage variables may be an issue.
     bytes[] private cbrQueue;
     uint256 private cbrIdx;
 
