@@ -22,19 +22,23 @@ import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 contract BonsaiTestRelay is IBonsaiRelay {
     // An array of byte arrays storing the queue of callback requests received.
     function requestCallback(
-        bytes32 image_id,
+        bytes32 imageId,
         bytes calldata input,
-        address callback_contract,
-        bytes4 function_selector,
-        uint64 gas_limit
+        address callbackContract,
+        bytes4 functionSelector,
+        uint64 gasLimit
     ) external {
-        emit CallbackRequest(msg.sender, image_id, input, callback_contract, function_selector, gas_limit);
+        emit CallbackRequest(msg.sender, imageId, input, callbackContract, functionSelector, gasLimit);
     }
 
-    function invokeCallback(address callback_contract, bytes calldata payload, uint64 gas_limit)
+    function invokeCallback(address callbackContract, bytes calldata payload, uint64 gasLimit)
         external
-        returns (bool, bytes memory)
     {
-        return callback_contract.call{gas: gas_limit}(payload);
+        (bool success, bytes memory data) = callbackContract.call{gas: gasLimit}(payload);
+        if (!success) {
+            assembly {
+                revert(add(data, 32), mload(data))
+            }
+        }
     }
 }

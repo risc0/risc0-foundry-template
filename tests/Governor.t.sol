@@ -394,30 +394,30 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
 
         BonsaiGovernor bonsaiGov = BonsaiGovernor(payable(address(gov)));
         bytes4 callbackSelector = bonsaiGov.bonsaiLowLevelCallbackReceiver.selector;
-        bool success;
-        bytes memory data;
         if (useZkvmGuest) {
-            (success, data) = runCallbackRequest(imageId, guestInput, address(gov), callbackSelector, UINT64_MAX);
+            // Check the callback result and revert if the callback failed.
+            // NOTE: When the revert is expected, the vm.expectRevert call will prevent this function
+            // from reverting, thereby ensuring the results from collectBallots is preserved.
+            if (bytes(expectedRevert).length != 0) {
+                vm.expectRevert(bytes(expectedRevert));
+            }
+
+            this.runCallbackRequest(imageId, guestInput, address(gov), callbackSelector, UINT64_MAX);
         } else {
             bytes memory journal = finalizeVotesSolidityImpl(guestInput);
+            bytes memory payload = abi.encodePacked(callbackSelector, journal, imageId);
+
+            // Check the callback result and revert if the callback failed.
+            // NOTE: When the revert is expected, the vm.expectRevert call will prevent this function
+            // from reverting, thereby ensuring the results from collectBallots is preserved.
+            if (bytes(expectedRevert).length != 0) {
+                vm.expectRevert(bytes(expectedRevert));
+            }
 
             // Bonsai Relay callbacks use a non-stardard call encoding of
             // { bytes4(selector) || journal bytes || bytes32(imageId) }
             // Here we are calling through the Relay and so assemble to call to be same structure.
-            bytes memory payload = abi.encodePacked(callbackSelector, journal, imageId);
-            (success, data) = getBonsaiTestRelay().invokeCallback(address(bonsaiGov), payload, UINT64_MAX);
-        }
-
-        // Check the callback result and revert if the callback failed.
-        // NOTE: When the revert is expected, the vm.expectRevert call will prevent this function
-        // from reverting, thereby ensuring the results from collectBallots is preserved.
-        if (bytes(expectedRevert).length != 0) {
-            vm.expectRevert(bytes(expectedRevert));
-        }
-        if (!success) {
-            assembly {
-                revert(add(data, 32), mload(data))
-            }
+            getBonsaiTestRelay().invokeCallback(address(bonsaiGov), payload, UINT64_MAX);
         }
     }
 

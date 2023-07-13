@@ -92,41 +92,44 @@ abstract contract BonsaiTest is Test, BonsaiCheats {
     }
 
     /// @notice Process a single callback request and invoke its receiver contract with the results.
-    /// @return A boolean, true is the callback was successful and false otherwise, and the return
-    ///         data from the callback. Note that the Bonsai relay will not process return data.
-    function runPendingCallbackRequest() internal returns (bool, bytes memory) {
+    function runPendingCallbackRequest() public {
         vm.pauseGasMetering();
         // read logs, parse event, get image output, invoke proper callback
         bytes memory logEntry = bonsaiRelay.dequeueCbrEventData();
 
-        (bytes32 image_id, bytes memory input, address callback_contract, bytes4 function_selector, uint64 gas_limit) =
+        (bytes32 imageId, bytes memory input, address callbackContract, bytes4 functionSelector, uint64 gasLimit) =
             abi.decode(logEntry, (bytes32, bytes, address, bytes4, uint64));
         vm.resumeGasMetering();
 
-        return runCallbackRequest(image_id, input, callback_contract, function_selector, gas_limit);
+        runCallbackRequest(imageId, input, callbackContract, functionSelector, gasLimit);
     }
 
     /// @notice Process the given callback request, executing the guest and invoking the indicated
     ///   callback function with the resulting journal and image ID.
-    /// @return A boolean, true is the callback was successful and false otherwise, and the return
-    ///         data from the callback. Note that the Bonsai relay will not process return data.
     function runCallbackRequest(
         bytes32 imageId,
         bytes memory input,
         address callbackContract,
         bytes4 functionSelector,
         uint64 gasLimit
-    ) internal returns (bool, bytes memory) {
+    ) public {
         vm.pauseGasMetering();
 
         if (proverMode == ProverMode.Bonsai) {
-            revert("bonsai callbacks not quite implemented");
+            (bytes memory journal, bytes32 postStateDigest, Seal memory seal) = queryImageOutputAndSeal(imageId, input);
+            bytes memory payload = abi.encodePacked(functionSelector, journal, imageId);
+            BonsaiRelay.Callback memory callback = BonsaiRelay.Callback(
+                BonsaiRelay.CallbackAuthorization(seal, postStateDigest), callbackContract, payload, gasLimit
+            );
+            vm.resumeGasMetering();
+
+            getBonsaiVerifyingRelay().invokeCallback(callback);
         } else {
             bytes memory journal = queryImageOutput(imageId, input);
             bytes memory payload = abi.encodePacked(functionSelector, journal, imageId);
             vm.resumeGasMetering();
 
-            return getBonsaiTestRelay().invokeCallback(callbackContract, payload, gasLimit);
+            getBonsaiTestRelay().invokeCallback(callbackContract, payload, gasLimit);
         }
     }
 }
