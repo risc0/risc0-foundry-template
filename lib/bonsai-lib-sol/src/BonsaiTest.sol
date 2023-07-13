@@ -16,7 +16,7 @@
 
 pragma solidity ^0.8.17;
 
-import "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {console2} from "forge-std/console2.sol";
 import {Strings2} from "lib/murky/differential_testing/test/utils/Strings2.sol";
 

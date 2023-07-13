@@ -230,12 +230,14 @@ abstract contract GovernorTest is Test {
         GovernorCountingSimple govCounting = GovernorCountingSimple(payable(address(gov)));
         (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) =
             govCounting.proposalVotes(proposalId);
-        console2.log("Vote counts: ", againstVotes, forVotes, abstainVotes);
         (uint256 finalAgainstVotes, uint256 finalForVotes, uint256 finalAbstainVotes) =
             scene.finalCounts();
-        require(finalAgainstVotes == againstVotes, "against vote counts do not match");
-        require(finalForVotes == forVotes, "for vote counts do not match");
-        require(finalAbstainVotes == abstainVotes, "abstain vote counts do not match");
+        if (finalAgainstVotes != againstVotes || finalForVotes != forVotes || finalAbstainVotes !=
+            abstainVotes) {
+            console2.log("Vote counts: ", againstVotes, forVotes, abstainVotes);
+            console2.log("Expected vote counts: ", finalAgainstVotes, finalForVotes, finalAbstainVotes);
+            revert("vote counts do not match");
+        }
 
         execute();
     }
@@ -507,8 +509,8 @@ abstract contract DuplicateVotesScenario is GovernorTest {
         voter = scene.addVoter(true, 50);
         scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
         scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
-        scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
-        scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
+        scene.addVote(voter, true, GovernorCountingSimple.VoteType.Abstain);
+        scene.addVote(voter, true, GovernorCountingSimple.VoteType.Against);
         scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
 
         return scene;

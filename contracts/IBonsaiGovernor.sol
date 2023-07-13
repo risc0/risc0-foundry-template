@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
+
 pragma solidity ^0.8.9;
 
-import "openzeppelin/contracts/governance/IGovernor.sol";
-import "openzeppelin/contracts/governance/Governor.sol";
+import {Governor, IGovernor} from "openzeppelin/contracts/governance/Governor.sol";
 
 abstract contract IBonsaiGovernor is IGovernor, Governor {
     // Copied from the Governor contract.

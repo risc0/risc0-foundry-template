@@ -13,6 +13,7 @@
 // limitations under the License.
 //
 // SPDX-License-Identifier: Apache-2.0
+
 pragma solidity ^0.8.17;
 
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
@@ -62,7 +63,11 @@ contract BonsaiRelay is IBonsaiRelay, RiscZeroVerifier {
         return (imageId, journal);
     }
 
-    function callbackIsAuthorized(bytes32 imageId, bytes calldata journal, CallbackAuthorization calldata auth) public view returns (bool) {
+    function callbackIsAuthorized(bytes32 imageId, bytes calldata journal, CallbackAuthorization calldata auth)
+        public
+        view
+        returns (bool)
+    {
         return verify(auth.seal, imageId, auth.postStateDigest, journal);
     }
 
@@ -80,8 +85,7 @@ contract BonsaiRelay is IBonsaiRelay, RiscZeroVerifier {
             require(callbackIsAuthorized(imageId, journal, callback.auth));
 
             // invoke callback
-            (invocationResults[i],) =
-                callback.callbackContract.call{gas: callback.gasLimit}(callback.payload);
+            (invocationResults[i],) = callback.callbackContract.call{gas: callback.gasLimit}(callback.payload);
         }
     }
 
@@ -93,8 +97,7 @@ contract BonsaiRelay is IBonsaiRelay, RiscZeroVerifier {
         require(callbackIsAuthorized(imageId, journal, callback.auth));
 
         // invoke callback
-        (bool success, bytes memory data) =
-            callback.callbackContract.call{gas: callback.gasLimit}(callback.payload);
+        (bool success, bytes memory data) = callback.callbackContract.call{gas: callback.gasLimit}(callback.payload);
         if (!success) {
             assembly {
                 revert(add(data, 32), mload(data))

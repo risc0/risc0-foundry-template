@@ -31,9 +31,7 @@ contract BonsaiTestRelay is IBonsaiRelay {
         emit CallbackRequest(msg.sender, imageId, input, callbackContract, functionSelector, gasLimit);
     }
 
-    function invokeCallback(address callbackContract, bytes calldata payload, uint64 gasLimit)
-        external
-    {
+    function invokeCallback(address callbackContract, bytes calldata payload, uint64 gasLimit) external {
         (bool success, bytes memory data) = callbackContract.call{gas: gasLimit}(payload);
         if (!success) {
             assembly {

@@ -16,9 +16,9 @@
 
 pragma solidity ^0.8.17;
 
-import "forge-std/Test.sol";
-import "forge-std/StdCheats.sol";
-import "forge-std/Base.sol";
+import {Test} from "forge-std/Test.sol";
+import {StdCheatsSafe} from "forge-std/StdCheats.sol";
+import {CommonBase} from "forge-std/Base.sol";
 import {Strings2} from "murky_differential_testing/test/utils/Strings2.sol";
 
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";

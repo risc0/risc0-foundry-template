@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
+
 pragma solidity ^0.8.9;
 
-import "openzeppelin/contracts/governance/Governor.sol";
-import "openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-import "openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import "openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import "openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
+import {Governor, IGovernor} from "openzeppelin/contracts/governance/Governor.sol";
+import {GovernorSettings} from "openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
+import {GovernorCountingSimple} from "openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
+import {GovernorVotes, IVotes} from "openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
+import {GovernorVotesQuorumFraction} from "openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 
-import "./IBonsaiGovernor.sol";
+import {IBonsaiGovernor} from "./IBonsaiGovernor.sol";
 
 /// @custom:security-contact security@risczero.com
 contract BaselineGovernor is
