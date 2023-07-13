@@ -17,22 +17,77 @@
 pragma solidity ^0.8.17;
 
 import "forge-std/Test.sol";
+import {console2} from "forge-std/console2.sol";
 import {Strings2} from "lib/murky/differential_testing/test/utils/Strings2.sol";
 
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
+import {BonsaiRelay} from "./BonsaiRelay.sol";
+import {BonsaiRelayQueueWrapper} from "./BonsaiRelayQueueWrapper.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
 import {BonsaiCheats} from "./BonsaiCheats.sol";
+import {Seal} from "./RiscZeroVerifier.sol";
 
 /// @notice A base contract for testing a Bonsai callback receiver contract
+/// @dev Based on the BONSAI_PROVING environment, a real or a mock BonsaiRelay will be used:
+///     * When BONSAI_PROVING=none a mock version of the relay is used, and proofs are not checked.
+///     * When BONSAI_PROVING=bonsai the fully verifying version of the relay is used. SNARK proofs
+///       of zkVM guest execution will be provided by Bonsai and verified on every callback.
 abstract contract BonsaiTest is Test, BonsaiCheats {
     using Strings2 for bytes;
 
-    BonsaiTestRelay internal mockBonsaiRelay;
+    enum ProverMode {
+        None,
+        Local,
+        Bonsai
+    }
 
-    /// @notice Instantiates a mock relay contract for testing
-    modifier withRelayMock() {
-        mockBonsaiRelay = new BonsaiTestRelay();
-        vm.recordLogs();
+    BonsaiRelayQueueWrapper internal bonsaiRelay;
+    ProverMode proverMode;
+
+    // Backing variables to store the address of the relay we are using.
+    // Only one of these two state variables will be populated.
+    BonsaiRelay private bonsaiVerifyingRelay;
+    BonsaiTestRelay private bonsaiTestRelay;
+
+    /// @notice provides checked access to the BonsaiTestRelay reference.
+    /// @dev Reverts if the bonsai test relay is not initialized.
+    function getBonsaiTestRelay() internal view returns (BonsaiTestRelay) {
+        require(address(bonsaiTestRelay) != address(0), "bonsaiTestRelay is not initialized");
+        return BonsaiTestRelay(address(bonsaiRelay));
+    }
+
+    /// @notice provides checked access to the verifying BonsaiRelay reference.
+    /// @dev Reverts if the bonsai verifying relay is not initialized.
+    function getBonsaiVerifyingRelay() internal view returns (BonsaiRelay) {
+        require(address(bonsaiVerifyingRelay) != address(0), "bonsaiVerifyingRelay is not initialized");
+        return BonsaiRelay(address(bonsaiRelay));
+    }
+
+    function parseProverMode(string memory str) private pure returns (ProverMode) {
+        if (keccak256(bytes(str)) == keccak256(bytes("none"))) {
+            return ProverMode.None;
+        }
+        if (keccak256(bytes(str)) == keccak256(bytes("local"))) {
+            return ProverMode.Local;
+        }
+        if (keccak256(bytes(str)) == keccak256(bytes("bonsai"))) {
+            return ProverMode.Bonsai;
+        }
+        console2.log("invalid prover mode string: ", str);
+        revert("invalid prover mode string");
+    }
+
+    /// @notice Instantiates a relay contract for testing.
+    /// @dev Apply this modifier to the setUp function of your test.
+    modifier withRelay() {
+        proverMode = parseProverMode(vm.envOr("BONSAI_PROVING", string("none")));
+        if (proverMode == ProverMode.Bonsai) {
+            bonsaiVerifyingRelay = new BonsaiRelay();
+            bonsaiRelay = new BonsaiRelayQueueWrapper(bonsaiVerifyingRelay);
+        } else {
+            bonsaiTestRelay = new BonsaiTestRelay();
+            bonsaiRelay = new BonsaiRelayQueueWrapper(bonsaiTestRelay);
+        }
         _;
     }
 
@@ -42,7 +97,7 @@ abstract contract BonsaiTest is Test, BonsaiCheats {
     function runPendingCallbackRequest() internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
         // read logs, parse event, get image output, invoke proper callback
-        bytes memory logEntry = mockBonsaiRelay.dequeue_cbr_event_data();
+        bytes memory logEntry = bonsaiRelay.dequeueCbrEventData();
 
         (bytes32 image_id, bytes memory input, address callback_contract, bytes4 function_selector, uint64 gas_limit) =
             abi.decode(logEntry, (bytes32, bytes, address, bytes4, uint64));
@@ -56,20 +111,22 @@ abstract contract BonsaiTest is Test, BonsaiCheats {
     /// @return A boolean, true is the callback was successful and false otherwise, and the return
     ///         data from the callback. Note that the Bonsai relay will not process return data.
     function runCallbackRequest(
-        bytes32 image_id,
+        bytes32 imageId,
         bytes memory input,
-        address callback_contract,
-        bytes4 function_selector,
-        uint64 gas_limit
+        address callbackContract,
+        bytes4 functionSelector,
+        uint64 gasLimit
     ) internal returns (bool, bytes memory) {
         vm.pauseGasMetering();
 
-        // TODO Modify the query command to return an ABI encoded athorization object when running
-        // in bonsai proving mode.
-        bytes memory journal = queryImageOutput(image_id, input);
-        bytes memory payload = abi.encodePacked(function_selector, journal, image_id);
-        vm.resumeGasMetering();
+        if (proverMode == ProverMode.Bonsai) {
+            revert("bonsai callbacks not quite implemented");
+        } else {
+            bytes memory journal = queryImageOutput(imageId, input);
+            bytes memory payload = abi.encodePacked(functionSelector, journal, imageId);
+            vm.resumeGasMetering();
 
-        return mockBonsaiRelay.invoke_callback(callback_contract, payload, gas_limit);
+            return getBonsaiTestRelay().invokeCallback(callbackContract, payload, gasLimit);
+        }
     }
 }

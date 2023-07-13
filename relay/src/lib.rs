@@ -19,8 +19,8 @@ use bonsai_sdk_alpha::alpha::{responses::SnarkProof, Client, SdkErr};
 use clap::{builder::PossibleValue, ValueEnum};
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    Executor, ExecutorEnv, MemoryImage, Program, ReceiptMetadata, SessionReceipt, MEM_SIZE,
-    PAGE_SIZE,
+    Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, ReceiptMetadata, SessionReceipt,
+    MEM_SIZE, PAGE_SIZE,
 };
 
 #[derive(Debug, Copy, Clone)]
@@ -65,7 +65,7 @@ pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Output> 
         .add_input(&input)
         .build()
         .expect("Failed to build exec env");
-    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let mut exec = LocalExecutor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;

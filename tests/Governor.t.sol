@@ -268,11 +268,10 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
     /// @dev ballots are persisted to storage because evnts can only ever be obtained once from vm.getRecordedLogs().
     mapping(uint256 => BallotBox) internal ballotBoxes;
 
-    function setUp() public withRelayMock {
+    function setUp() public withRelay {
         useZkvmGuest = vm.envOr("USE_ZKVM_GUEST", false);
         if (useZkvmGuest) {
             imageId = queryImageId("FINALIZE_VOTES");
-            console2.log(vm.toString(imageId));
         }
 
         token = new VoteToken();
@@ -284,7 +283,7 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
     }
 
     function governor(VoteToken token) internal override returns (IBonsaiGovernor) {
-        return new BonsaiGovernor(token, mockBonsaiRelay, imageId);
+        return new BonsaiGovernor(token, bonsaiRelay, imageId);
     }
 
     /// @notice collect the ballots and assemble zkVM guest input.
@@ -406,7 +405,7 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
             // { bytes4(selector) || journal bytes || bytes32(imageId) }
             // Here we are calling through the Relay and so assemble to call to be same structure.
             bytes memory payload = abi.encodePacked(callbackSelector, journal, imageId);
-            (success, data) = mockBonsaiRelay.invoke_callback(address(bonsaiGov), payload, UINT64_MAX);
+            (success, data) = getBonsaiTestRelay().invokeCallback(address(bonsaiGov), payload, UINT64_MAX);
         }
 
         // Check the callback result and revert if the callback failed.

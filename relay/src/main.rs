@@ -16,9 +16,13 @@ use std::io::Write;
 
 use anyhow::Context;
 use bonsai_ethereum_relay::{resolve_guest_entry, resolve_image_output, Output, ProverMode};
+use bonsai_sdk_alpha::alpha::responses::SnarkProof;
 use bonsai_starter_methods::GUEST_LIST;
 use clap::{Parser, Subcommand};
-use ethers::abi::{Hash, Token, Tokenizable};
+use ethers::{
+    abi::{Hash, Token, Tokenizable},
+    types::U256,
+};
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -42,6 +46,35 @@ struct Args {
     command: Command,
 }
 
+/// Parse a slice of strings as a fixed array of uint256 tokens.
+fn parse_to_tokens(slice: &[String]) -> anyhow::Result<Token> {
+    Ok(Token::FixedArray(
+        slice
+            .iter()
+            .map(|s| -> anyhow::Result<_> { Ok(U256::from_str_radix(s, 16)?.into_token()) })
+            .collect::<Result<Vec<_>, _>>()?,
+    ))
+}
+
+fn tokenize_snark_proof(proof: &SnarkProof) -> anyhow::Result<Token> {
+    if proof.b.len() != 2 {
+        anyhow::bail!("hex-strings encoded proof is not well formed");
+    }
+    for pair in [&proof.a, &proof.c].into_iter().chain(proof.b.iter()) {
+        if pair.len() != 2 {
+            anyhow::bail!("hex-strings encoded proof is not well formed");
+        }
+    }
+    Ok(Token::FixedArray(vec![
+        parse_to_tokens(&proof.a)?,
+        Token::FixedArray(vec![
+            parse_to_tokens(&proof.b[0])?,
+            parse_to_tokens(&proof.b[1])?,
+        ]),
+        parse_to_tokens(&proof.c)?,
+    ]))
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
@@ -58,28 +91,42 @@ async fn main() -> anyhow::Result<()> {
 
             // Execute or return image id
             let output_tokens = match &input {
-                // Input provided. Return the Ethereum ABI encoded journal and 
+                // Input provided. Return the Ethereum ABI encoded journal and
                 Some(input) => {
                     let output = resolve_image_output(input, guest_entry, prover_mode)
                         .await
                         .context("failed to resolve image output")?;
                     match (prover_mode, output) {
-                        (ProverMode::None, Output::Execution { journal }) => vec![Token::Bytes(journal)],
-                        (ProverMode::Local, Output::Execution { journal }) => vec![Token::Bytes(journal)],
-                        (ProverMode::Bonsai, Output::Bonsai {
-                            journal,
-                            ..
-                        }) => {
-                            vec![Token::Bytes(journal) /*, Hash::from(receipt_metadata.post.digest()).into_token()*/] // TODO
+                        (ProverMode::None, Output::Execution { journal }) => {
+                            vec![Token::Bytes(journal)]
                         }
-                        _ => anyhow::bail!("invalid prover mode and output combination: {:?}", prover_mode),
+                        (ProverMode::Local, Output::Execution { journal }) => {
+                            vec![Token::Bytes(journal)]
+                        }
+                        (
+                            ProverMode::Bonsai,
+                            Output::Bonsai {
+                                journal,
+                                receipt_metadata,
+                                snark_proof,
+                            },
+                        ) => {
+                            vec![
+                                Token::Bytes(journal),
+                                Hash::from(<[u8; 32]>::from(receipt_metadata.post.digest())).into_token(),
+                                tokenize_snark_proof(&snark_proof)?,
+                            ]
+                        }
+                        _ => anyhow::bail!(
+                            "invalid prover mode and output combination: {:?}",
+                            prover_mode
+                        ),
                     }
                 }
                 // No input. Return the Ethereum ABI encoded bytes32 image ID.
-                None => vec![Hash::from(bytemuck::cast::<_, [u8; 32]>(
-                    guest_entry.image_id,
-                ))
-                .into_token()],
+                None => vec![
+                    Hash::from(bytemuck::cast::<_, [u8; 32]>(guest_entry.image_id)).into_token(),
+                ],
             };
 
             let output = hex::encode(ethers::abi::encode(&output_tokens));

@@ -20,16 +20,6 @@ import {RiscZeroVerifier, Seal} from "./RiscZeroVerifier.sol";
 
 /// @notice Bonsai Relay contract supporting authenticated communication from zkVM guest programs.
 contract BonsaiRelay is IBonsaiRelay, RiscZeroVerifier {
-    /// @notice Event emitted
-    event CallbackRequest(
-        address account,
-        bytes32 image_id,
-        bytes input,
-        address callback_contract,
-        bytes4 function_selector,
-        uint64 gas_limit
-    );
-
     /// @notice Data required to authorize a callback to be sent through the relay.
     struct CallbackAuthorization {
         /// @notice Groth16 SNARK proof acting as the cryptographic seal over the execution results.

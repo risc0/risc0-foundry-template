@@ -23,22 +23,42 @@ import {Strings2} from "murky_differential_testing/test/utils/Strings2.sol";
 
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
+import {Seal} from "./RiscZeroVerifier.sol";
 
 /// @notice A base contract for testing a Bonsai callback receiver contract
 abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
     using Strings2 for bytes;
 
-    /// @notice Returns the journal resulting from running the guest with @imageId using @input.
+    /// @notice Returns the journal resulting from running the guest with imageId using input.
     function queryImageOutput(bytes32 imageId, bytes memory input) internal returns (bytes memory) {
-        string[] memory imageRunnerInput = new string[](6);
+        string[] memory imageRunnerInput = new string[](7);
         uint256 i = 0;
         imageRunnerInput[i++] = "cargo";
         imageRunnerInput[i++] = "run";
         imageRunnerInput[i++] = "-q";
         imageRunnerInput[i++] = "query";
+        imageRunnerInput[i++] = "--prover-mode=none";
         imageRunnerInput[i++] = abi.encodePacked(imageId).toHexString();
         imageRunnerInput[i++] = input.toHexString();
         return abi.decode(vm.ffi(imageRunnerInput), (bytes));
+    }
+
+    /// @notice Returns the journal, post state digest, and Groth16 seal, resulting from running the
+    ///     guest with imageId using input on the Bonsai proving service.
+    function queryImageOutputAndSeal(bytes32 imageId, bytes memory input)
+        internal
+        returns (bytes memory, bytes32, Seal memory)
+    {
+        string[] memory imageRunnerInput = new string[](7);
+        uint256 i = 0;
+        imageRunnerInput[i++] = "cargo";
+        imageRunnerInput[i++] = "run";
+        imageRunnerInput[i++] = "-q";
+        imageRunnerInput[i++] = "query";
+        imageRunnerInput[i++] = "--prover-mode=bonsai";
+        imageRunnerInput[i++] = abi.encodePacked(imageId).toHexString();
+        imageRunnerInput[i++] = input.toHexString();
+        return abi.decode(vm.ffi(imageRunnerInput), (bytes, bytes32, Seal));
     }
 
     /// @notice Returns the image id of the guest with the specified name.
