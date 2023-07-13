@@ -102,6 +102,12 @@ library VoteLib {
     }
 }
 
+struct VoteCounts {
+    uint256 againstVotes;
+    uint256 forVotes;
+    uint256 abstainVotes;
+}
+
 contract Scenario {
     using SafeMath for uint256;
     using VoteLib for Vote;
@@ -115,11 +121,14 @@ contract Scenario {
     Vote[] public votes;
     /// @notice indicator for whether or not the proposal should pass.
     bool public success;
+    /// @notice expected final votes counts.
+    VoteCounts public finalCounts;
 
-    constructor(IBonsaiGovernor gov_, VoteToken token_, bool success_) {
+    constructor(IBonsaiGovernor gov_, VoteToken token_, bool success_, VoteCounts memory finalCounts_) {
         gov = gov_;
         token = token_;
         success = success_;
+        finalCounts = finalCounts_;
     }
 
     function addVoter(bool eoa, uint256 weight) public returns (Voter) {
@@ -156,14 +165,6 @@ abstract contract GovernorTest is Test {
     function scenario(IBonsaiGovernor gov_, VoteToken token_) internal virtual returns (Scenario);
 
     function finalizeVotes(uint256 proposalId) internal virtual;
-
-    // TODO(victor): Write up a variety of test cases for different voting combinations and whatnot.
-    // * Many votes
-    // * Failing to reach consensus
-    // * Failing to each quorum
-    // * Repeated votes
-    //
-    // Measure the gas consumption as it scales with number of votes.
 
     function proposalCallback() external {
         assertTrue(scene.success());
@@ -221,6 +222,21 @@ abstract contract GovernorTest is Test {
 
         vm.roll(gov.proposalDeadline(proposalId) + 1);
         finalizeVotes(proposalId);
+
+        // Check that the final vote counts are as expected.
+        // We need to call the proposalVotes, which has the same selector on both the baseline and
+        // Bonsai versions of the Governor. We cast to the GovernorCountingSimple interface, which
+        // has this function.
+        GovernorCountingSimple govCounting = GovernorCountingSimple(payable(address(gov)));
+        (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) =
+            govCounting.proposalVotes(proposalId);
+        console2.log("Vote counts: ", againstVotes, forVotes, abstainVotes);
+        (uint256 finalAgainstVotes, uint256 finalForVotes, uint256 finalAbstainVotes) =
+            scene.finalCounts();
+        require(finalAgainstVotes == againstVotes, "against vote counts do not match");
+        require(finalForVotes == forVotes, "for vote counts do not match");
+        require(finalAbstainVotes == abstainVotes, "abstain vote counts do not match");
+
         execute();
     }
 }
@@ -450,7 +466,7 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
 
 abstract contract BasicScenario is GovernorTest {
     function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
-        scene = new Scenario(gov, token, true);
+        scene = new Scenario(gov, token, true, VoteCounts(uint256(0), uint256(100), uint256(0)));
 
         Voter voter;
         voter = scene.addVoter(false, 50);
@@ -464,13 +480,49 @@ abstract contract BasicScenario is GovernorTest {
 
 abstract contract BasicFailingScenario is GovernorTest {
     function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
-        scene = new Scenario(gov, token, false);
+        scene = new Scenario(gov, token, false, VoteCounts(uint256(50), uint256(50), uint256(0)));
 
         Voter voter;
         voter = scene.addVoter(false, 50);
         scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
         voter = scene.addVoter(true, 50);
         scene.addVote(voter, true, GovernorCountingSimple.VoteType.Against);
+
+        return scene;
+    }
+}
+
+// Note that duplicate votes are rejected by the baseline, but in the Bonsai Governor new votes
+// simply replace the old ones.
+abstract contract DuplicateVotesScenario is GovernorTest {
+    function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
+        scene = new Scenario(gov, token, false, VoteCounts(uint256(50), uint256(50), uint256(50)));
+
+        Voter voter;
+        voter = scene.addVoter(false, 50);
+        scene.addVote(voter, false, GovernorCountingSimple.VoteType.Abstain);
+        voter = scene.addVoter(false, 50);
+        scene.addVote(voter, false, GovernorCountingSimple.VoteType.Against);
+        // Voting many times for the proposal, both with and without signatures.
+        voter = scene.addVoter(true, 50);
+        scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
+        scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
+        scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
+        scene.addVote(voter, true, GovernorCountingSimple.VoteType.For);
+        scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
+
+        return scene;
+    }
+}
+
+abstract contract NoQuorumScenario is GovernorTest {
+    function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
+        scene = new Scenario(gov, token, false, VoteCounts(uint256(0), uint256(19), uint256(0)));
+
+        Voter voter;
+        voter = scene.addVoter(false, 81);
+        voter = scene.addVoter(false, 19);
+        scene.addVote(voter, false, GovernorCountingSimple.VoteType.For);
 
         return scene;
     }
@@ -486,7 +538,7 @@ abstract contract BenchScenario is GovernorTest {
     }
 
     function scenario(IBonsaiGovernor gov, VoteToken token) internal override returns (Scenario) {
-        scene = new Scenario(gov, token, true);
+        scene = new Scenario(gov, token, true, VoteCounts(uint256(0), uint256(10) * voteCount, uint256(0)));
 
         Voter voter;
         for (uint256 i = 0; i < voteCount; i = i.add(1)) {
@@ -505,6 +557,12 @@ contract BasicBonsaiGovernorTest is BonsaiGovernorTest, BasicScenario {}
 contract BasicFailingBaselineGovernorTest is BaselineGovernorTest, BasicFailingScenario {}
 
 contract BasicFailingBonsaiGovernorTest is BonsaiGovernorTest, BasicFailingScenario {}
+
+contract DuplicateVotesBonsaiGovernorTest is BonsaiGovernorTest, DuplicateVotesScenario {}
+
+contract NoQuorumBaselineGovernorTest is BaselineGovernorTest, NoQuorumScenario {}
+
+contract NoQuorumBonsaiGovernorTest is BonsaiGovernorTest, NoQuorumScenario {}
 
 contract BenchBaselineGovernorTest is BaselineGovernorTest, BenchScenario {
     constructor() BenchScenario(100) {}
