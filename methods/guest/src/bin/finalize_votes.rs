@@ -61,7 +61,7 @@ fn into_recovery_id(v: u8) -> Option<RecoveryId> {
         v if v >= 35 => Some((v - 1) % 2),
         _ => None,
     }
-    .and_then(|byte| RecoveryId::from_byte(byte))
+    .and_then(RecoveryId::from_byte)
 }
 
 /// Signer address recovery from the (v, r, s) signature components.
@@ -106,7 +106,7 @@ fn main() {
 
     // Iterate through the 100-byte chunks, decoding each and reconstructing the
     // ballot box hash accumulator value, and adding the votes to a map of votes.
-    let mut ballot_box_accum = proposal_id.clone();
+    let mut ballot_box_accum = proposal_id;
     let mut hasher = Sha256::new();
     let mut votes = BTreeMap::<[u8; 20], u8>::new();
     for (offset, chunk) in chunks
@@ -133,7 +133,7 @@ fn main() {
                 let sig_digest: [u8; 32] = chunk[68..100].try_into().unwrap();
 
                 hasher.update(&ballot_box_accum[..]);
-                hasher.update(&chunk[..]);
+                hasher.update(chunk);
                 hasher.finalize_into_reset((&mut ballot_box_accum).into());
 
                 ecrecover(v, rs, sig_digest)

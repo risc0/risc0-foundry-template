@@ -228,12 +228,9 @@ abstract contract GovernorTest is Test {
         // Bonsai versions of the Governor. We cast to the GovernorCountingSimple interface, which
         // has this function.
         GovernorCountingSimple govCounting = GovernorCountingSimple(payable(address(gov)));
-        (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) =
-            govCounting.proposalVotes(proposalId);
-        (uint256 finalAgainstVotes, uint256 finalForVotes, uint256 finalAbstainVotes) =
-            scene.finalCounts();
-        if (finalAgainstVotes != againstVotes || finalForVotes != forVotes || finalAbstainVotes !=
-            abstainVotes) {
+        (uint256 againstVotes, uint256 forVotes, uint256 abstainVotes) = govCounting.proposalVotes(proposalId);
+        (uint256 finalAgainstVotes, uint256 finalForVotes, uint256 finalAbstainVotes) = scene.finalCounts();
+        if (finalAgainstVotes != againstVotes || finalForVotes != forVotes || finalAbstainVotes != abstainVotes) {
             console2.log("Vote counts: ", againstVotes, forVotes, abstainVotes);
             console2.log("Expected vote counts: ", finalAgainstVotes, finalForVotes, finalAbstainVotes);
             revert("vote counts do not match");

@@ -113,7 +113,8 @@ async fn main() -> anyhow::Result<()> {
                         ) => {
                             vec![
                                 Token::Bytes(journal),
-                                Hash::from(<[u8; 32]>::from(receipt_metadata.post.digest())).into_token(),
+                                Hash::from(<[u8; 32]>::from(receipt_metadata.post.digest()))
+                                    .into_token(),
                                 tokenize_snark_proof(&snark_proof)?,
                             ]
                         }

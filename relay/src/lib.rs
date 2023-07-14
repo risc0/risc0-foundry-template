@@ -64,7 +64,7 @@ pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Output> 
     let env = ExecutorEnv::builder()
         .add_input(&input)
         .build()
-        .expect("Failed to build exec env");
+        .context("Failed to build exec env")?;
     let mut exec = LocalExecutor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
@@ -145,9 +145,9 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
         }
     })()?;
-    let metadata = receipt.segments.last().unwrap().get_metadata()?;
+    let metadata = receipt.segments.last().ok_or(anyhow!("receipt contains no segments"))?.get_metadata()?;
 
-    let snark_session = client.create_snark(session.uuid.clone())?;
+    let snark_session = client.create_snark(session.uuid)?;
     let snark_proof: SnarkProof = (|| loop {
         let res = snark_session.status(&client)?;
         match res.status.as_str() {
@@ -156,9 +156,9 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
             "SUCCEEDED" => {
                 // eprintln!("Completed SNARK proof on bonsai alpha backend!");
-                return Ok(res
+                return res
                     .output
-                    .expect("output expected to be non-empty on success"));
+                    .ok_or(anyhow!("output expected to be non-empty on success"));
             }
             _ => {
                 bail!(
@@ -169,11 +169,11 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         }
     })()?;
 
-    return Ok(Output::Bonsai {
+    Ok(Output::Bonsai {
         journal: receipt.journal,
         receipt_metadata: metadata,
         snark_proof,
-    });
+    })
 }
 
 pub fn resolve_guest_entry<'a>(
@@ -216,7 +216,7 @@ pub async fn resolve_image_output(
     match prover_mode {
         ProverMode::Bonsai => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
-            .expect("Failed to run alpha sub-task"),
+            .context("Failed to run alpha sub-task")?,
         ProverMode::Local => prove_locally(elf, input, true),
         ProverMode::None => prove_locally(elf, input, false),
     }
