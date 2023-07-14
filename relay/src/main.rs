@@ -28,7 +28,6 @@ use ethers::{
     prelude::*,
     types::Address,
 };
-use risc0_zkvm::{MEM_SIZE, Program, MemoryImage, PAGE_SIZE};
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -109,29 +108,24 @@ async fn main() -> Result<(), Error> {
                 .context("Failed to flush stdout buffer")?;
         }
         Command::Upload {
-            guest_binary: _,
+            guest_binary,
             bonsai_api_url,
             bonsai_api_key,
         } => {
             // Search list for requested binary name
-            // let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
-            //     .context("failed to resolve guest entry")?;
-            // let image_id = hex::encode(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
-            //     guest_entry.image_id,
-            // )));
-            let bonsai_client = get_client_from_parts(bonsai_api_url, bonsai_api_key).await?;
-            let program = Program::load_elf(bonsai_starter_methods::FIBONACCI_ELF, MEM_SIZE as u32)?;
-            let image = MemoryImage::new(&program, PAGE_SIZE as u32)?;
-            let image_id = hex::encode(image.compute_id());
-            // let image = bincode::serialize(&image).expect("Failed to serialize memory img");
+            let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
+                .context("failed to resolve guest entry")?;
+            let image_id = hex::encode(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
+                guest_entry.image_id,
+            )));
 
             // upload binary to Bonsai
-            
+            let bonsai_client = get_client_from_parts(bonsai_api_url, bonsai_api_key).await?;
             let img_id = image_id.clone();
             match put_image(
                 bonsai_client.clone(),
                 img_id.clone(),
-                bonsai_starter_methods::FIBONACCI_ELF.to_vec(),
+                guest_entry.elf.to_vec(),
             )
             .await
             {
@@ -140,7 +134,7 @@ async fn main() -> Result<(), Error> {
                 Err(err) => return Err(err.into()),
             }
 
-            println!("Uploaded image id: {}", img_id);
+            print!("{image_id}");
             std::io::stdout()
                 .flush()
                 .context("Failed to flush stdout buffer")?;
