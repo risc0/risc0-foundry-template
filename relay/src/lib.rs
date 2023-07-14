@@ -18,7 +18,7 @@ use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk_alpha::alpha::{Client, SdkErr};
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    Executor, ExecutorEnv, MemoryImage, Program, SessionReceipt, MEM_SIZE, PAGE_SIZE,
+    Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, SessionReceipt, MEM_SIZE, PAGE_SIZE,
 };
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
@@ -30,7 +30,7 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
         .add_input(&input)
         .build()
         .expect("Failed to build exec env");
-    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let mut exec = LocalExecutor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;

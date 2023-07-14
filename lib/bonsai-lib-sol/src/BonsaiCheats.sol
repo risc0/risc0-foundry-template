@@ -52,4 +52,18 @@ abstract contract BonsaiCheats is StdCheatsSafe, CommonBase {
         imageRunnerInput[i++] = binaryName;
         return bytes32(vm.ffi(imageRunnerInput));
     }
+
+    /// @notice Returns the image id of the guest with the specified name.
+    function uploadImage(string memory binaryName, string memory bonsaiApiUrl, string memory bonsaiApiKey) internal returns (bytes32) {
+        string[] memory imageRunnerInput = new string[](7);
+        uint i = 0;
+        imageRunnerInput[i++] = 'cargo';
+        imageRunnerInput[i++] = 'run';
+        imageRunnerInput[i++] = '-q';
+        imageRunnerInput[i++] = 'upload';
+        imageRunnerInput[i++] = binaryName;
+        imageRunnerInput[i++] = bonsaiApiUrl;
+        imageRunnerInput[i++] = bonsaiApiKey;
+        return bytes32(vm.ffi(imageRunnerInput));
+    }
 }
