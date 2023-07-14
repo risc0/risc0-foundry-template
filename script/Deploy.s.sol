@@ -19,7 +19,7 @@ pragma solidity ^0.8.17;
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
-import {BonsaiCheats} from "bonsai-lib-sol/BonsaiCheats.sol";
+import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
 import {IVotes} from "openzeppelin/contracts/governance/utils/IVotes.sol";
 
 import {BonsaiGovernor} from "../contracts/BonsaiGovernor.sol";
