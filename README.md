@@ -64,12 +64,13 @@ forge test
 ### Deploy your project on a local network
 You can deploy your contracts and run an end-to-end test or demo as follows:
 
-1. Start an anvil instance by running:
+1. Start an anvil instance, if you want a local testnet, by running:
 ```
 anvil
 ```
+Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
-2. On a new terminal, deploy the starter contract by running:
+2. Deploy the `BonsaiRelay` contract by running:
 ```
 forge script scripts/Deploy.s.sol:Relay --rpc-url http://localhost:8545 --broadcast
 ```
@@ -78,8 +79,8 @@ forge script scripts/Deploy.s.sol:Relay --rpc-url http://localhost:8545 --broadc
 ```
 RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none cargo run --bin bonsai-ethereum-relay-cli -- run --eth-node ws://localhost:8545 --eth-chain-id 31337 --private-key ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
-The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
-You should modify the environment variables to reflect your setup. For instance, if you want to prove remotely via Bonsai, set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
+The relay will keep monitoring the chain for callback requests and relay their result back after computing them. You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
+If needed, you should modify the environment variables to reflect your setup. For instance, if you want to prove remotely via Bonsai, set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
 Moreover, if you want to run the relay on a remote Ethereum network, you can use a different `--eth-node`, `--eth-chain-id` and `--private-key`.
 
 4. On a new terminal, you can run the following forge script to deploy your `StarterContract`:
@@ -87,7 +88,6 @@ Moreover, if you want to run the relay on a remote Ethereum network, you can use
 RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none METHOD_NAME=FIBONACCI forge script scripts/Deploy.s.sol:Starter --rpc-url http://localhost:8545 --broadcast
 ```
 Again, you can change the environment variables to reflect your setup.
-
 
 **Now you can test your deployment as follows:**
 1. Send a transaction to the starter contract:
