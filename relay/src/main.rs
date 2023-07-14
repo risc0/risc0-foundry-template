@@ -44,8 +44,10 @@ pub enum Command {
         /// The name of the guest binary
         guest_binary: String,
         /// Bonsai API URL
+        #[arg(long, env)]
         bonsai_api_url: String,
         /// Bonsai API URL
+        #[arg(long, env)]
         bonsai_api_key: String,
     },
     /// Upload the RISC-V ELF binary to Bonsai.

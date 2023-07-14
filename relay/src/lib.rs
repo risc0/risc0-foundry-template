@@ -135,6 +135,7 @@ pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> 
         "bonsai" => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
             .expect("Failed to run alpha sub-task"),
-        _ => execute_locally(elf, input),
+        "local" | "" => execute_locally(elf, input),
+        _ => bail!("valid options for BONSAI_PROVING are 'bonsai' and 'local', got: {}", prover.as_str()),
     }
 }
