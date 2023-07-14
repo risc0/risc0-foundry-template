@@ -11,8 +11,8 @@ import {Test} from "forge-std/Test.sol";
 import {console2} from "forge-std/console2.sol";
 import {BytesLib} from "solidity-bytes-utils//BytesLib.sol";
 
-import {BonsaiTest} from "bonsai-lib-sol/BonsaiTest.sol";
-import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
+import {BonsaiTest} from "bonsai/BonsaiTest.sol";
+import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
 
 import {BonsaiGovernor} from "../contracts/BonsaiGovernor.sol";
 import {BaselineGovernor} from "../contracts/BaselineGovernor.sol";
@@ -284,7 +284,7 @@ abstract contract BonsaiGovernorTest is GovernorTest, BonsaiTest {
     mapping(uint256 => BallotBox) internal ballotBoxes;
 
     function setUp() public withRelay {
-        useZkvmGuest = vm.envOr("USE_ZKVM_GUEST", false);
+        useZkvmGuest = vm.envOr("TEST_USE_ZKVM", true);
         if (useZkvmGuest) {
             imageId = queryImageId("FINALIZE_VOTES");
         }
