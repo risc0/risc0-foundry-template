@@ -145,7 +145,11 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
         }
     })()?;
-    let metadata = receipt.segments.last().ok_or(anyhow!("receipt contains no segments"))?.get_metadata()?;
+    let metadata = receipt
+        .segments
+        .last()
+        .ok_or(anyhow!("receipt contains no segments"))?
+        .get_metadata()?;
 
     let snark_session = client.create_snark(session.uuid)?;
     let snark_proof: SnarkProof = (|| loop {
