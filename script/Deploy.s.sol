@@ -16,31 +16,82 @@
 
 pragma solidity ^0.8.17;
 
-/*
-import "forge-std/Script.sol";
-import "../relay/contracts/BonsaiRelay.sol";
-import "../contracts/BonsaiStarter.sol";
-import "bonsai-lib-sol/BonsaiCheats.sol";
+import {Script} from "forge-std/Script.sol";
+import {console2} from "forge-std/console2.sol";
+import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
+import {BonsaiCheats} from "bonsai-lib-sol/BonsaiCheats.sol";
+import {IVotes} from "openzeppelin/contracts/governance/utils/IVotes.sol";
 
+import {BonsaiGovernor} from "../contracts/BonsaiGovernor.sol";
+import {VoteToken} from "../contracts/VoteToken.sol";
+
+/// @notice deployment script for the Bonsai Governor and it's dependencies.
+/// @dev Use the following environment variables to control the deployment:
+///     * DEPLOYER_ADDRESS address of the wallet to be used for sending deploy transactions.
+///         Must be unlocked on the RPC provider node.
+///     * DEPLOYER_PRIVATE_KEY private key of the wallet to be used for deployment.
+///         Alternative to using DEPLOYER_ADDRESS.
+///     * DEPLOY_BONSAI_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
+///         If not specified, a new BonsaiRelay will be deployed.
+///     * DEPLOY_VOTE_TOKEN_ADDRESS address of a predeployed IVotes contract.
+///         If not specified, a new VoteToken contract will be deployed.
+///         Note that the deployer address will be the owner of the VoteToken contract.
 contract Deploy is Script, BonsaiCheats {
+    /// @notice use vm.startBroadcast to begin recording deploy transactions.
+    function startBroadcast() internal {
+        address deployerAddr = vm.envOr("DEPLOYER_ADDRESS", address(0));
+        uint256 deployerKey = vm.envOr("DEPLOYER_PRIVATE_KEY", uint256(0));
+
+        if (deployerAddr != address(0) && deployerKey != uint256(0)) {
+            revert("only one of DEPLOYER_ADDRESS or DEPLOYER_PRIVATE_KEY should be set");
+        }
+        if (deployerAddr != address(0)) {
+            vm.startBroadcast(deployerAddr);
+        } else if (deployerKey != uint256(0)) {
+            vm.startBroadcast(deployerKey);
+        } else if (block.chainid == 31337) {
+            // On an Anvil local testnet, use the first private key by default.
+            deployerKey =
+                uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80);
+            vm.startBroadcast(deployerKey);
+        } else {
+            revert("specify a deployer with either DEPLOYER_ADDRESS or DEPLOYER_PRIVATE_KEY");
+        }
+    }
+
     function run() external {
-        uint256 relayPrivateKey =
-            vm.envOr("RELAY_PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
-        vm.startBroadcast(relayPrivateKey);
+        startBroadcast();
 
-        // Deploy a Relay contract instance
-        BonsaiRelayContract relayContract = new BonsaiRelayContract();
+        // Deploy a Relay contract instance. Relay is stateless and owner-less.
+        BonsaiRelay bonsaiRelay;
+        address addr = vm.envOr("DEPLOY_BONSAI_RELAY_ADDRESS", address(0));
+        if (addr != address(0)) {
+            console2.log("Using BonsaiRelay at ", address(addr));
+            bonsaiRelay = BonsaiRelay(addr);
+        } else {
+            bonsaiRelay = new BonsaiRelay();
+            console2.log("Deployed BonsaiRelay to ", address(bonsaiRelay));
+        }
 
-        // Deploy a new starter instance (or replace with deployment of your own contract here)
-        IBonsaiRelay bonsaiRelay = IBonsaiRelay(address(relayContract));
-        bytes32 imageId = queryImageId("FIBONACCI");
-        BonsaiStarter starter = new BonsaiStarter(bonsaiRelay, imageId);
+        // Deploy the IVotes token used to grant voting rights.
+        IVotes token;
+        addr = vm.envOr("DEPLOY_VOTE_TOKEN_ADDRESS", address(0));
+        if (addr != address(0)) {
+            console2.log("Using IVotes at ", address(addr));
+            token = IVotes(addr);
+        } else {
+            // Sender of the transactions will be the owner and controller of the VoteToken.
+            token = new VoteToken();
+            console2.log("Deployed VoteToken to ", address(token));
+        }
 
-        console.logAddress(address(bonsaiRelay));
-        console.logBytes32(imageId);
-        console.logAddress(address(starter));
+        // Deploy the BonsaiGovernor.
+        // TODO(victor): Provide a way to upload the image here.
+        bytes32 imageId = queryImageId("FINALIZE_VOTES");
+        console2.log("Image ID for FINALIZE_VOTES is ", vm.toString(imageId));
+        BonsaiGovernor gov = new BonsaiGovernor(token, bonsaiRelay, imageId);
+        console2.log("Deployed BonsaiGovernor to ", address(gov));
 
         vm.stopBroadcast();
     }
 }
-*/
