@@ -27,6 +27,7 @@ endif
 ifndef ETH_WS_NODE_URL
 	ETH_WS_NODE_URL=ws://anvil:8545
 endif
+
 ifndef ETH_HTTP_NODE_URL
 	ETH_HTTP_NODE_URL=http://anvil:8545
 endif
