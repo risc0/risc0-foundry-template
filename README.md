@@ -4,9 +4,9 @@ Starter template for writing an application using [Bonsai].
 
 This repository implements an application on Ethereum utilizing Bonsai as a coprocessor to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive
-(or difficult to implement) tasks to be proven by the [RISC Zero] [zkVM], with verified results sent to your Ethereum contract.
+(or difficult to implement) tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
 
-https://github.com/risc0/bonsai-foundry-template/assets/15272444/5f2bc82d-f01a-437d-b515-c3747ffcedb9
+*For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=hUl8ZB6hpUM).*
 
 ## Dependencies
 
@@ -19,7 +19,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-***Hint:*** *If you're installing Foundry for the first time, be sure to quit your terminal before reopening it and running the `foundryup` command.*
+***Tip:*** *If you're installing Foundry for the first time, be sure to quit your terminal before reopening it and running the `foundryup` command.*
 
 ## Project Setup
 1. Use Foundry to create a new project from this template at a location of your choosing (this example command will create it at `./my-project`) 
@@ -50,7 +50,7 @@ If you've written tests in your zkVM progam, run them with
 ```bash
 cargo test
 ```
-***Hint:*** *To learn more about our RISC-V zkVM [visit the docs](https://dev.risczero.com/zkvm) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
+***Tip:*** *To learn more about our RISC-V zkVM [visit the docs](https://dev.risczero.com/zkvm) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
 
 ### Test your solidity integration with the zkVM
 To test both your Solidity contracts and their interaction with your zkVM program, run
@@ -59,7 +59,7 @@ To test both your Solidity contracts and their interaction with your zkVM progra
 forge test
 ```
 
-***Hint:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: (https://book.getfoundry.sh/forge/tests)[https://book.getfoundry.sh/forge/tests].*
+***Tip:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
 
 ### Deploy your project on a local network
 You can deploy your contracts and run an end-to-end test or demo as follows:
@@ -126,17 +126,19 @@ The foundry template supports two different proving modes:
 
 Configure your preferred mode by setting the `BONSAI_PROVING` env variable.
 ```bash
-export BONSAI_PROVING=local
+export BONSAI_PROVING=bonsai
 ```
+
 After setting your preferred proving mode, use `forge test` to build and run your application. 
-### Configuring Bonsai for Eth Waterloo
-If you're at Eth Waterloo and want to run your proofs on Bonsai, complete [the form here](https://forms.gle/Ships93xqY4c8zA37) to request an API key. If you haven't received a key within a few hours drop a message in the [RISC Zero discord](https://discord.gg/risczero) **#eth-waterloo** channel.
+### Configuring Bonsai
+***Note:*** *The Bonsai proving service is still in early Alpha. To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
 To prove in `bonsai` mode, two additional environment variables are required
 ```bash
 export BONSAI_API_KEY="YOUR_API_KEY" #see form linked above
 export BONSAI_API_URL="BONSAI_URL" #provided with your api key
-BONSAI_PROVING=bonsai forge test
+export BONSAI_PROVING=bonsai
+forge test
 ```
 
 ## Project Structure
