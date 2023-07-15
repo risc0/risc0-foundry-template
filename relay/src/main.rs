@@ -44,33 +44,36 @@ pub enum Command {
         /// The name of the guest binary
         guest_binary: String,
         /// Bonsai API URL
-        #[arg(long, env)]
         bonsai_api_url: String,
         /// Bonsai API URL
-        #[arg(long, env)]
         bonsai_api_key: String,
     },
     /// Upload the RISC-V ELF binary to Bonsai.
     Run {
         /// Bonsai API URL
+        /// Defaults to localhost
         #[arg(long, env)]
-        bonsai_api_url: String,
+        bonsai_api_url: Option<String>,
         /// Bonsai API URL
+        /// Defaults to empty
         #[arg(long, env)]
-        bonsai_api_key: String,
+        bonsai_api_key: Option<String>,
         /// Bonsai Relay contract address on Ethereum
         #[arg(long, env)]
         relay_address: Address,
-        /// Ethereum Node endpoint
+        /// Ethereum Node endpoint.
+        /// Defaults to Anvil
         #[arg(long, env)]
-        eth_node: String,
+        eth_node: Option<String>,
         /// Ethereum chain ID
-        #[arg(long, default_value_t = 5)]
+        #[arg(long, default_value_t = 31337)]
         eth_chain_id: u64,
         /// Wallet Key Identifier. Can be a private key as a hex string, or an
-        /// AWS KMS key identifier
+        /// AWS KMS key identifier.
+        /// Defaults to
+        /// ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
         #[arg(short, long, env)]
-        private_key: String,
+        private_key: Option<String>,
     },
 }
 
@@ -149,14 +152,21 @@ async fn main() -> Result<(), Error> {
             eth_chain_id,
             private_key,
         } => {
-            let ethers_client =
-                create_ethers_client_private_key(&eth_node, &private_key, eth_chain_id).await?;
+            let ethers_client = create_ethers_client_private_key(
+                &eth_node.unwrap_or_else(|| "ws://localhost:8545".to_string()),
+                &private_key.unwrap_or_else(|| {
+                    "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80".to_string()
+                }),
+                eth_chain_id,
+            )
+            .await?;
 
             let relayer = Relayer {
                 publish_mode: true,
                 publish_port: "8080".to_string(),
-                bonsai_api_url: bonsai_api_url.clone(),
-                bonsai_api_key: bonsai_api_key.clone(),
+                bonsai_api_url: bonsai_api_url
+                    .unwrap_or_else(|| "http://localhost:8081".to_string()),
+                bonsai_api_key: bonsai_api_key.unwrap_or_else(|| "".to_string()),
                 relay_contract_address: relay_address,
             };
             let _ = tokio::spawn(relayer.run(ethers_client.clone())).await;
