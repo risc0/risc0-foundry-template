@@ -11,7 +11,7 @@ path = "src/bin/fibonacci.rs"
 ethabi = { version = "18.0", default-features = false }
 # Directly import radium to silence warning about unused patch. See https://github.com/risc0/risc0/issues/549
 radium = "=0.7.1"
-risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "b69ff7ac5dd7c341430aab1abddf671cc362a3ca", default-features = false, features = ["std"] }
+risc0-zkvm = { git = "https://github.com/risc0/risc0", rev = "6f5b3497a611aad8d3a5db7e03c5e2adf02a26db", default-features = false, features = ["std"] }
 
 [patch.crates-io]
 radium = { git = "https://github.com/bitvecto-rs/radium", rev = "723bed5abd75994ee4b7221b8b12c9f4e77ce408" }

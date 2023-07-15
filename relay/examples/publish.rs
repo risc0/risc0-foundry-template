@@ -1,16 +1,13 @@
 use bonsai_ethereum_relay::sdk::client::{CallbackRequest, Client};
 use clap::Parser;
-use ethers::{
-    abi::{ethabi, Uint},
-    types::Address,
-};
+use ethers::{abi::ethabi, types::Address};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
     image_id: String,
     address: Address,
-    number: Uint,
+    number: u64,
 }
 
 #[tokio::main]
@@ -24,7 +21,7 @@ async fn main() {
     .expect("Failed to initialize the relay client");
 
     // Initialize the input for the FIBONACCI guest.
-    let input = ethabi::encode(&[ethers::abi::Token::Uint(args.number)]);
+    let input = ethabi::encode(&[ethers::abi::Token::Uint(args.number.into())]);
 
     // Create a CallbackRequest for your contract
     // example: (contracts/BonsaiStarter.sol).
@@ -35,8 +32,8 @@ async fn main() {
     let request = CallbackRequest {
         callback_contract: args.address,
         // you can use the command `solc --hashes contracts/BonsaiStarter.sol`
-        // to get the value for your actual contract
-        function_selector: [0xe8, 0x08, 0x02, 0xa2],
+        // to get the value for your actual contract (9f2275c0: storeResult(uint256,uint256))
+        function_selector: [0x9f, 0x22, 0x75, 0xc0],
         gas_limit: 3000000,
         image_id: image_id.into(),
         input,
