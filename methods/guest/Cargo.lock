@@ -310,7 +310,7 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=release-0.16#0d02111b2f84a53cf6198a0064086b281ed0f749"
+source = "git+https://github.com/risc0/risc0?rev=b69ff7ac5dd7c341430aab1abddf671cc362a3ca#b69ff7ac5dd7c341430aab1abddf671cc362a3ca"
 dependencies = [
  "anyhow",
  "log",
@@ -323,7 +323,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=release-0.16#0d02111b2f84a53cf6198a0064086b281ed0f749"
+source = "git+https://github.com/risc0/risc0?rev=b69ff7ac5dd7c341430aab1abddf671cc362a3ca#b69ff7ac5dd7c341430aab1abddf671cc362a3ca"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -332,7 +332,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=release-0.16#0d02111b2f84a53cf6198a0064086b281ed0f749"
+source = "git+https://github.com/risc0/risc0?rev=b69ff7ac5dd7c341430aab1abddf671cc362a3ca#b69ff7ac5dd7c341430aab1abddf671cc362a3ca"
 dependencies = [
  "anyhow",
  "blake2",
@@ -353,7 +353,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=release-0.16#0d02111b2f84a53cf6198a0064086b281ed0f749"
+source = "git+https://github.com/risc0/risc0?rev=b69ff7ac5dd7c341430aab1abddf671cc362a3ca#b69ff7ac5dd7c341430aab1abddf671cc362a3ca"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -378,7 +378,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=release-0.16#0d02111b2f84a53cf6198a0064086b281ed0f749"
+source = "git+https://github.com/risc0/risc0?rev=b69ff7ac5dd7c341430aab1abddf671cc362a3ca#b69ff7ac5dd7c341430aab1abddf671cc362a3ca"
 
 [[package]]
 name = "rustc-hex"

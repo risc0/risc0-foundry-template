@@ -20,6 +20,7 @@ import "forge-std/Test.sol";
 import {Strings2} from "../lib/murky/differential_testing/test/utils/Strings2.sol";
 import {IBonsaiRelay} from "./IBonsaiRelay.sol";
 import {BonsaiTestRelay} from "./BonsaiTestRelay.sol";
+import {BonsaiRelay} from "../../../relay/contracts/BonsaiRelay.sol";
 import "./BonsaiCheats.sol";
 
 /// @notice A base contract for testing a Bonsai callback receiver contract

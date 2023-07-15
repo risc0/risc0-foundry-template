@@ -16,26 +16,47 @@
 
 pragma solidity ^0.8.17;
 
-import "forge-std/Script.sol";
+import "../lib/forge-std/src/Script.sol";
 import "../relay/contracts/BonsaiRelay.sol";
 import "../contracts/BonsaiStarter.sol";
-import "bonsai-lib-sol/BonsaiCheats.sol";
+import "../lib/bonsai-lib-sol/src/BonsaiCheats.sol";
 
-contract Deploy is Script, BonsaiCheats {
+contract Relay is Script, BonsaiCheats {
     function run() external {
         uint256 relayPrivateKey =
             vm.envOr("RELAY_PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
         vm.startBroadcast(relayPrivateKey);
 
         // Deploy a Relay contract instance
-        BonsaiRelayContract relayContract = new BonsaiRelayContract();
-
-        // Deploy a new starter instance (or replace with deployment of your own contract here)
+        BonsaiRelay relayContract = new BonsaiRelay();
+        
         IBonsaiRelay bonsaiRelay = IBonsaiRelay(address(relayContract));
-        bytes32 imageId = queryImageId("FIBONACCI");
+        console.logAddress(address(bonsaiRelay));
+
+        vm.stopBroadcast();
+    }
+}
+
+contract Starter is Script, BonsaiCheats {
+    function run() external {
+        address relayContract =
+            vm.envAddress("RELAY_ADDRESS");
+        string memory bonsaiApiUrl =
+            vm.envString("BONSAI_API_URL");
+        string memory bonsaiApiKey =
+            vm.envString("BONSAI_API_KEY");
+        string memory methodName =
+            vm.envString("METHOD_NAME");
+        uint256 relayPrivateKey =
+            vm.envOr("RELAY_PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
+        vm.startBroadcast(relayPrivateKey);
+
+        IBonsaiRelay bonsaiRelay = IBonsaiRelay(relayContract);
+        bytes32 imageId = uploadImage(methodName, bonsaiApiUrl, bonsaiApiKey);
+        
+        // Deploy a new starter instance (or replace with deployment of your own contract here)
         BonsaiStarter starter = new BonsaiStarter(bonsaiRelay, imageId);
 
-        console.logAddress(address(bonsaiRelay));
         console.logBytes32(imageId);
         console.logAddress(address(starter));
 

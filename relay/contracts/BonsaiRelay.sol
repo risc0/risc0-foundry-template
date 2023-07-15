@@ -2,7 +2,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-contract BonsaiRelayContract {
+import {IBonsaiRelay} from "../../lib/bonsai-lib-sol/src/IBonsaiRelay.sol";
+
+/// @notice A mock Bonsai relay for local testing
+contract BonsaiRelay is IBonsaiRelay {
+    // Flag to signal if the contract has been initialized.
+    // Useful when putting this contract behind a Proxy.
+    bool initialized;
     // Initial config
     address public owner;
     // Events
@@ -17,13 +23,26 @@ contract BonsaiRelayContract {
     // Callback
     struct Callback {
         address callback_contract;
-        bytes32[] journal_inclusion_proof;
+        SnarkProof proof;
         bytes payload;
         uint64 gas_limit;
     }
+    // Snark Proof
+    struct SnarkProof {
+        uint[2] a;
+        uint[2][2] b;
+        uint[2] c;
+        uint[4] pubSignals;
+    }
     // Initiate Contract
     constructor() {
+        initialize();
+    }
+    // Initalize the owner
+    function initialize() public {
+        require(initialized == false, "contract already initialized");
         owner = address(msg.sender);
+        initialized = true;
     }
     // Submit request
     function requestCallback(
@@ -37,11 +56,11 @@ contract BonsaiRelayContract {
         emit CallbackRequest(msg.sender, image_id, input, callback_contract, function_selector, gas_limit);
     }
     // Submit proofs
-    function invoke_callbacks(Callback[] calldata callbacks) external returns (bool[] memory invocation_results) {
+    function invoke_callback(Callback[] calldata callbacks) external returns (bool[] memory invocation_results) {
         require(msg.sender == owner, "Denied");
         invocation_results = new bool[](callbacks.length);
         for (uint i = 0; i < callbacks.length; i++) {
-            // invoke callback
+			// invoke callback
             (invocation_results[i], ) = callbacks[i].callback_contract.call{gas: callbacks[i].gas_limit}(callbacks[i].payload);
         }
     }

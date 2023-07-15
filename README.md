@@ -61,39 +61,38 @@ forge test
 
 ***Tip:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
 
-### Test your project end-to-end
-
+### Deploy your project on a local network
 You can deploy your contracts and run an end-to-end test or demo as follows:
 
-1. Start an anvil instance (if you want a local testnet):
+1. Start an anvil instance, if you want a local testnet, by running:
 ```
 anvil
 ```
-If you do use anvil, then you will need to specify a private key to use for deployment:
-```
-export RELAY_PRIVATE_KEY=0x..
-```
 Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
-2. Run the provided deploy script to deploy the local relay and the starter contract:
+2. Deploy the `BonsaiRelay` contract by running:
 ```
-forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --broadcast
+forge script scripts/Deploy.s.sol:Relay --rpc-url http://localhost:8545 --broadcast
 ```
-You should modify this script to correctly deploy your application's solidity contract instead of the starter contract if you have changed things.
 
-3. Run the local relay binary (replace the relay contract address and Ethereum node parameters if needed):
+3. Start the Bonsai Ethereum Relay by running:
 ```
-cargo run relay --relay-contract-address 0x5fbdb2315678afecb367f032d93f642f64180aa3 --eth-node-url ws://localhost:8545
+RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none cargo run --bin bonsai-ethereum-relay-cli -- run 
 ```
-You can set the `--private-key` parameter if you do not wish to use the default anvil account.
+The relay will keep monitoring the chain for callback requests and relay their result back after computing them. You should keep this terminal instance running the relay in the foreground and switch to a new terminal. When using `http://localhost:8081` as the `BONSAI_API_URL`, the relay will work as `local` [proving-mode](#proving-modes).
+If needed, you should modify the environment variables to reflect your setup. For instance, if you want to prove remotely via Bonsai, set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
+Moreover, if you want to run the relay on a remote Ethereum network, you can use a different `ETH_NODE`, `ETH_CHAIN_ID` and `PRIVATE_KEY`.
 
-The relay binary will keep monitoring the chain for callback requests and relay their result back after computing them.
-You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
+4. On a new terminal, you can run the following forge script to deploy your `StarterContract`:
+```
+RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none METHOD_NAME=FIBONACCI forge script scripts/Deploy.s.sol:Starter --rpc-url http://localhost:8545 --broadcast
+```
+Again, you can change the environment variables to reflect your setup.
 
-**Now you can test your deployment in a new terminal as follows:**
+**Now you can test your deployment as follows:**
 1. Send a transaction to the starter contract:
 ```
-cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
+cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --gas-limit 100000 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
 ```
 
 2. Check the relayed result:
@@ -101,11 +100,29 @@ cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f460
 cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
 ```
 
+### Publish-mode
+The Relay exposes a REST API interface that can be used to directly send Callback requests to it, thus bypassing the first interaction on-chain. It also provides an SDK in `rust` that can be used to interact with it. You can check out this [example](relay/examples/publish.rs). 
+
+Assuming that Anvil and the Relay are running and both the `BonsaiRelay` and `BonsaiStarter` are deployed (first 4 steps of the previous section), you can send a `Callback` request directly to the Relay by running:
+
+```
+cargo run --example publish 288ea9093b9000870ccd8cef93d24bba3cc5f67b14b6f9b651072e23984a379c 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 10
+```
+The first argument is the `image_id`, then the `BonsaiStarter` address and finally the number to compute the Fibonacci sequence. 
+You may need to change these values accordingly.
+
+Once again, you can check the relayed result
+```
+cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 10
+```
+
+The Relay source code with its SDK can be found in the [risc0/risc0](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay) github repo.
+
+
 ## Proving Modes
-The foundry template supports three different proving modes:
-1. `none` - By default, only the [executor](https://www.dev.risczero.com/docs/terminology#executor) runs your zkVM program and no proof is generated. Because there is no proving, this will be the fastest way to test.  
-***Note:*** *When iterating locally, this mode is recommended as tests will run faster without full proving.*  
-2. `bonsai` - A proof of execution, called a [receipt](https://dev.risczero.com/zkvm/developer-guide/receipts), is generated by the Bonsai API, and returned as a groth16 SNARK optimized for on-chain verification.
+The foundry template supports two different proving modes:
+1. `local` - By default, only the [executor](https://www.dev.risczero.com/docs/terminology#executor) runs your zkVM program and no proof is generated. Because there is no proving, this will be the fastest way to test. 
+2. `bonsai` - A proof of execution is generated by the Bonsai API.
 
 Configure your preferred mode by setting the `BONSAI_PROVING` env variable.
 ```bash
