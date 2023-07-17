@@ -15,24 +15,20 @@
 use std::{io::Write, sync::Arc};
 
 use anyhow::Context;
-use bonsai_sdk_alpha::alpha::responses::SnarkProof;
-use bonsai_starter_methods::GUEST_LIST;
+use bonsai_ethereum_relay::Relayer;
+use bonsai_ethereum_relay_cli::{resolve_guest_entry, resolve_image_output, Output, ProverMode};
+use bonsai_sdk::{
+    alpha::{responses::SnarkProof, SdkErr},
+    alpha_async::{get_client_from_parts, put_image},
+};
 use clap::{Parser, Subcommand};
 use ethers::{
     abi::{Hash, Token, Tokenizable},
-    types::U256,
-};
-use bonsai_ethereum_relay::Relayer;
-use bonsai_ethereum_relay_cli::{resolve_guest_entry, resolve_image_output, ProverMode, Output};
-use bonsai_sdk_alpha::{
-    alpha::SdkErr,
-    alpha_async::{get_client_from_parts, put_image},
-};
-use ethers::{
     core::k256::{ecdsa::SigningKey, SecretKey},
     prelude::*,
-    types::Address,
+    types::{Address, U256},
 };
+use methods::GUEST_LIST;
 
 #[derive(Subcommand)]
 pub enum Command {
@@ -44,7 +40,7 @@ pub enum Command {
         /// The input to provide to the guest binary
         input: Option<String>,
 
-        #[arg(long, env = "BONSAI_PROVING", value_enum, default_value_t = ProverMode::None)]
+        #[arg(long, env = "BONSAI_PROVING", value_enum, default_value_t = ProverMode::Local)]
         prover_mode: ProverMode,
     },
     /// Upload the RISC-V ELF binary to Bonsai.
@@ -143,9 +139,6 @@ async fn main() -> anyhow::Result<()> {
                         .await
                         .context("failed to resolve image output")?;
                     match (prover_mode, output) {
-                        (ProverMode::None, Output::Execution { journal }) => {
-                            vec![Token::Bytes(journal)]
-                        }
                         (ProverMode::Local, Output::Execution { journal }) => {
                             vec![Token::Bytes(journal)]
                         }
@@ -224,9 +217,9 @@ async fn main() -> anyhow::Result<()> {
         } => {
             let ethers_client = create_ethers_client_private_key(
                 &eth_node.unwrap_or_else(|| "ws://localhost:8545".to_string()),
-                &private_key.unwrap_or_else(||
+                &private_key.unwrap_or_else(|| {
                     "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80".to_string()
-                ),
+                }),
                 eth_chain_id,
             )
             .await?;

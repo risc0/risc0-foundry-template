@@ -398,7 +398,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-relay"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -444,13 +444,13 @@ dependencies = [
  "bincode",
  "bonsai-ethereum-relay",
  "bonsai-sdk",
- "bonsai-starter-methods",
  "bytemuck",
  "clap",
  "ethers",
  "ethers-signers",
  "ethers-solc 1.0.2",
  "hex",
+ "methods",
  "risc0-build",
  "risc0-zkvm",
  "tokio",
@@ -459,14 +459,13 @@ dependencies = [
 [[package]]
 name = "bonsai-proxy-contract"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "ethers",
  "ethers-solc 1.0.2",
  "hex",
  "serde",
- "tempfile",
  "tokio",
  "tracing",
 ]
@@ -474,7 +473,7 @@ dependencies = [
 [[package]]
 name = "bonsai-rest-api-mock"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "axum",
@@ -498,21 +497,12 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "reqwest",
  "serde",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "bonsai-starter-methods"
-version = "0.1.0"
-dependencies = [
- "hex-literal",
- "risc0-build",
- "risc0-zkvm",
 ]
 
 [[package]]
@@ -2558,6 +2548,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "methods"
+version = "0.1.0"
+dependencies = [
+ "hex-literal",
+ "risc0-build",
+ "risc0-zkvm",
+]
+
+[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3418,7 +3417,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "cargo_metadata",
  "directories",
@@ -3435,7 +3434,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "cc",
  "directories",
@@ -3448,7 +3447,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "log",
@@ -3465,7 +3464,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -3476,7 +3475,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3485,7 +3484,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "cc",
  "glob",
@@ -3496,7 +3495,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3516,14 +3515,13 @@ dependencies = [
  "risc0-zkvm-platform",
  "serde",
  "sha2 0.10.7",
- "thiserror",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-zkvm"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 dependencies = [
  "anyhow",
  "bincode",
@@ -3558,7 +3556,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?rev=6f5b3497a611aad8d3a5db7e03c5e2adf02a26db#6f5b3497a611aad8d3a5db7e03c5e2adf02a26db"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d636116f6547cbb02b24a51edfceb8bbadc0cba9"
 
 [[package]]
 name = "rlp"

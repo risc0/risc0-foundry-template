@@ -15,7 +15,7 @@
 use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk_alpha::alpha::{responses::SnarkProof, Client, SdkErr};
+use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
 use clap::{builder::PossibleValue, ValueEnum};
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
@@ -25,19 +25,17 @@ use risc0_zkvm::{
 
 #[derive(Debug, Copy, Clone)]
 pub enum ProverMode {
-    None,
     Local,
     Bonsai,
 }
 
 impl ValueEnum for ProverMode {
     fn value_variants<'a>() -> &'a [Self] {
-        &[Self::None, Self::Local, Self::Bonsai]
+        &[Self::Local, Self::Bonsai]
     }
 
     fn to_possible_value(&self) -> Option<PossibleValue> {
         Some(match self {
-            Self::None => PossibleValue::new("none"),
             Self::Local => PossibleValue::new("local"),
             Self::Bonsai => PossibleValue::new("bonsai"),
         })
@@ -70,7 +68,9 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;
 
-    Ok(Output::Execution { journal: session.journal })
+    Ok(Output::Execution {
+        journal: session.journal,
+    })
 }
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
@@ -212,6 +212,6 @@ pub async fn resolve_image_output(
         ProverMode::Bonsai => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
             .context("Failed to run alpha sub-task")?,
-        ProverMode::Local | ProverMode::None => execute_locally(elf, input),
+        ProverMode::Local => execute_locally(elf, input),
     }
 }
