@@ -58,7 +58,7 @@ pub enum Output {
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
 /// the proof request to the Bonsai service.
-pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Output> {
+pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
     let env = ExecutorEnv::builder()
@@ -70,16 +70,7 @@ pub fn prove_locally(elf: &[u8], input: Vec<u8>, prove: bool) -> Result<Output> 
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;
 
-    // Locally prove resulting journal
-    if prove {
-        session.prove().context("Failed to prove session")?;
-        // eprintln!("Completed proof locally");
-    } else {
-        // eprintln!("Completed execution without a proof locally");
-    }
-    Ok(Output::Execution {
-        journal: session.journal,
-    })
+    Ok(Output::Execution { journal: session.journal })
 }
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
@@ -221,7 +212,6 @@ pub async fn resolve_image_output(
         ProverMode::Bonsai => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
             .context("Failed to run alpha sub-task")?,
-        ProverMode::Local => prove_locally(elf, input, true),
-        ProverMode::None => prove_locally(elf, input, false),
+        ProverMode::Local | ProverMode::None => execute_locally(elf, input),
     }
 }

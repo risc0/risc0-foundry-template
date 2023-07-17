@@ -16,6 +16,7 @@
 
 pragma solidity ^0.8.17;
 
+<<<<<<< HEAD:script/Deploy.s.sol
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
@@ -25,6 +26,7 @@ import {IVotes} from "openzeppelin/contracts/governance/utils/IVotes.sol";
 import {BonsaiGovernor} from "../contracts/BonsaiGovernor.sol";
 import {VoteToken} from "../contracts/VoteToken.sol";
 
+// TODO(victor): Merge these scripts
 /// @notice deployment script for the Bonsai Governor and it's dependencies.
 /// @dev Use the following environment variables to control the deployment:
 ///     * DEPLOYER_ADDRESS address of the wallet to be used for sending deploy transactions.
@@ -57,10 +59,6 @@ contract Deploy is Script, BonsaiCheats {
         } else {
             revert("specify a deployer with either DEPLOYER_ADDRESS or DEPLOYER_PRIVATE_KEY");
         }
-    }
-
-    function run() external {
-        startBroadcast();
 
         // Deploy a Relay contract instance. Relay is stateless and owner-less.
         BonsaiRelay bonsaiRelay;
@@ -91,6 +89,47 @@ contract Deploy is Script, BonsaiCheats {
         console2.log("Image ID for FINALIZE_VOTES is ", vm.toString(imageId));
         BonsaiGovernor gov = new BonsaiGovernor(token, bonsaiRelay, imageId);
         console2.log("Deployed BonsaiGovernor to ", address(gov));
+
+        vm.stopBroadcast();
+    }
+}
+
+contract Relay is Script, BonsaiCheats {
+    function run() external {
+        startBroadcast();
+
+        // Deploy a Relay contract instance
+        BonsaiRelay relayContract = new BonsaiRelay();
+        
+        IBonsaiRelay bonsaiRelay = IBonsaiRelay(address(relayContract));
+        console.logAddress(address(bonsaiRelay));
+
+        vm.stopBroadcast();
+    }
+}
+
+contract Starter is Script, BonsaiCheats {
+    function run() external {
+        address relayContract =
+            vm.envAddress("RELAY_ADDRESS");
+        string memory bonsaiApiUrl =
+            vm.envString("BONSAI_API_URL");
+        string memory bonsaiApiKey =
+            vm.envString("BONSAI_API_KEY");
+        string memory methodName =
+            vm.envString("METHOD_NAME");
+        uint256 relayPrivateKey =
+            vm.envOr("RELAY_PRIVATE_KEY", uint256(0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80));
+        vm.startBroadcast(relayPrivateKey);
+
+        IBonsaiRelay bonsaiRelay = IBonsaiRelay(relayContract);
+        bytes32 imageId = uploadImage(methodName, bonsaiApiUrl, bonsaiApiKey);
+        
+        // Deploy a new starter instance (or replace with deployment of your own contract here)
+        BonsaiStarter starter = new BonsaiStarter(bonsaiRelay, imageId);
+
+        console.logBytes32(imageId);
+        console.logAddress(address(starter));
 
         vm.stopBroadcast();
     }
