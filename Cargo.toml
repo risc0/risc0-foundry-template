@@ -1,7 +1,4 @@
 [workspace]
-default-members = [
-    "relay"
-]
 members = [
     "methods",
     "relay"
