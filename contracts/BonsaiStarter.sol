@@ -16,8 +16,8 @@
 
 pragma solidity ^0.8.17;
 
-import {IBonsaiRelay} from "../lib/bonsai-lib-sol/src/IBonsaiRelay.sol";
-import {BonsaiCallbackReceiver} from "../lib/bonsai-lib-sol/src/BonsaiCallbackReceiver.sol";
+import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
+import {BonsaiCallbackReceiver} from "bonsai/BonsaiCallbackReceiver.sol";
 
 /// @title A starter application using Bonsai through the on-chain relay.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive

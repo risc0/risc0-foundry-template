@@ -16,10 +16,11 @@
 
 pragma solidity ^0.8.17;
 
-import "../lib/forge-std/src/Script.sol";
-import "../relay/contracts/BonsaiRelay.sol";
+import "bonsai/BonsaiRelay.sol";
+import "bonsai/BonsaiCheats.sol";
+import "forge-std/src/Script.sol";
+
 import "../contracts/BonsaiStarter.sol";
-import "../lib/bonsai-lib-sol/src/BonsaiCheats.sol";
 
 contract Relay is Script, BonsaiCheats {
     function run() external {
