@@ -16,30 +16,17 @@ use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
-use clap::{builder::PossibleValue, ValueEnum};
+use clap::ValueEnum;
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
     Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, ReceiptMetadata, SessionReceipt,
     MEM_SIZE, PAGE_SIZE,
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, ValueEnum)]
 pub enum ProverMode {
     Local,
     Bonsai,
-}
-
-impl ValueEnum for ProverMode {
-    fn value_variants<'a>() -> &'a [Self] {
-        &[Self::Local, Self::Bonsai]
-    }
-
-    fn to_possible_value(&self) -> Option<PossibleValue> {
-        Some(match self {
-            Self::Local => PossibleValue::new("local"),
-            Self::Bonsai => PossibleValue::new("bonsai"),
-        })
-    }
 }
 
 /// Result of executing a guest image, possibly containing a proof.
@@ -173,7 +160,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
 
 pub fn resolve_guest_entry<'a>(
     guest_list: &'a [GuestListEntry],
-    guest_binary: &String,
+    guest_binary: &str,
 ) -> Result<&'a GuestListEntry> {
     // Search list for requested binary name
     let potential_guest_image_id: [u8; 32] =
