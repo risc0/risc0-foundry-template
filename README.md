@@ -86,29 +86,23 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 2. Deploy the `BonsaiRelay` contract by running:
 
     ```bash
-    forge script scripts/Deploy.s.sol:Relay --rpc-url http://localhost:8545 --broadcast
+    forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
     ```
+
+    Check the logs for the address of the `BonsaiRelay` contract.
 
 3. Start the Bonsai Ethereum Relay by running:
 
     ```bash
-    RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none cargo run --bin bonsai-ethereum-relay-cli -- run 
+    run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
     ```
 
     The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
     You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
-    When using `http://localhost:8081` as the `BONSAI_API_URL`, the relay will work as `local` [proving-mode](#proving-modes).
+    When using `http://localhost:8081` (the default) as the `BONSAI_API_URL`, the relay will work as `local` [proving-mode](#proving-modes).
     If needed, you should modify the environment variables to reflect your setup.
     For instance, if you want to prove remotely via Bonsai, set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
     Moreover, if you want to run the relay on a remote Ethereum network, you can use a different `ETH_NODE`, `ETH_CHAIN_ID` and `PRIVATE_KEY`.
-
-4. On a new terminal, you can run the following forge script to deploy your `StarterContract`:
-
-    ```bash
-    RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 BONSAI_API_URL=http://localhost:8081 BONSAI_API_KEY=none METHOD_NAME=FIBONACCI forge script scripts/Deploy.s.sol:Starter --rpc-url http://localhost:8545 --broadcast
-    ```
-
-    Again, you can change the environment variables to reflect your setup.
 
 **Now you can test your deployment as follows:**
 
@@ -123,6 +117,25 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     ```bash
     cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
     ```
+
+**Deploy a new version of your application contract:**
+
+When you want to deploy a new version of the application contract, run the following command with the relay contract address noted earlier.
+
+```bash
+DEPLOY_RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+```
+
+This will deploy only your application address and upload any updated images.
+The existing relay contract and the running relay will continue to be used.
+
+**Use the fully verifying relay:**
+
+If you want to use Bonsai and the on-chain SNARK verifier in your local or testnet deployment, set `BONSAI_PROVING=bonsai` and rerun the steps for deployment.
+When `BONSAI_PROVING=bonsai`, the zkVM guest images will be uploaded to Bonsai and the relay will use Bonsai for executing and proving the guest.
+With this setup, the fully verifying relay will be used and a SNARK proof will be required to send a callback to your application.
+
+See the [Configuring Bonsai](#Configuring Bonsai) section below for more information about using the Bonsai proving service.
 
 ### Publish-mode
 

@@ -204,7 +204,7 @@ async fn main() -> anyhow::Result<()> {
             )?;
 
             // Upload each guest binary.
-            for guest_entry in guest_entries.into_iter() {
+            for guest_entry in guest_entries.iter() {
                 // Search list for requested binary name
                 let image_id = hex::encode(Vec::from(bytemuck::cast::<[u32; 8], [u8; 32]>(
                     guest_entry.image_id,
@@ -229,6 +229,19 @@ async fn main() -> anyhow::Result<()> {
                     Err(err) => Err(err.into()),
                 }?;
             }
+
+            let output = hex::encode(ethers::abi::encode(&[Token::Array(
+                guest_entries
+                    .into_iter()
+                    .map(|entry| {
+                        Hash::from(bytemuck::cast::<_, [u8; 32]>(entry.image_id)).into_token()
+                    })
+                    .collect(),
+            )]));
+            print!("{output}");
+            std::io::stdout()
+                .flush()
+                .context("failed to flush stdout buffer")?;
         }
         Command::Run {
             relay_address,
