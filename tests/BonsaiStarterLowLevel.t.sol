@@ -21,7 +21,7 @@ import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
 import {BonsaiStarterLowLevel} from "../contracts/BonsaiStarterLowLevel.sol";
 
 contract BonsaiStarterLowLevelTest is BonsaiTest {
-    function setUp() public withRelay{}
+    function setUp() public withRelay {}
 
     function testMockLowLevelCall() public {
         // Deploy a new starter instance
