@@ -70,7 +70,7 @@ abstract contract BonsaiDeploy is Script, BonsaiCheats {
         IBonsaiRelay bonsaiRelay;
         address relayAddr = vm.envOr("DEPLOY_RELAY_ADDRESS", address(0));
         if (relayAddr != address(0)) {
-            console2.log("Using BonsaiRelay at ", address(relayAddr));
+            console2.log("Using IBonsaiRelay at ", address(relayAddr));
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
             // Deploy an IRiscZeroVerifier contract instance. Relay is stateless and owner-less.
@@ -99,7 +99,11 @@ abstract contract BonsaiDeploy is Script, BonsaiCheats {
             console2.log("Using BonsaiRelay at ", address(relayAddr));
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
-            bonsaiRelay = new BonsaiTestRelay();
+            // BonsaiTestRelay SHOULD ONLY BE DEPLOYED IN TEST SCENARIOS.
+            // Use a long and unweildy environment variable name for overriding
+            // the expected chain ID for the test relay so that it is hard to
+            // trigger without thinking about it.
+            bonsaiRelay = new BonsaiTestRelay(vm.envOr("DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID", uint256(31337)));
             console2.log("Deployed BonsaiTestRelay to ", address(bonsaiRelay));
         }
         return bonsaiRelay;
