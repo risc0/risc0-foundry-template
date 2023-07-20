@@ -1,17 +1,3 @@
-// Copyright 2023 RISC Zero, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
 // SPDX-License-Identifier: Apache-2.0
 
 pragma solidity ^0.8.17;
@@ -35,18 +21,21 @@ import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 ///         a new RiscZeroGroth16Verifier will be deployed.
 ///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
 ///         If not specified, a new BonsaiRelay will be deployed.
-///     * DEPLOY_UPLOAD_IMAGES true or false indicating whether to upload the zkVM guest images to
-///         Bonsai. Default is true if BONSAI_API_URL is set.
 ///     * BONSAI_PROVING indicates what mode of proving is being used and decides what relay
 ///         contract to deploy.
 ///         * If BONSAI_PROVING = local: The mock BonsaiTestRelay contract will be used.
 ///         * If BONSAI_PROVING = bonsai: The fully verifying BonsaiRelay contract will be used.
 contract Deploy is Script, BonsaiCheats, BonsaiDeploy {
-    /// @notice Deploy application, with a pointer to the Bonsai relay contract and image ID.
-    function deployApp(IBonsaiRelay bonsaiRelay) internal override {
+    function run() external {
+        startBroadcast();
+        IBonsaiRelay bonsaiRelay = deployBonsaiRelay();
+
+        // TEMPLATE: Modify this block to match your expected deployment.
         bytes32 imageId = queryImageId("FIBONACCI");
         console2.log("Image ID for FIBONACCI is ", vm.toString(imageId));
         BonsaiStarter app = new BonsaiStarter(bonsaiRelay, imageId);
         console2.log("Deployed BonsaiStarter to ", address(app));
+
+        vm.stopBroadcast();
     }
 }

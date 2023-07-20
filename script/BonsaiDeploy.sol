@@ -26,23 +26,7 @@ import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.so
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {IVotes} from "openzeppelin/contracts/governance/utils/IVotes.sol";
 
-abstract contract BonsaiDeploy is Script, BonsaiCheats {
-    /// @notice Deploy application, with a pointer to the Bonsai relay contract and image ID.
-    /// @dev Override this function to deploy your application.
-    function deployApp(IBonsaiRelay bonsaiRelay) internal virtual;
-
-    function run() external virtual {
-        startBroadcast();
-
-        IBonsaiRelay bonsaiRelay = deployBonsaiRelay();
-
-        uploadImages();
-
-        deployApp(bonsaiRelay);
-
-        vm.stopBroadcast();
-    }
-
+contract BonsaiDeploy is Script, BonsaiCheats {
     /// @notice use vm.startBroadcast to begin recording deploy transactions.
     function startBroadcast() internal {
         address deployerAddr = vm.envOr("DEPLOYER_ADDRESS", address(0));
@@ -120,19 +104,16 @@ abstract contract BonsaiDeploy is Script, BonsaiCheats {
         revert("invalid value for proverMode");
     }
 
+    // TODO(victor): This functionality is not unused. Should it be removed, or is it still useful?
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.
-    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to true if BONSAI_PROVING is true.
+    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to true.
     function uploadImages() internal {
-        if (vm.envOr("DEPLOY_UPLOAD_IMAGES", proverMode() == ProverMode.Bonsai)) {
-            bytes32[] memory imageIds = uploadAllImages();
-            if (imageIds.length == 0) {
-                console2.log("No images uploaded to Bonsai");
-            }
-            for (uint256 i = 0; i < imageIds.length; i++) {
-                console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
-            }
-        } else {
-            console2.log("Skipped image upload to Bonsai");
+        bytes32[] memory imageIds = uploadAllImages();
+        if (imageIds.length == 0) {
+            console2.log("No images uploaded to Bonsai");
+        }
+        for (uint256 i = 0; i < imageIds.length; i++) {
+            console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
         }
     }
 }
