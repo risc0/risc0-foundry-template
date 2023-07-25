@@ -16,30 +16,17 @@ use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
-use clap::{builder::PossibleValue, ValueEnum};
+use clap::ValueEnum;
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
     Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, ReceiptMetadata, SessionReceipt,
     MEM_SIZE, PAGE_SIZE,
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, ValueEnum)]
 pub enum ProverMode {
     Local,
     Bonsai,
-}
-
-impl ValueEnum for ProverMode {
-    fn value_variants<'a>() -> &'a [Self] {
-        &[Self::Local, Self::Bonsai]
-    }
-
-    fn to_possible_value(&self) -> Option<PossibleValue> {
-        Some(match self {
-            Self::Local => PossibleValue::new("local"),
-            Self::Bonsai => PossibleValue::new("bonsai"),
-        })
-    }
 }
 
 /// Result of executing a guest image, possibly containing a proof.
@@ -136,7 +123,11 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
         }
     })()?;
-    let metadata = receipt.get_metadata()?;
+    let metadata = receipt
+        .segments
+        .last()
+        .ok_or(anyhow!("receipt contains no segments"))?
+        .get_metadata()?;
 
     let snark_session = client.create_snark(session.uuid)?;
     let snark_proof: SnarkProof = (|| loop {
@@ -168,9 +159,9 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
 }
 
 pub fn resolve_guest_entry<'a>(
-    guest_list: &[GuestListEntry<'a>],
-    guest_binary: &String,
-) -> Result<GuestListEntry<'a>> {
+    guest_list: &'a [GuestListEntry],
+    guest_binary: &str,
+) -> Result<&'a GuestListEntry> {
     // Search list for requested binary name
     let potential_guest_image_id: [u8; 32] =
         match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {
@@ -193,12 +184,12 @@ pub fn resolve_guest_entry<'a>(
                 guest_binary,
                 found_guests
             )
-        }).cloned()
+        })
 }
 
 pub async fn resolve_image_output(
     input: &str,
-    guest_entry: &GuestListEntry<'static>,
+    guest_entry: &GuestListEntry,
     prover_mode: ProverMode,
 ) -> Result<Output> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;
