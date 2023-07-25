@@ -118,12 +118,13 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
     ```
 
-**Deploy a new version of your application contract:**
+**Deploy a new version of your application:**
 
 When you want to deploy a new version of the application contract, run the following command with the relay contract address noted earlier.
+Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a new version to Bonsai.
 
 ```bash
-DEPLOY_RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+DEPLOY_RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
 This will deploy only your application address and upload any updated images.

@@ -21,6 +21,8 @@ import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 ///         a new RiscZeroGroth16Verifier will be deployed.
 ///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
 ///         If not specified, a new BonsaiRelay will be deployed.
+///     * DEPLOY_UPLOAD_IMAGES true or false indicating whether to upload the zkVM guest images to
+///         Bonsai. Default is false.
 ///     * BONSAI_PROVING indicates what mode of proving is being used and decides what relay
 ///         contract to deploy.
 ///         * If BONSAI_PROVING = local: The mock BonsaiTestRelay contract will be used.
@@ -29,6 +31,7 @@ contract Deploy is Script, BonsaiCheats, BonsaiDeploy {
     function run() external {
         startBroadcast();
         IBonsaiRelay bonsaiRelay = deployBonsaiRelay();
+        uploadImages();
 
         // TEMPLATE: Modify this block to match your expected deployment.
         bytes32 imageId = queryImageId("FIBONACCI");

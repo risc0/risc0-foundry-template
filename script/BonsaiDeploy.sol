@@ -104,16 +104,17 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         revert("invalid value for proverMode");
     }
 
-    // TODO(victor): This functionality is not unused. Should it be removed, or is it still useful?
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.
     /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to true.
     function uploadImages() internal {
-        bytes32[] memory imageIds = uploadAllImages();
-        if (imageIds.length == 0) {
-            console2.log("No images uploaded to Bonsai");
-        }
-        for (uint256 i = 0; i < imageIds.length; i++) {
-            console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
+        if (vm.envOr("DEPLOY_UPLOAD_IMAGES", false)) {
+            bytes32[] memory imageIds = uploadAllImages();
+            if (imageIds.length == 0) {
+                console2.log("No images uploaded to Bonsai");
+            }
+            for (uint256 i = 0; i < imageIds.length; i++) {
+                console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
+            }
         }
     }
 }

@@ -444,13 +444,13 @@ dependencies = [
  "bincode",
  "bonsai-ethereum-relay",
  "bonsai-sdk",
+ "bonsai-starter-methods",
  "bytemuck",
  "clap",
  "ethers",
  "ethers-signers",
  "ethers-solc 1.0.2",
  "hex",
- "methods",
  "risc0-build",
  "risc0-zkvm",
  "tokio",
@@ -503,6 +503,14 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "bonsai-starter-methods"
+version = "0.1.0"
+dependencies = [
+ "risc0-build",
+ "risc0-zkvm",
 ]
 
 [[package]]
@@ -2539,14 +2547,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5a634b1c61a95585bd15607c6ab0c4e5b226e695ff2800ba0cdccddf208c406c"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "methods"
-version = "0.1.0"
-dependencies = [
- "risc0-build",
- "risc0-zkvm",
 ]
 
 [[package]]
