@@ -94,7 +94,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 3. Start the Bonsai Ethereum Relay by running:
 
     ```bash
-    run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
     ```
 
     The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
