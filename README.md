@@ -6,7 +6,7 @@ This repository implements an application on Ethereum utilizing Bonsai as a copr
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive
 (or difficult to implement) tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
 
-*For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=hUl8ZB6hpUM).*
+*For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
 
 ## Dependencies
 
