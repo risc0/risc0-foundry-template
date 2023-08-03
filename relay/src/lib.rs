@@ -19,8 +19,7 @@ use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
 use clap::ValueEnum;
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, ReceiptMetadata, SessionReceipt,
-    MEM_SIZE, PAGE_SIZE,
+    Executor, ExecutorEnv, MemoryImage, Program, Receipt, ReceiptMetadata, MEM_SIZE, PAGE_SIZE,
 };
 
 #[derive(Debug, Copy, Clone, ValueEnum)]
@@ -50,7 +49,7 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         .add_input(&input)
         .build()
         .context("Failed to build exec env")?;
-    let mut exec = LocalExecutor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;
@@ -88,7 +87,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         .context("Failed to create remote proving session")?;
 
     // Poll and await the result of the STARK rollup proving session.
-    let receipt: SessionReceipt = (|| {
+    let receipt: Receipt = (|| {
         loop {
             let res = match session.status(&client) {
                 Ok(res) => res,
@@ -109,8 +108,8 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
                                 .context("Missing 'receipt_url' on status response")?,
                         )
                         .context("Failed to download receipt")?;
-                    let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
-                        .context("Failed to deserialize SessionReceipt")?;
+                    let receipt: Receipt = bincode::deserialize(&receipt_buf)
+                        .context("Failed to deserialize Receipt")?;
                     // eprintln!("Completed STARK proof on bonsai alpha backend!");
                     return Ok(receipt);
                 }
@@ -123,11 +122,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
         }
     })()?;
-    let metadata = receipt
-        .segments
-        .last()
-        .ok_or(anyhow!("receipt contains no segments"))?
-        .get_metadata()?;
+    let metadata = receipt.get_metadata()?;
 
     let snark_session = client.create_snark(session.uuid)?;
     let snark_proof: SnarkProof = (|| loop {
@@ -159,9 +154,9 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
 }
 
 pub fn resolve_guest_entry<'a>(
-    guest_list: &'a [GuestListEntry],
-    guest_binary: &str,
-) -> Result<&'a GuestListEntry> {
+    guest_list: &[GuestListEntry<'a>],
+    guest_binary: &String,
+) -> Result<GuestListEntry<'a>> {
     // Search list for requested binary name
     let potential_guest_image_id: [u8; 32] =
         match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {
@@ -185,11 +180,12 @@ pub fn resolve_guest_entry<'a>(
                 found_guests
             )
         })
+        .cloned()
 }
 
 pub async fn resolve_image_output(
     input: &str,
-    guest_entry: &GuestListEntry,
+    guest_entry: &GuestListEntry<'static>,
     prover_mode: ProverMode,
 ) -> Result<Output> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;

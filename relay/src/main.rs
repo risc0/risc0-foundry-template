@@ -155,7 +155,7 @@ async fn main() -> anyhow::Result<()> {
             let output_tokens = match &input {
                 // Input provided. Return the Ethereum ABI encoded journal and
                 Some(input) => {
-                    let output = resolve_image_output(input, guest_entry, prover_mode)
+                    let output = resolve_image_output(input, &guest_entry, prover_mode)
                         .await
                         .context("failed to resolve image output")?;
                     match (prover_mode, output) {
@@ -263,8 +263,8 @@ async fn upload_images(
 ) -> anyhow::Result<Vec<Digest>> {
     // Create a list of either the single binary name to upload or all guests.
     let guest_entries = guest_binary.map_or_else(
-        || Ok::<_, anyhow::Error>(GUEST_LIST.iter().collect::<Vec<_>>()),
-        |name| Ok(vec![resolve_guest_entry(GUEST_LIST, &name)?]),
+        || Ok::<_, anyhow::Error>(GUEST_LIST.iter().cloned().collect::<Vec<_>>()),
+        |name| Ok(vec![resolve_guest_entry(&GUEST_LIST, &name)?]),
     )?;
 
     // Upload each guest binary.
