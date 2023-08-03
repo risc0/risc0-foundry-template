@@ -16,7 +16,7 @@ use std::{io::Write, sync::Arc};
 
 use anyhow::Context;
 use bonsai_ethereum_relay::Relayer;
-use bonsai_ethereum_relay_cli::{resolve_guest_entry, resolve_image_output, Output, ProverMode};
+use bonsai_ethereum_relay_cli::{resolve_guest_entry, resolve_image_output, Output};
 use bonsai_sdk::{
     alpha::{responses::SnarkProof, SdkErr},
     alpha_async::{get_client_from_parts, put_image},
@@ -45,13 +45,10 @@ enum Command {
         /// The input to provide to the guest binary
         input: Option<String>,
 
-        /// Mode for running the zkVM guest.
-        /// "local" specifies local execution, without producing an on-chain
-        /// verifiable SNARK.
-        /// "bonsai" specifies execution and proving with Bonsai, producing a
-        /// SNARK.
-        #[arg(long, value_enum, env = "BONSAI_PROVING", default_value_t = ProverMode::Local)]
-        prover_mode: ProverMode,
+        // TODO(victor): Also check the RISC0_DEV_MODE env var.
+        // TODO(victor): Add description and allow for setting this to false explicitly
+        #[arg(long, default_value_t = true)]
+        dev_mode: bool,
     },
     /// Upload the RISC-V ELF binary to Bonsai.
     Upload {
@@ -145,7 +142,7 @@ async fn main() -> anyhow::Result<()> {
         Command::Query {
             guest_binary,
             input,
-            prover_mode,
+            dev_mode,
         } => {
             // Search list for requested binary name
             let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
@@ -155,15 +152,15 @@ async fn main() -> anyhow::Result<()> {
             let output_tokens = match &input {
                 // Input provided. Return the Ethereum ABI encoded journal and
                 Some(input) => {
-                    let output = resolve_image_output(input, &guest_entry, prover_mode)
+                    let output = resolve_image_output(input, &guest_entry, dev_mode)
                         .await
                         .context("failed to resolve image output")?;
-                    match (prover_mode, output) {
-                        (ProverMode::Local, Output::Execution { journal }) => {
+                    match (dev_mode, output) {
+                        (true, Output::Execution { journal }) => {
                             vec![Token::Bytes(journal)]
                         }
                         (
-                            ProverMode::Bonsai,
+                            false,
                             Output::Bonsai {
                                 journal,
                                 receipt_metadata,
@@ -179,10 +176,9 @@ async fn main() -> anyhow::Result<()> {
                                 )?])),
                             ]
                         }
-                        _ => anyhow::bail!(
-                            "invalid prover mode and output combination: {:?}",
-                            prover_mode
-                        ),
+                        _ => {
+                            anyhow::bail!("invalid dev mode and output combination: {:?}", dev_mode)
+                        }
                     }
                 }
                 // No input. Return the Ethereum ABI encoded bytes32 image ID.
