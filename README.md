@@ -86,7 +86,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 2. Deploy the `BonsaiRelay` contract by running:
 
     ```bash
-    forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+    RISC0_DEV_MODE= forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
     ```
 
     Check the logs for the address of the `BonsaiRelay` contract.
@@ -94,15 +94,16 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 3. Start the Bonsai Ethereum Relay by running:
 
     ```bash
-    cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    RISC0_DEV_MODE= cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
     ```
 
     The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
     You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
-    When using `http://localhost:8081` (the default) as the `BONSAI_API_URL`, the relay will work as `local` [proving-mode](#proving-modes).
+    When setting the env variable `RISC0_DEV_MODE`, the relay will start a mock version of Bonsai that will only return a journal of the execution without any cryptographic proof. 
     If needed, you should modify the environment variables to reflect your setup.
-    For instance, if you want to prove remotely via Bonsai, set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
+    For instance, if you want to prove remotely via Bonsai, unset `RISC0_DEV_MODE` and set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
     Moreover, if you want to run the relay on a remote Ethereum network, you can use a different `ETH_NODE`, `ETH_CHAIN_ID` and `PRIVATE_KEY`.
+    If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
 
 **Now you can test your deployment as follows:**
 
@@ -138,9 +139,9 @@ With this setup, the fully verifying relay will be used and a SNARK proof will b
 
 See the [Configuring Bonsai](#Configuring Bonsai) section below for more information about using the Bonsai proving service.
 
-### Publish-mode
+### Off-chain Callback Request
 
-The Relay exposes a REST API interface that can be used to directly send Callback requests to it, thus bypassing the first interaction on-chain.
+The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* Callback requests to it, as an alternative to the on-chain requests.
 It also provides an SDK in `rust` that can be used to interact with it. You can check out this [example](relay/examples/publish.rs).
 
 Assuming that Anvil and the Relay are running and both the `BonsaiRelay` and `BonsaiStarter` are deployed (first 4 steps of the previous section), you can send a `Callback` request directly to the Relay by running:

@@ -45,10 +45,10 @@ enum Command {
         /// The input to provide to the guest binary
         input: Option<String>,
 
-        // TODO(victor): Also check the RISC0_DEV_MODE env var.
-        // TODO(victor): Add description and allow for setting this to false explicitly
-        #[arg(long, default_value_t = true)]
-        dev_mode: bool,
+        /// Toggle to enable dev_mode: only a local executor runs your 
+        /// zkVM program and no proof is generated.
+        #[arg(long, env)]
+        risc0_dev_mode: bool,
     },
     /// Upload the RISC-V ELF binary to Bonsai.
     Upload {
@@ -142,7 +142,7 @@ async fn main() -> anyhow::Result<()> {
         Command::Query {
             guest_binary,
             input,
-            dev_mode,
+            risc0_dev_mode,
         } => {
             // Search list for requested binary name
             let guest_entry = resolve_guest_entry(GUEST_LIST, &guest_binary)
@@ -152,10 +152,10 @@ async fn main() -> anyhow::Result<()> {
             let output_tokens = match &input {
                 // Input provided. Return the Ethereum ABI encoded journal and
                 Some(input) => {
-                    let output = resolve_image_output(input, &guest_entry, dev_mode)
+                    let output = resolve_image_output(input, &guest_entry, risc0_dev_mode)
                         .await
                         .context("failed to resolve image output")?;
-                    match (dev_mode, output) {
+                    match (risc0_dev_mode, output) {
                         (true, Output::Execution { journal }) => {
                             vec![Token::Bytes(journal)]
                         }
@@ -177,7 +177,7 @@ async fn main() -> anyhow::Result<()> {
                             ]
                         }
                         _ => {
-                            anyhow::bail!("invalid dev mode and output combination: {:?}", dev_mode)
+                            anyhow::bail!("invalid dev mode and output combination: {:?}", risc0_dev_mode)
                         }
                     }
                 }

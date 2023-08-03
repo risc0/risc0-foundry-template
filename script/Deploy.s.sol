@@ -23,10 +23,10 @@ import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 ///         If not specified, a new BonsaiRelay will be deployed.
 ///     * DEPLOY_UPLOAD_IMAGES true or false indicating whether to upload the zkVM guest images to
 ///         Bonsai. Default is false.
-///     * BONSAI_PROVING indicates what mode of proving is being used and decides what relay
+///     * RISC0_DEV_MODE indicates what mode of proving is being used and decides what relay
 ///         contract to deploy.
-///         * If BONSAI_PROVING = local: The mock BonsaiTestRelay contract will be used.
-///         * If BONSAI_PROVING = bonsai: The fully verifying BonsaiRelay contract will be used.
+///         * If set: The mock BonsaiTestRelay contract will be used.
+///         * If unset: The fully verifying BonsaiRelay contract will be used.
 contract Deploy is Script, BonsaiCheats, BonsaiDeploy {
     function run() external {
         startBroadcast();
