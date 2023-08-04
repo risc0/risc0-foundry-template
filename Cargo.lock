@@ -414,9 +414,9 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "axum"
-version = "0.6.19"
+version = "0.6.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6a1de45611fdb535bfde7b7de4fd54f4fd2b17b1737c0a59b69bf9b92074b8c"
+checksum = "3b829e4e32b91e643de6eafe82b1d90675f5874230191a4ffbc1b336dec4d6bf"
 dependencies = [
  "async-trait",
  "axum-core",
@@ -609,7 +609,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-contracts"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "clap",
@@ -621,7 +621,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-relay"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -634,8 +634,6 @@ dependencies = [
  "displaydoc",
  "ethers 2.0.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "ethers-signers 2.0.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "file-lock",
- "foundry-cli",
  "futures",
  "hex",
  "hyper",
@@ -682,7 +680,7 @@ dependencies = [
 [[package]]
 name = "bonsai-rest-api-mock"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "axum",
@@ -706,7 +704,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "reqwest",
  "serde",
@@ -907,12 +905,10 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.81"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c6b2562119bf28c3439f7f02db99faf0aa1a8cdfe5772a2ee155d32227239f0"
+version = "1.0.79"
+source = "git+https://github.com/rust-lang/cc-rs?rev=e5bbdfa#e5bbdfa1fa468c028cb38fee6c35a3cf2e5a2736"
 dependencies = [
  "jobserver",
- "libc",
 ]
 
 [[package]]
@@ -1937,7 +1933,7 @@ dependencies = [
  "serde",
  "serde_json",
  "syn 2.0.28",
- "toml",
+ "toml 0.7.6",
  "walkdir",
 ]
 
@@ -1960,7 +1956,7 @@ dependencies = [
  "serde",
  "serde_json",
  "syn 2.0.28",
- "toml",
+ "toml 0.7.6",
  "walkdir",
 ]
 
@@ -2412,7 +2408,7 @@ dependencies = [
  "atomic",
  "pear",
  "serde",
- "toml",
+ "toml 0.7.6",
  "uncased",
  "version_check",
 ]
@@ -2542,7 +2538,7 @@ dependencies = [
  "solang-parser",
  "thiserror",
  "tokio",
- "toml",
+ "toml 0.7.6",
  "tracing",
  "warp",
 ]
@@ -2701,7 +2697,7 @@ dependencies = [
  "serde_json",
  "serde_regex",
  "thiserror",
- "toml",
+ "toml 0.7.6",
  "toml_edit",
  "tracing",
  "walkdir",
@@ -4042,9 +4038,9 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "matchit"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67827e6ea8ee8a7c4a72227ef4fc08957040acffdb5f122733b24fa12daff41b"
+checksum = "ed1202b2a6f884ae56f04cff409ab315c5ce26b5e58d7412e484f01fd52f52ef"
 
 [[package]]
 name = "matrixmultiply"
@@ -4084,9 +4080,9 @@ dependencies = [
 
 [[package]]
 name = "mdbook"
-version = "0.4.32"
+version = "0.4.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bdbb9ad3cd885a014d15e4b358e2dd3f68599e704fa679c6dcb06691359ad60"
+checksum = "329804657707ec99b5c386cb0328aecb2885bda29eab030f253a896bb133c79c"
 dependencies = [
  "ammonia",
  "anyhow",
@@ -4106,7 +4102,7 @@ dependencies = [
  "serde_json",
  "shlex",
  "tempfile",
- "toml",
+ "toml 0.5.11",
  "topological-sort",
 ]
 
@@ -5423,7 +5419,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "elf",
@@ -5436,7 +5432,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "cargo_metadata 0.15.4",
  "directories",
@@ -5454,7 +5450,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "cc",
  "directories",
@@ -5467,7 +5463,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "log",
@@ -5484,7 +5480,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -5495,7 +5491,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -5504,7 +5500,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "cc",
  "glob",
@@ -5515,7 +5511,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5541,7 +5537,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 dependencies = [
  "addr2line",
  "anyhow",
@@ -5576,7 +5572,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#0976e2f69151dfb6ffa5bceea5d51ec373944d8f"
+source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#d93fa88e2301e5470a6eeb3ac98df814c7dc3c92"
 
 [[package]]
 name = "rlp"
@@ -6126,9 +6122,9 @@ checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
 
 [[package]]
 name = "serde"
-version = "1.0.180"
+version = "1.0.181"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ea67f183f058fe88a4e3ec6e2788e003840893b91bac4559cabedd00863b3ed"
+checksum = "6d3e73c93c3240c0bda063c239298e633114c69a888c3e37ca8bb33f343e9890"
 dependencies = [
  "serde_derive",
 ]
@@ -6146,9 +6142,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.180"
+version = "1.0.181"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24e744d7782b686ab3b73267ef05697159cc0e5abbed3f47f9933165e5219036"
+checksum = "be02f6cb0cd3a5ec20bbcfbcbd749f57daddb1a0882dc2e46a6c236c90b977ed"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6917,6 +6913,15 @@ dependencies = [
 
 [[package]]
 name = "toml"
+version = "0.5.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4f7f0dd8d50a853a531c426359045b1998f04219d88799810762cd4ad314234"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "toml"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c17e963a819c331dcacd7ab957d80bc2b9a9c1e71c804826d2f283dd65306542"
@@ -7357,9 +7362,9 @@ checksum = "711b9620af191e0cdc7468a8d14e709c3dcdb115b36f838e601583af800a370a"
 
 [[package]]
 name = "utoipa"
-version = "3.4.3"
+version = "3.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c624186f22e625eb8faa777cb33d34cd595aa16d1742aa1d8b6cf35d3e4dda9"
+checksum = "de634b7f8178c9c246c88ea251f3a0215c9a4d80778db2d7bd4423a78b5170ec"
 dependencies = [
  "indexmap 2.0.0",
  "serde",
@@ -7369,9 +7374,9 @@ dependencies = [
 
 [[package]]
 name = "utoipa-gen"
-version = "3.4.4"
+version = "3.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9ce5f21ca77e010f5283fa791c6ab892c68b3668a1bdc6b7ac6cf978f5d5b30"
+checksum = "0fcba79cb3e5020d9bcc8313cd5aadaf51d6d54a6b3fd08c3d0360ae6b3c83d0"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -8040,8 +8045,3 @@ dependencies = [
  "libc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "cc"
-version = "1.0.79"
-source = "git+https://github.com/rust-lang/cc-rs?rev=e5bbdfa#e5bbdfa1fa468c028cb38fee6c35a3cf2e5a2736"
