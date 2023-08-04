@@ -24,8 +24,24 @@ import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
 import {BonsaiTestRelay} from "bonsai/BonsaiTestRelay.sol";
 import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
-import {IVotes} from "openzeppelin/contracts/governance/utils/IVotes.sol";
 
+/// @notice Base deployment script for Bonsai projects with Foundry and it's dependencies.
+/// @dev Use the following environment variables to control the deployment:
+///     * DEPLOYER_ADDRESS address of the wallet to be used for sending deploy transactions.
+///         Must be unlocked on the RPC provider node.
+///     * DEPLOYER_PRIVATE_KEY private key of the wallet to be used for deployment.
+///         Alternative to using DEPLOYER_ADDRESS.
+///     * DEPLOY_VERFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
+///         If not specified and also DEPLOY_RELAY_ADDRESS is not specified,
+///         a new RiscZeroGroth16Verifier will be deployed.
+///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
+///         If not specified, a new BonsaiRelay will be deployed.
+///     * DEPLOY_UPLOAD_IMAGES true or false indicating whether to upload the zkVM guest images to
+///         Bonsai. Default is false.
+///     * RISC0_DEV_MODE indicates what mode of proving is being used and decides what which
+///         contract to deploy.
+///         * If "true": The mock BonsaiTestRelay contract will be used.
+///         * If "false" or unset: The fully verifying BonsaiRelay contract will be used.
 contract BonsaiDeploy is Script, BonsaiCheats {
     /// @notice use vm.startBroadcast to begin recording deploy transactions.
     function startBroadcast() internal {
@@ -93,15 +109,14 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         return bonsaiRelay;
     }
 
-    /// @notice Deploy either a test or fully verifying relay depending on BONSAI_PROVING.
+    /// @notice Deploy either a test or fully verifying relay depending on RISC0_DEV_MODE.
     /// @dev Relay is stateless and owner-less.
     function deployBonsaiRelay() internal returns (IBonsaiRelay) {
-        if (proverMode() == ProverMode.Bonsai) {
+        if (vm.envOr("RISC0_DEV_MODE", false) == false) {
             return deployBonsaiVerifyingRelay();
-        } else if (proverMode() == ProverMode.Local) {
+        } else {
             return deployBonsaiTestRelay();
         }
-        revert("invalid value for proverMode");
     }
 
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.

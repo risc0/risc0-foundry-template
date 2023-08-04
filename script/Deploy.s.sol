@@ -10,7 +10,7 @@ import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
 import {BonsaiDeploy} from "./BonsaiDeploy.sol";
 import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 
-/// @notice deployment script for the Bonsai Governor and it's dependencies.
+/// @notice Deployment script for the BonsaiStarter project.
 /// @dev Use the following environment variables to control the deployment:
 ///     * DEPLOYER_ADDRESS address of the wallet to be used for sending deploy transactions.
 ///         Must be unlocked on the RPC provider node.
@@ -23,10 +23,10 @@ import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 ///         If not specified, a new BonsaiRelay will be deployed.
 ///     * DEPLOY_UPLOAD_IMAGES true or false indicating whether to upload the zkVM guest images to
 ///         Bonsai. Default is false.
-///     * RISC0_DEV_MODE indicates what mode of proving is being used and decides what relay
+///     * RISC0_DEV_MODE indicates what mode of proving is being used and decides which relay
 ///         contract to deploy.
-///         * If set: The mock BonsaiTestRelay contract will be used.
-///         * If unset: The fully verifying BonsaiRelay contract will be used.
+///         * If "true": The mock BonsaiTestRelay contract will be used.
+///         * If "false" or unset: The fully verifying BonsaiRelay contract will be used.
 contract Deploy is Script, BonsaiCheats, BonsaiDeploy {
     function run() external {
         startBroadcast();

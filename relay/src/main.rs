@@ -47,7 +47,7 @@ enum Command {
 
         /// Toggle to enable dev_mode: only a local executor runs your 
         /// zkVM program and no proof is generated.
-        #[arg(long, env)]
+        #[arg(long, env, default_value_t = false)]
         risc0_dev_mode: bool,
     },
     /// Upload the RISC-V ELF binary to Bonsai.
@@ -89,7 +89,7 @@ struct GlobalOpts {
     #[arg(long, env, global = true, default_value = "http://localhost:8081")]
     bonsai_api_url: String,
 
-    /// Bonsai API URL
+    /// Bonsai API key
     /// Defaults to empty, providing no authentication.
     #[arg(long, env, global = true, default_value = "")]
     bonsai_api_key: String,
