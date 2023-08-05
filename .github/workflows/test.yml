@@ -73,5 +73,5 @@ jobs:
         env:
           BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
-          BONSAI_PROVING: bonsai
+          RISC0_DEV_MODE: false
         run: forge test -vvv
