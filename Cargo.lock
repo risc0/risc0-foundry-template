@@ -603,7 +603,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-contracts"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "clap",
@@ -614,7 +614,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-relay"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -673,7 +673,7 @@ dependencies = [
 [[package]]
 name = "bonsai-rest-api-mock"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "axum",
@@ -697,7 +697,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "reqwest",
  "serde",
@@ -5400,7 +5400,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "cargo_metadata 0.15.4",
  "directories",
@@ -5417,7 +5417,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "cc",
  "directories",
@@ -5430,7 +5430,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "log",
@@ -5447,7 +5447,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -5458,7 +5458,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -5467,7 +5467,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "cc",
  "glob",
@@ -5478,7 +5478,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5505,7 +5505,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 dependencies = [
  "anyhow",
  "bincode",
@@ -5540,7 +5540,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#c8f2b8880291a972505912a3c8b1a55dddcb2d2d"
 
 [[package]]
 name = "rlp"
