@@ -3,8 +3,7 @@
 Starter template for writing an application using [Bonsai].
 
 This repository implements an application on Ethereum utilizing Bonsai as a coprocessor to the smart contract application.
-It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive
-(or difficult to implement) tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
+It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive, or difficult to implement, tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
 
 *For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
 
@@ -43,7 +42,7 @@ Associated build configuration files and tests are discussed along with the [pro
 
 ## Test Your Project
 
-With this Foundry template, you can write a zkVM Rust program in the `/methods/guest` directory which Solidity contracts in  `/contracts` can call into and in return receive a proof or 'receipt' of execution.
+With this Foundry template, you can write a zkVM Rust program, in the `/methods/guest` directory, which Solidity contracts in `/contracts` can call into and in return receive a proof or '[receipt]' of execution.
 
 ### Test your zkVM program
 
@@ -69,13 +68,13 @@ To test both your Solidity contracts and their interaction with your zkVM progra
 forge test
 ```
 
-***Tip:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
+***Tip:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: [https://book.getfoundry.sh/forge/tests].*
 
 ### Deploy your project on a local network
 
 You can deploy your contracts and run an end-to-end test or demo as follows:
 
-1. Start an anvil instance, if you want a local testnet, by running:
+1. Start a local testnet with `anvil` by running:
 
     ```bash
     anvil
@@ -83,40 +82,46 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
     Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
-2. Deploy the `BonsaiRelay` contract by running:
+2. Deploy an `IBonsaiRelay` contract by running:
 
     ```bash
-    RISC0_DEV_MODE= forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+    RISC0_DEV_MODE=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
     ```
 
-    Check the logs for the address of the `BonsaiRelay` contract.
-
-3. Start the Bonsai Ethereum Relay by running:
+3. Check the logs for the address of the deployed `BonsaiTestRelay` contract and your application contract.
+   Save them to a couple of environment variables to reference later.
 
     ```bash
-    RISC0_DEV_MODE= cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    export BONSAI_RELAY_ADDRESS="#copy relay address from the deploy logs#"
+    export APP_ADDRESS="#copy app address from the deploy logs#"
     ```
 
-    The relay will keep monitoring the chain for callback requests and relay their result back after computing them.
-    You should keep this terminal instance running the relay in the foreground and switch to a new terminal.
-    When setting the env variable `RISC0_DEV_MODE`, the relay will start a mock version of Bonsai that will only return a journal of the execution without any cryptographic proof. 
-    If needed, you should modify the environment variables to reflect your setup.
-    For instance, if you want to prove remotely via Bonsai, unset `RISC0_DEV_MODE` and set `BONSAI_API_URL` and `BONSAI_API_KEY` accordingly.
-    Moreover, if you want to run the relay on a remote Ethereum network, you can use a different `ETH_NODE`, `ETH_CHAIN_ID` and `PRIVATE_KEY`.
-    If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
+4. Start the Bonsai Ethereum Relay by running:
 
-**Now you can test your deployment as follows:**
+    ```bash
+    RISC0_DEV_MODE=true cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address "$BONSAI_RELAY_ADDRESS"
+    ```
+
+    The relay will keep monitoring the chain for callback requests, generated when your contract calls `bonsaiRelay.requestCallback(...)`, and relay their result back to your contract after computing them.
+    Keep the relay running and switch to a new terminal.
+
+    Setting `RISC0_DEV_MODE=true` deploys the `BonsaiTestRelay`, for use in local development and testing, instead of the fully verifying `BonsaiRelay` contract.
+    See the section below on using the fully-verifying relay for more information on this setting and testnet deployment.
+
+**Interact with your deployment:**
+
+You now have a locally running testnet and relay deployment that you can interact with using `cast`, a wallet, or any application you write.
 
 1. Send a transaction to the starter contract:
 
     ```bash
-    cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --gas-limit 100000 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'calculateFibonacci(uint256)' 5
+    cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --gas-limit 100000 "$APP_ADDRESS" 'calculateFibonacci(uint256)' 5
     ```
 
 2. Check the relayed result:
 
     ```bash
-    cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
+    cast call "$APP_ADDRESS" 'fibonacci(uint256)' 5
     ```
 
 **Deploy a new version of your application:**
@@ -125,72 +130,66 @@ When you want to deploy a new version of the application contract, run the follo
 Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a new version to Bonsai.
 
 ```bash
-DEPLOY_RELAY_ADDRESS=0x5FbDB2315678afecb367f032d93F642f64180aa3 DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
 This will deploy only your application address and upload any updated images.
-The existing relay contract and the running relay will continue to be used.
+The existing relay contract and, by setting `DEPLOY_RELAY_ADDRESS`, the running relay will continue to be used.
 
 **Use the fully verifying relay:**
 
-If you want to use Bonsai and the on-chain SNARK verifier in your local or testnet deployment, set `BONSAI_PROVING=bonsai` and rerun the steps for deployment.
-When `BONSAI_PROVING=bonsai`, the zkVM guest images will be uploaded to Bonsai and the relay will use Bonsai for executing and proving the guest.
-With this setup, the fully verifying relay will be used and a SNARK proof will be required to send a callback to your application.
+In each of the commands above, the environment variable `RISC0_DEV_MODE=true` is added.
+With this environment variable set, the `BonsaiTestRelay` contract is used, which does not check callbacks for authentication.
+This provides fast development, allowing you to iterate on your application.
 
+When it's time to deploy you application to a live chain, such as the Sepolia testnet, you should remove this environment or set `RISC0_DEV_MODE=false`.
+When unset, or set to `false`, the fully-verifying `BonsaiRelay` contract will be used and all callbacks will require a [Groth16 SNARK proof] for authentication.
+This is what provides the security guarantees of Bonsai, that only legitimate outputs from your guest program can be sent to your application contract.
+
+Producing SNARK receipts that are verifiable on-chain requires the Bonsai proving service.
 See the [Configuring Bonsai](#Configuring Bonsai) section below for more information about using the Bonsai proving service.
+
+When you want to deploy to a testnet, configure the relay with `ETH_NODE`, `ETH_CHAIN_ID` and `PRIVATE_KEY` environment variables.
+If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
 
 ### Off-chain Callback Request
 
-The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* Callback requests to it, as an alternative to the on-chain requests.
-It also provides an SDK in `rust` that can be used to interact with it. You can check out this [example](relay/examples/publish.rs).
+The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it, as an alternative to the on-chain requests.
+It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/callback_request.rs.rs).
 
-Assuming that Anvil and the Relay are running and both the `BonsaiRelay` and `BonsaiStarter` are deployed (first 4 steps of the previous section), you can send a `Callback` request directly to the Relay by running:
+Assuming that Anvil and the Relay are running and both an `IBonsaiRelay` and the `BonsaiStarter` app contract are deployed (first 4 steps of the previous section), you can send a callback request directly to the Relay by running:
 
 ```bash
-cargo run --example publish 288ea9093b9000870ccd8cef93d24bba3cc5f67b14b6f9b651072e23984a379c 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 10
+cargo run --example callback_request "$APP_ADDRESS" 10
 ```
 
-The first argument is the `image_id`, then the `BonsaiStarter` address and finally the number to compute the Fibonacci sequence.
+This example's arguments are the `BonsaiStarter` contract address and the number, N, to compute the Nth Fibonacci number.
 You may need to change these values accordingly.
 
-Once again, you can check the relayed result
+Just as with on-chain callback requests, you can check the relayed result
 
 ```bash
-cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 10
+cast call "$APP_ADDRESS" 'fibonacci(uint256)' 10
 ```
 
-The Relay source code with its SDK can be found in the [risc0/risc0](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay) github repo.
-
-## Proving Modes
-
-The foundry template supports two different proving modes:
-
-1. `local` - By default, only the [executor](https://www.dev.risczero.com/docs/terminology#executor) runs your zkVM program and no proof is generated.
-    Because there is no proving, this will be the fastest way to test.
-    In the local, execution-only, mode a mock version of the `BonsaiRelay` will be used that does not verify proofs for callbacks.
-
-2. `bonsai` - A proof of execution is generated by the Bonsai API.
-    When using the `bonsai` proving mode, the real `BonsaiRelay` will be used and all callbacks will require a SNARK proof.
-
-Configure your preferred mode by setting the `BONSAI_PROVING` env variable.
-
-```bash
-export BONSAI_PROVING=bonsai
-```
-
-After setting your preferred proving mode, use `forge test` to build and run your application.
+The Relay source code with its SDK can be found in the [risc0/risc0] github repo.
 
 ### Configuring Bonsai
 
 ***Note:*** *The Bonsai proving service is still in early Alpha. To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
-To prove in `bonsai` mode, two additional environment variables are required
+With the Bonsai proving service, you can produce a [Groth16 SNARK proof] that is verifiable on-chain.
+You can get started by setting the following environment variables with your API key and associated URL.
 
 ```bash
-export BONSAI_API_KEY="YOUR_API_KEY" #see form linked above
-export BONSAI_API_URL="BONSAI_URL" #provided with your api key
-export BONSAI_PROVING=bonsai
-forge test
+export BONSAI_API_KEY="YOUR_API_KEY" # see form linked above
+export BONSAI_API_URL="BONSAI_URL" # provided with your api key
+```
+
+Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `BonsaiRelay` contract instead of `BonsaiTestRelay` and will request a SNARK receipt from Bonsai.
+
+```bash
+RISC0_DEV_MODE=false forge test
 ```
 
 ## Project Structure
@@ -242,9 +241,13 @@ The image ID will be included in the deployment of the smart contracts to refere
 Build configuration for the methods is included in `methods/build.rs`.
 
 [Bonsai]: https://dev.bonsai.xyz/
-[RISC Zero]: https://www.risczero.com/
-[RISC Zero examples]: https://github.com/risc0/risc0/tree/main/examples
-[RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
 [Foundry]: https://getfoundry.sh/
-[zkVM]: https://www.dev.risczero.com/terminology#zero-knowledge-virtual-machine-zkvm
+[Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
+[RISC Zero examples]: https://github.com/risc0/risc0/tree/main/examples
+[RISC Zero]: https://www.risczero.com/
+[RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
+[https://book.getfoundry.sh/forge/tests]: https://book.getfoundry.sh/forge/tests
+[receipt]: https://dev.risczero.com/zkvm/developer-guide/receipts
+[risc0/risc0]: https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay
 [zkVM guest program]: https://www.dev.risczero.com/terminology#guest-program
+[zkVM]: https://www.dev.risczero.com/terminology#zero-knowledge-virtual-machine-zkvm

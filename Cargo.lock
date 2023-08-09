@@ -29,13 +29,7 @@ version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f4fa78e18c64fce05e902adecd7a5eed15a5e0a3439f7b0e169f0252214865e3"
 dependencies = [
- "cpp_demangle",
- "fallible-iterator",
  "gimli",
- "memmap2",
- "object",
- "rustc-demangle",
- "smallvec 1.11.0",
 ]
 
 [[package]]
@@ -609,7 +603,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-contracts"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "anyhow",
  "clap",
@@ -620,7 +614,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-relay"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -679,7 +673,7 @@ dependencies = [
 [[package]]
 name = "bonsai-rest-api-mock"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "anyhow",
  "axum",
@@ -703,7 +697,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.2.0"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "reqwest",
  "serde",
@@ -1206,15 +1200,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e496a50fda8aacccc86d7529e2c1e0892dbd0f898a6b5645b5561b89c3210efa"
 
 [[package]]
-name = "cpp_demangle"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee34052ee3d93d6d8f3e6f81d85c47921f6653a19a7b70e939e3e602d893a674"
-dependencies = [
- "cfg-if",
-]
-
-[[package]]
 name = "cpufeatures"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1564,6 +1549,25 @@ name = "dunce"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56ce8c6da7551ec6c462cbaf3bfbc75131ebbfa1c944aeaa9dab51ca1c5f0c3b"
+
+[[package]]
+name = "dyn_partial_eq"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a07039d197226c4b9a3810c4f165328fb4e715258a4b8584f143d38e9de04301"
+dependencies = [
+ "dyn_partial_eq_derive",
+]
+
+[[package]]
+name = "dyn_partial_eq_derive"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e217c6c1435ebf9b88662354589d339192b8eaf506edd22951e75e045c8e8bd"
+dependencies = [
+ "quote",
+ "syn 1.0.109",
+]
 
 [[package]]
 name = "ecdsa"
@@ -2347,12 +2351,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fallible-iterator"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7"
-
-[[package]]
 name = "fastrand"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2958,10 +2956,6 @@ name = "gimli"
 version = "0.27.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
-dependencies = [
- "fallible-iterator",
- "stable_deref_trait",
-]
 
 [[package]]
 name = "git2"
@@ -4465,9 +4459,7 @@ version = "0.31.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8bda667d9f2b5051b8833f59f3bf748b28ef54f850f4fcb389a252aa383866d1"
 dependencies = [
- "flate2",
  "memchr",
- "ruzstd",
 ]
 
 [[package]]
@@ -5406,28 +5398,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "risc0-binfmt"
-version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
-dependencies = [
- "anyhow",
- "elf",
- "log",
- "risc0-zkp",
- "risc0-zkvm-platform",
- "serde",
-]
-
-[[package]]
 name = "risc0-build"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "cargo_metadata 0.15.4",
  "directories",
  "downloader",
- "risc0-binfmt",
- "risc0-zkp",
+ "risc0-zkvm",
  "risc0-zkvm-platform",
  "serde",
  "serde_json",
@@ -5439,7 +5417,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "cc",
  "directories",
@@ -5452,7 +5430,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "anyhow",
  "log",
@@ -5469,7 +5447,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -5480,7 +5458,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -5489,7 +5467,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "cc",
  "glob",
@@ -5500,7 +5478,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
  "anyhow",
  "blake2",
@@ -5520,21 +5498,23 @@ dependencies = [
  "risc0-zkvm-platform",
  "serde",
  "sha2 0.10.7",
+ "thiserror",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-zkvm"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 dependencies = [
- "addr2line",
  "anyhow",
  "bincode",
  "bonsai-sdk",
  "bytemuck",
  "cfg-if",
  "crypto-bigint",
+ "dyn_partial_eq",
+ "elf",
  "generic-array",
  "getrandom",
  "hex",
@@ -5545,7 +5525,6 @@ dependencies = [
  "num-traits",
  "rand",
  "rayon",
- "risc0-binfmt",
  "risc0-circuit-rv32im",
  "risc0-core",
  "risc0-zkp",
@@ -5561,7 +5540,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.16.1"
-source = "git+https://github.com/risc0/risc0?branch=victor/governance-showcase#bdcd1388dfe38775fd512c6395d56f646d0175d3"
+source = "git+https://github.com/risc0/risc0?branch=capossele/governance-example#4f525afc9072494bd91aa9b19c968e16fcbb5c23"
 
 [[package]]
 name = "rlp"
@@ -5911,17 +5890,6 @@ dependencies = [
  "quick-error",
  "tempfile",
  "wait-timeout",
-]
-
-[[package]]
-name = "ruzstd"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a15e661f0f9dac21f3494fe5d23a6338c0ac116a2d22c2b63010acd89467ffe"
-dependencies = [
- "byteorder",
- "thiserror",
- "twox-hash",
 ]
 
 [[package]]
@@ -6432,12 +6400,6 @@ dependencies = [
  "base64ct",
  "der",
 ]
-
-[[package]]
-name = "stable_deref_trait"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "static_assertions"
@@ -7165,16 +7127,6 @@ dependencies = [
  "url",
  "utf-8",
  "webpki",
-]
-
-[[package]]
-name = "twox-hash"
-version = "1.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
-dependencies = [
- "cfg-if",
- "static_assertions",
 ]
 
 [[package]]
