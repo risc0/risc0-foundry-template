@@ -196,18 +196,19 @@ RISC0_DEV_MODE=false forge test
 
 You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-end test or demo as follows:
 
-1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia and export the following environment variables:
+1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia (in this example, we will be using [alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
 
     ```bash
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_URL" # provided with your api key
+    export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
     export DEPLOYER_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
     ```
 
-2. In this example, we will be using [alchemy](https://www.alchemy.com/) as our Ethereum node provider. Deploy an `IBonsaiRelay` contract by running:
+2.  Deploy an `IBonsaiRelay` contract by running:
 
     ```bash
-    RISC0_DEV_MODE=false forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/<YOUR_ALCHEMY_API_KEY> --broadcast
+    RISC0_DEV_MODE=false forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --broadcast
     ```
 
 3. Check the logs for the address of the deployed `BonsaiRelay` contract and your application contract.
@@ -221,7 +222,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 4. Start the Bonsai Ethereum Relay by running:
 
     ```bash
-    RISC0_DEV_MODE=false cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address "$BONSAI_RELAY_ADDRESS" --eth-node "wss://eth-sepolia.g.alchemy.com/v2/<YOUR_ALCHEMY_API_KEY>" --eth-chain-id 11155111 --private-key "$DEPLOYER_PRIVATE_KEY"
+    RISC0_DEV_MODE=false cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address "$BONSAI_RELAY_ADDRESS" --eth-node wss://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --eth-chain-id 11155111 --private-key "$DEPLOYER_PRIVATE_KEY"
     ```
 
     The relay will keep monitoring the chain for callback requests, generated when your contract calls `bonsaiRelay.requestCallback(...)`, and relay their result back to your contract after computing them.
@@ -234,13 +235,13 @@ You now have a deployment on a testnet that you can interact with using `cast`, 
 1. Send a transaction to the starter contract:
 
     ```bash
-    cast send --rpc-url https://eth-sepolia.g.alchemy.com/v2/<YOUR_ALCHEMY_API_KEY> --private-key "$DEPLOYER_PRIVATE_KEY" --gas-limit 100000 "$APP_ADDRESS" 'calculateFibonacci(uint256)' 5
+    cast send --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --private-key "$DEPLOYER_PRIVATE_KEY" --gas-limit 100000 "$APP_ADDRESS" 'calculateFibonacci(uint256)' 5
     ```
 
 2. Check the relayed result:
 
     ```bash
-    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/<YOUR_ALCHEMY_API_KEY> "$APP_ADDRESS" 'fibonacci(uint256)' 5
+    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY "$APP_ADDRESS" 'fibonacci(uint256)' 5
     ```
 
 
