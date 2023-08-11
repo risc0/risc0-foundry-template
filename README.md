@@ -20,7 +20,7 @@ Your new project consists of:
 - a [`contract`] (written in Solidity), which requests a proof and receives the response
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
-[Foundry]: (https://getfoundry.sh/)
+[Foundry]: https://getfoundry.sh/
 [`zkVM program`]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
 [`contract`]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
 
