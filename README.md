@@ -100,8 +100,8 @@ cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f460
 cast call 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'fibonacci(uint256)' 5
 ```
 
-### Publish-mode
-The Relay exposes a REST API interface that can be used to directly send Callback requests to it, thus bypassing the first interaction on-chain. It also provides an SDK in `rust` that can be used to interact with it. You can check out this [example](relay/examples/publish.rs). 
+### Calling Bonsai from off-chain 
+The Relay exposes a REST API interface that can be used to directly send Callback requests to it. It also provides an SDK in `rust` that can be used to interact with it. You can check out this [example](relay/examples/publish.rs). 
 
 Assuming that Anvil and the Relay are running and both the `BonsaiRelay` and `BonsaiStarter` are deployed (first 4 steps of the previous section), you can send a `Callback` request directly to the Relay by running:
 
