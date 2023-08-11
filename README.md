@@ -8,58 +8,26 @@ It provides a starting point for building powerful new applications on Ethereum 
 
 *For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
 
-## Dependencies
-
-1. [Rust and Cargo](https://rustup.rs)
-```bash
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-```
-2. [Foundry](https://getfoundry.sh/)
-```bash
-curl -L https://foundry.paradigm.xyz | bash
-```
-
-***Tip:*** *If you're installing Foundry for the first time, be sure to quit your terminal before reopening it and running the `foundryup` command.*
-
-## Project Setup
-1. Use Foundry to create a new project from this template at a location of your choosing (this example command will create it at `./my-project`) 
+## Quick Start
+First, [install Rust] and [Foundry], and then restart your terminal. Now, you can initialize a new Bonsai project at a location of your choosing: 
 
 ```bash
 forge init -t risc0/bonsai-foundry-template ./my-project
 ```
+Congratulations! You've just built your first Bonsai project.
+Your new project consists of:
+- a [`zkVM program`] (written in Rust), which specifies a computation that will be proven
+- a [`contract`] (written in Solidity), which requests a proof and receives the response
 
-## Get Started
+[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
+[Foundry]: https://getfoundry.sh/
+[`zkVM program`]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
+[`contract`]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
 
-Get started writing your application by modifying these key files:
-
-* Replace `contracts/BonsaiStarter.sol` with your on-chain application logic.
-* Replace `methods/guest/src/bin/fibonacci.rs` with your [zkVM guest program].
-
-Associated build configuration files and tests are discussed along with the [project structure](#project-structure) below.
-
-## Test Your Project
-With this Foundry template, you can write a zkVM Rust program in the `/methods/guest` directory which Solidity contracts in  `/contracts` can call into and in return receive a proof or 'receipt' of execution.
-### Test your zkVM program
-To check if your zkVM program will compile, and generate any errors if not, run the Rust compiler with
-
-```bash
-cargo build
-```
-
-If you've written tests in your zkVM progam, run them with
-```bash
-cargo test
-```
-***Tip:*** *To learn more about our RISC-V zkVM [visit the docs](https://dev.risczero.com/zkvm) or for a thorough walkthrough, follow the [Factors Tutorial here](https://github.com/risc0/risc0/tree/main/examples/factors#tutorial).*
-
-### Test your solidity integration with the zkVM
-To test both your Solidity contracts and their interaction with your zkVM program, run
-
-```bash
-forge test
-```
-
-***Tip:*** *To learn more about Foundry's `forge` command and the other helpful utilities Foundry provides, visit their docs: https://book.getfoundry.sh/forge/tests.*
+### Test Your Project
+- Use `cargo build` to test compilation of your zkVM program.
+- Use `cargo test` to run the tests in your zkVM program. 
+- Use `forge test` to test your Solidity contracts and their interaction with your zkVM program.
 
 ### Deploy your project on a local network
 You can deploy your contracts and run an end-to-end test or demo as follows:
