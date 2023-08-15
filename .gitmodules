@@ -13,5 +13,4 @@
 [submodule "lib/risc0"]
 	path = lib/risc0
 	url = https://github.com/risc0/risc0
-	# DO NOT MERGE: Update this to a release tag
 	branch = release-0.17
