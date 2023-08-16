@@ -8,7 +8,25 @@ It provides a starting point for building powerful new applications on Ethereum 
 *For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
 
 ## Quick Start
-First, [install Rust] and [Foundry], and then restart your terminal. Now, you can initialize a new Bonsai project at a location of your choosing: 
+First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero tool`:
+
+```bash
+cargo install cargo-risczero
+```
+
+For the above commands to build successfully you will need to have installed the required dependencies. On a Ubuntu system you can install them with:
+
+```bash
+sudo apt install curl build-essential libssl-dev pkgconf
+```
+
+Next we'll need to install the `risc0` toolchain with:
+
+```bash
+cargo risczero install
+```
+
+Now, you can initialize a new Bonsai project at a location of your choosing: 
 
 ```bash
 forge init -t risc0/bonsai-foundry-template ./my-project
