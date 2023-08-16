@@ -16,29 +16,28 @@
 
 pragma solidity ^0.8.17;
 
-import {BonsaiTest} from "bonsai-lib-sol/BonsaiTest.sol";
-import {IBonsaiRelay} from "bonsai-lib-sol/IBonsaiRelay.sol";
+import {BonsaiTest} from "bonsai/BonsaiTest.sol";
+import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
 import {BonsaiStarterLowLevel} from "../contracts/BonsaiStarterLowLevel.sol";
 
 contract BonsaiStarterLowLevelTest is BonsaiTest {
-    function setUp() public withRelayMock {}
+    function setUp() public withRelay {}
 
     function testMockLowLevelCall() public {
         // Deploy a new starter instance
         BonsaiStarterLowLevel starter = new BonsaiStarterLowLevel(
-            IBonsaiRelay(MOCK_BONSAI_RELAY),
+            IBonsaiRelay(bonsaiRelay),
             queryImageId('FIBONACCI'));
 
         // Anticipate a callback request to the relay
-        vm.expectCall(address(MOCK_BONSAI_RELAY), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
+        vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
         // Request the callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
         vm.expectCall(address(starter), abi.encodeWithSelector(starter.bonsaiLowLevelCallbackReceiver.selector));
         // Relay the solution as a callback
-        (bool success,) = relayCallback();
-        assertTrue(success, "Callback failed");
+        runPendingCallbackRequest();
 
         // Validate the Fibonacci solution value
         uint256 result = starter.fibonacci(128);
