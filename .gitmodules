@@ -1,9 +1,16 @@
 [submodule "lib/forge-std"]
 	path = lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/bonsai-lib-sol/lib/forge-std"]
-	path = lib/bonsai-lib-sol/lib/forge-std
-	url = https://github.com/foundry-rs/forge-std
-[submodule "lib/bonsai-lib-sol/lib/murky"]
-	path = lib/bonsai-lib-sol/lib/murky
+[submodule "lib/murky"]
+	path = lib/murky
 	url = https://github.com/dmfxyz/murky
+[submodule "lib/openzeppelin-contracts"]
+	path = lib/openzeppelin-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "lib/solidity-bytes-utils"]
+	path = lib/solidity-bytes-utils
+	url = https://github.com/GNSPS/solidity-bytes-utils
+[submodule "lib/risc0"]
+	path = lib/risc0
+	url = https://github.com/risc0/risc0
+	branch = release-0.17

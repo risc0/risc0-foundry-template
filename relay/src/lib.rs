@@ -12,30 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{env, time::Duration};
+use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk_alpha::alpha::{Client, SdkErr};
+use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
 use risc0_build::GuestListEntry;
 use risc0_zkvm::{
-    Executor, ExecutorEnv, LocalExecutor, MemoryImage, Program, SessionReceipt, MEM_SIZE, PAGE_SIZE,
+    Executor, ExecutorEnv, MemoryImage, Program, Receipt, ReceiptMetadata, MEM_SIZE, PAGE_SIZE,
 };
+
+/// Result of executing a guest image, possibly containing a proof.
+pub enum Output {
+    Execution {
+        journal: Vec<u8>,
+    },
+    Bonsai {
+        journal: Vec<u8>,
+        receipt_metadata: ReceiptMetadata,
+        snark_proof: SnarkProof,
+    },
+}
 
 /// Execute and prove the guest locally, on this machine, as opposed to sending
 /// the proof request to the Bonsai service.
-pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
+pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
     let env = ExecutorEnv::builder()
         .add_input(&input)
         .build()
-        .expect("Failed to build exec env");
-    let mut exec = LocalExecutor::from_elf(env, elf).context("Failed to instantiate executor")?;
+        .context("Failed to build exec env")?;
+    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
     let session = exec
         .run()
         .context(format!("Failed to run executor {:?}", &input))?;
 
-    Ok(session.journal)
+    Ok(Output::Execution {
+        journal: session.journal,
+    })
 }
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
@@ -46,7 +60,7 @@ fn get_digest(elf: &[u8]) -> Result<String> {
     Ok(hex::encode(image.compute_id()))
 }
 
-pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
+pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
     let client = Client::from_env().context("Failed to create client from env var")?;
 
     let img_id = get_digest(elf).context("Failed to generate elf memory image")?;
@@ -65,42 +79,77 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Vec<u8>> {
         .create_session(img_id, input_id)
         .context("Failed to create remote proving session")?;
 
-    loop {
-        let res = match session.status(&client) {
-            Ok(res) => res,
-            Err(err) => {
-                eprint!("Failed to get session status: {err}");
-                std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
-                continue;
+    // Poll and await the result of the STARK rollup proving session.
+    let receipt: Receipt = (|| {
+        loop {
+            let res = match session.status(&client) {
+                Ok(res) => res,
+                Err(err) => {
+                    eprint!("Failed to get session status: {err}");
+                    std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+                    continue;
+                }
+            };
+            match res.status.as_str() {
+                "RUNNING" => {
+                    std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
+                }
+                "SUCCEEDED" => {
+                    let receipt_buf = client
+                        .download(
+                            &res.receipt_url
+                                .context("Missing 'receipt_url' on status response")?,
+                        )
+                        .context("Failed to download receipt")?;
+                    let receipt: Receipt = bincode::deserialize(&receipt_buf)
+                        .context("Failed to deserialize SessionReceipt")?;
+                    // eprintln!("Completed STARK proof on bonsai alpha backend!");
+                    return Ok(receipt);
+                }
+                _ => {
+                    bail!(
+                        "STARK proving session exited with bad status: {}",
+                        res.status
+                    );
+                }
             }
-        };
+        }
+    })()?;
+    let metadata = receipt.get_metadata()?;
+
+    let snark_session = client.create_snark(session.uuid)?;
+    let snark_proof: SnarkProof = (|| loop {
+        let res = snark_session.status(&client)?;
         match res.status.as_str() {
             "RUNNING" => {
                 std::thread::sleep(Duration::from_secs(POLL_INTERVAL_SEC));
             }
             "SUCCEEDED" => {
-                let receipt_buf = client
-                    .download(
-                        &res.receipt_url
-                            .context("Missing 'receipt_url' on status response")?,
-                    )
-                    .context("Failed to download receipt")?;
-                let receipt: SessionReceipt = bincode::deserialize(&receipt_buf)
-                    .context("Failed to deserialize SessionReceipt")?;
-                // eprintln!("Completed proof on bonsai alpha backend!");
-                return Ok(receipt.journal);
+                // eprintln!("Completed SNARK proof on bonsai alpha backend!");
+                return res
+                    .output
+                    .ok_or(anyhow!("output expected to be non-empty on success"));
             }
             _ => {
-                bail!("Proving session exited with bad status: {}", res.status);
+                bail!(
+                    "SNARK proving session exited with bad status: {}",
+                    res.status
+                );
             }
         }
-    }
+    })()?;
+
+    Ok(Output::Bonsai {
+        journal: receipt.journal,
+        receipt_metadata: metadata,
+        snark_proof,
+    })
 }
 
 pub fn resolve_guest_entry<'a>(
-    guest_list: &'a [GuestListEntry],
+    guest_list: &[GuestListEntry<'a>],
     guest_binary: &String,
-) -> Result<&'a GuestListEntry> {
+) -> Result<GuestListEntry<'a>> {
     // Search list for requested binary name
     let potential_guest_image_id: [u8; 32] =
         match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {
@@ -124,21 +173,22 @@ pub fn resolve_guest_entry<'a>(
                 found_guests
             )
         })
+        .cloned()
 }
 
-pub async fn resolve_image_output(input: &str, guest_entry: &GuestListEntry) -> Result<Vec<u8>> {
+pub async fn resolve_image_output(
+    input: &str,
+    guest_entry: &GuestListEntry<'static>,
+    dev_mode: bool,
+) -> Result<Output> {
     let input = hex::decode(input.trim_start_matches("0x")).context("Failed to decode input")?;
-    let prover = env::var("BONSAI_PROVING").unwrap_or("".to_string());
     let elf = guest_entry.elf;
 
-    match prover.as_str() {
-        "bonsai" => tokio::task::spawn_blocking(move || prove_alpha(elf, input))
+    if dev_mode {
+        execute_locally(elf, input)
+    } else {
+        tokio::task::spawn_blocking(move || prove_alpha(elf, input))
             .await
-            .expect("Failed to run alpha sub-task"),
-        "local" | "" => execute_locally(elf, input),
-        _ => bail!(
-            "valid options for BONSAI_PROVING are 'bonsai' and 'local', got: {}",
-            prover.as_str()
-        ),
+            .context("Failed to run alpha sub-task")?
     }
 }

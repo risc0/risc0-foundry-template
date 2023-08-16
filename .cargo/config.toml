@@ -6,7 +6,7 @@ rustflags = [
     "-Wclippy::perf",
     "-Wclippy::style",
     "-Wclippy::unwrap_used",
-#    "-Wclippy::expect_used",
+    "-Wclippy::expect_used",
     "-Dclippy::needless_return",
     "-Dbad_style",
     "-Dbare_trait_objects",
@@ -30,6 +30,3 @@ rustflags = [
 
 [net]
 git-fetch-with-cli = true
-
-[patch.crates-io]
-cc = { git = "https://github.com/rust-lang/cc-rs", rev = "e5bbdfa" }
