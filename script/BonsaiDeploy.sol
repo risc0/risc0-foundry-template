@@ -75,7 +75,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         } else {
             // Deploy an IRiscZeroVerifier contract instance. Relay is stateless and owner-less.
             IRiscZeroVerifier verifier;
-            address verifierAddr = vm.envOr("DEPLOY_VERIFIER_ADDRESS", address(0)); // Fixed typo here
+            address verifierAddr = vm.envOr("DEPLOY_VERIFIER_ADDRESS", address(0));
             if (verifierAddr != address(0)) {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
@@ -120,7 +120,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
     }
 
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.
-    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to false. // Clarified this comment
+    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to false.
     function uploadImages() internal {
         if (vm.envOr("DEPLOY_UPLOAD_IMAGES", false)) {
             bytes32[] memory imageIds = uploadAllImages();
