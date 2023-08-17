@@ -70,22 +70,22 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         IBonsaiRelay bonsaiRelay;
         address relayAddr = vm.envOr("DEPLOY_RELAY_ADDRESS", address(0));
         if (relayAddr != address(0)) {
-            console2.log("Using IBonsaiRelay at address:", relayAddr);
+            console2.log("Using IBonsaiRelay at ", address(relayAddr));
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
             // Deploy an IRiscZeroVerifier contract instance. Relay is stateless and owner-less.
             IRiscZeroVerifier verifier;
             address verifierAddr = vm.envOr("DEPLOY_VERIFIER_ADDRESS", address(0)); // Fixed typo here
             if (verifierAddr != address(0)) {
-                console2.log("Using IRiscZeroVerifier at address:", verifierAddr);
+                console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
                 verifier = new RiscZeroGroth16Verifier();
-                console2.log("Deployed RiscZeroGroth16Verifier to address:", address(verifier));
+                console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
             }
 
             bonsaiRelay = new BonsaiRelay(verifier);
-            console2.log("Deployed BonsaiRelay to address:", address(bonsaiRelay));
+            console2.log("Deployed BonsaiRelay to ", address(bonsaiRelay));
         }
         return bonsaiRelay;
     }
@@ -96,7 +96,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         IBonsaiRelay bonsaiRelay;
         address relayAddr = vm.envOr("DEPLOY_RELAY_ADDRESS", address(0));
         if (relayAddr != address(0)) {
-            console2.log("Using BonsaiRelay at address:", relayAddr);
+            console2.log("Using BonsaiRelay at ", address(relayAddr));
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
             // BonsaiTestRelay SHOULD ONLY BE DEPLOYED IN TEST SCENARIOS.
@@ -104,7 +104,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
             // the expected chain ID for the test relay so that it is hard to
             // trigger without thinking about it.
             bonsaiRelay = new BonsaiTestRelay(vm.envOr("DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID", uint256(31337)));
-            console2.log("Deployed BonsaiTestRelay to address:", address(bonsaiRelay));
+            console2.log("Deployed BonsaiTestRelay to ", address(bonsaiRelay));
         }
         return bonsaiRelay;
     }
@@ -128,7 +128,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("No images uploaded to Bonsai");
             }
             for (uint256 i = 0; i < imageIds.length; i++) {
-                console2.log("Uploaded guest image to Bonsai:", vm.toString(imageIds[i]));
+                console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
             }
         }
     }
