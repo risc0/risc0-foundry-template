@@ -31,7 +31,7 @@ import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 ///         Must be unlocked on the RPC provider node.
 ///     * DEPLOYER_PRIVATE_KEY private key of the wallet to be used for deployment.
 ///         Alternative to using DEPLOYER_ADDRESS.
-///     * DEPLOY_VERFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
+///     * DEPLOY_VERIFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
 ///         If not specified and also DEPLOY_RELAY_ADDRESS is not specified,
 ///         a new RiscZeroGroth16Verifier will be deployed.
 ///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
@@ -70,22 +70,22 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         IBonsaiRelay bonsaiRelay;
         address relayAddr = vm.envOr("DEPLOY_RELAY_ADDRESS", address(0));
         if (relayAddr != address(0)) {
-            console2.log("Using IBonsaiRelay at ", address(relayAddr));
+            console2.log("Using IBonsaiRelay at address:", relayAddr);
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
             // Deploy an IRiscZeroVerifier contract instance. Relay is stateless and owner-less.
             IRiscZeroVerifier verifier;
-            address verifierAddr = vm.envOr("DEPLOY_VERFIER_ADDRESS", address(0));
+            address verifierAddr = vm.envOr("DEPLOY_VERIFIER_ADDRESS", address(0)); // Fixed typo here
             if (verifierAddr != address(0)) {
-                console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
+                console2.log("Using IRiscZeroVerifier at address:", verifierAddr);
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
                 verifier = new RiscZeroGroth16Verifier();
-                console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
+                console2.log("Deployed RiscZeroGroth16Verifier to address:", address(verifier));
             }
 
             bonsaiRelay = new BonsaiRelay(verifier);
-            console2.log("Deployed BonsaiRelay to ", address(bonsaiRelay));
+            console2.log("Deployed BonsaiRelay to address:", address(bonsaiRelay));
         }
         return bonsaiRelay;
     }
@@ -96,7 +96,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         IBonsaiRelay bonsaiRelay;
         address relayAddr = vm.envOr("DEPLOY_RELAY_ADDRESS", address(0));
         if (relayAddr != address(0)) {
-            console2.log("Using BonsaiRelay at ", address(relayAddr));
+            console2.log("Using BonsaiRelay at address:", relayAddr);
             bonsaiRelay = IBonsaiRelay(relayAddr);
         } else {
             // BonsaiTestRelay SHOULD ONLY BE DEPLOYED IN TEST SCENARIOS.
@@ -104,7 +104,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
             // the expected chain ID for the test relay so that it is hard to
             // trigger without thinking about it.
             bonsaiRelay = new BonsaiTestRelay(vm.envOr("DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID", uint256(31337)));
-            console2.log("Deployed BonsaiTestRelay to ", address(bonsaiRelay));
+            console2.log("Deployed BonsaiTestRelay to address:", address(bonsaiRelay));
         }
         return bonsaiRelay;
     }
@@ -120,7 +120,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
     }
 
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.
-    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to true.
+    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to false. // Clarified this comment
     function uploadImages() internal {
         if (vm.envOr("DEPLOY_UPLOAD_IMAGES", false)) {
             bytes32[] memory imageIds = uploadAllImages();
@@ -128,7 +128,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("No images uploaded to Bonsai");
             }
             for (uint256 i = 0; i < imageIds.length; i++) {
-                console2.log("Uploaded guest image to Bonsai", vm.toString(imageIds[i]));
+                console2.log("Uploaded guest image to Bonsai:", vm.toString(imageIds[i]));
             }
         }
     }
