@@ -2,7 +2,7 @@
 
 Starter template for writing an application using [Bonsai].
 
-This repository implements an application on Ethereum utilizing Bonsai as a coprocessor to the smart contract application.
+This repository implements an application on Ethereum utilizing Bonsai as a [coprocessor] to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive, or difficult to implement, tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
 
 *For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
@@ -269,6 +269,7 @@ The image ID will be included in the deployment of the smart contracts to refere
 
 Build configuration for the methods is included in `methods/build.rs`.
 
+[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
 [Bonsai]: https://dev.bonsai.xyz/
 [Foundry]: https://getfoundry.sh/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
