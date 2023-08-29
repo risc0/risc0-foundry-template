@@ -22,9 +22,9 @@ use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
 
-fn fibonacci(n: U256) -> U256 {
+fn fibonacci(n: u32) -> U256 {
     let (mut prev, mut curr) = (U256::from(1), U256::from(1));
-    for _ in 2..=n.try_into().unwrap() {
+    for _ in 2..=n {
         (prev, curr) = (curr, prev + curr);
     }
     curr
@@ -36,14 +36,12 @@ fn main() {
     env::stdin().read_to_end(&mut input_bytes).unwrap();
     // Type array passed to `ethabi::decode_whole` should match the types encoded in
     // the application contract.
-    let (n,) = <sol!(tuple(uint256,))>::decode_params(&input_bytes, true).unwrap();
+    let (n,) = <sol!(tuple(uint32,))>::decode_params(&input_bytes, true).unwrap();
 
     // Run the computation.
     let result = fibonacci(n);
 
     // Commit the journal that will be received by the application contract.
     // Encoded types should match the args expected by the application callback.
-    env::commit_slice(&<sol!(tuple(uint256, uint256))>::encode_params(&(
-        n, result,
-    )));
+    env::commit_slice(&<sol!(tuple(uint32, uint256))>::encode_params(&(n, result)));
 }
