@@ -26,7 +26,7 @@ contract BonsaiStarter is BonsaiCallbackReceiver {
     /// @notice Cache of the results calculated by our guest program in Bonsai.
     /// @dev Using a cache is one way to handle the callback from Bonsai. Upon callback, the
     ///      information from the journal is stored in the cache for later use by the contract.
-    mapping(uint256 => uint256) public fibonacciCache;
+    mapping(uint32 => uint256) public fibonacciCache;
 
     /// @notice Image ID of the only zkVM binary to accept callbacks from.
     bytes32 public immutable fibImageId;
@@ -45,14 +45,14 @@ contract BonsaiStarter is BonsaiCallbackReceiver {
     /// @notice Returns nth number in the Fibonacci sequence.
     /// @dev The sequence is defined as 1, 1, 2, 3, 5 ... with fibonacci(0) == 1.
     ///      Only precomputed results can be returned. Call calculate_fibonacci(n) to precompute.
-    function fibonacci(uint256 n) external view returns (uint256) {
+    function fibonacci(uint32 n) external view returns (uint256) {
         uint256 result = fibonacciCache[n];
         require(result != 0, "value not available in cache");
         return result;
     }
 
     /// @notice Callback function logic for processing verified journals from Bonsai.
-    function storeResult(uint256 n, uint256 result) external onlyBonsaiCallback(fibImageId) {
+    function storeResult(uint32 n, uint256 result) external onlyBonsaiCallback(fibImageId) {
         emit CalculateFibonacciCallback(n, result);
         fibonacciCache[n] = result;
     }
@@ -61,7 +61,7 @@ contract BonsaiStarter is BonsaiCallbackReceiver {
     /// @dev This function sends the request to Bonsai through the on-chain relay.
     ///      The request will trigger Bonsai to run the specified RISC Zero guest program with
     ///      the given input and asynchronously return the verified results via the callback below.
-    function calculateFibonacci(uint256 n) external {
+    function calculateFibonacci(uint32 n) external {
         bonsaiRelay.requestCallback(
             fibImageId, abi.encode(n), address(this), this.storeResult.selector, BONSAI_CALLBACK_GAS_LIMIT
         );
