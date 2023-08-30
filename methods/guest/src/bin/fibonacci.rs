@@ -34,7 +34,7 @@ fn main() {
     // Read data sent from the application contract.
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
-    // Type array passed to `ethabi::decode_whole` should match the types encoded in
+    // Type use with `sol!` macro should match the types encoded in
     // the application contract.
     let (n,) = <sol!(tuple(uint32,))>::decode_params(&input_bytes, true).unwrap();
 
