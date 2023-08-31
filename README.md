@@ -106,7 +106,7 @@ When you want to deploy a new version of the application contract, run the follo
 Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a new version to Bonsai.
 
 ```bash
-RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$BONSAI_RELAY_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
 This will deploy only your application address and upload any updated images.
