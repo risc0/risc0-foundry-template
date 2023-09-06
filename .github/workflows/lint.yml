@@ -24,7 +24,7 @@ jobs:
         uses: risc0/cargo-install@v1
         with:
           crate: cargo-sort
-          version: "^1.0.9"
+          version: "=1.0.7"
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
