@@ -13,4 +13,4 @@
 [submodule "lib/risc0"]
 	path = lib/risc0
 	url = https://github.com/risc0/risc0
-	branch = release-0.17
+	branch = parker/bonsai-snark-types
