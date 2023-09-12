@@ -109,8 +109,8 @@ Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a 
 RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
-This will deploy only your application address and upload any updated images.
-The existing relay contract and, by setting `DEPLOY_RELAY_ADDRESS`, the running relay will continue to be used.
+This will deploy only your application address and upload any updated images. 
+By setting `DEPLOY_RELAY_ADDRESS`, the running relay , the existing running relay contract will continue to be used.
 
 **Use the fully verifying relay:**
 
@@ -131,7 +131,7 @@ If you want to know more about the relay, you can follow this [link](https://git
 ### Off-chain Callback Request
 
 The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it, as an alternative to the on-chain requests.
-It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/callback_request.rs.rs).
+It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/callback_request.rs).
 
 Assuming that Anvil and the Relay are running and both an `IBonsaiRelay` and the `BonsaiStarter` app contract are deployed (first 4 steps of the previous section), you can send a callback request directly to the Relay by running:
 
