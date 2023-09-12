@@ -110,7 +110,7 @@ RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=tru
 ```
 
 This will deploy only your application address and upload any updated images. 
-By setting `DEPLOY_RELAY_ADDRESS`, the running relay , the existing running relay contract will continue to be used.
+By setting `DEPLOY_RELAY_ADDRESS`, the existing running relay contract will continue to be used.
 
 **Use the fully verifying relay:**
 
