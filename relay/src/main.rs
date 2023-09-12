@@ -128,7 +128,7 @@ async fn main() -> anyhow::Result<()> {
                         (false, Output::Bonsai { snark_proof }) => {
                             vec![
                                 Token::Bytes(snark_proof.journal),
-                                Token::Bytes(snark_proof.post_state_digest),
+                                Token::FixedBytes(snark_proof.post_state_digest),
                                 Token::Bytes(ethers::abi::encode(&[tokenize_snark_proof(
                                     &snark_proof.snark,
                                 )?])),
