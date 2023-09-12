@@ -406,7 +406,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-contracts"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "ethers",
@@ -415,7 +415,7 @@ dependencies = [
 [[package]]
 name = "bonsai-ethereum-relay"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -474,7 +474,7 @@ dependencies = [
 [[package]]
 name = "bonsai-rest-api-mock"
 version = "0.1.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "axum",
@@ -498,7 +498,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.3.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "reqwest",
  "serde",
@@ -3266,7 +3266,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "elf",
@@ -3279,7 +3279,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "cargo_metadata 0.17.0",
  "risc0-binfmt",
@@ -3292,7 +3292,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-kernel"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "cc",
  "directories",
@@ -3305,7 +3305,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "log",
@@ -3322,7 +3322,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im-sys"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "glob",
  "risc0-build-kernel",
@@ -3333,7 +3333,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3342,7 +3342,7 @@ dependencies = [
 [[package]]
 name = "risc0-sys"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "cc",
  "glob",
@@ -3353,7 +3353,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3379,7 +3379,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 dependencies = [
  "addr2line",
  "anyhow",
@@ -3419,7 +3419,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.17.0"
-source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#c290279341fb11e15fd714d8e00812d101719b93"
+source = "git+https://github.com/risc0/risc0?branch=parker/bonsai-snark-types#9b6c5ab24a91d1a3f492250799e71717cff4f8b4"
 
 [[package]]
 name = "rlp"

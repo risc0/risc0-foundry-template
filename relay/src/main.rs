@@ -15,7 +15,7 @@
 use std::io::Write;
 
 use anyhow::Context;
-use bonsai_ethereum_relay::{tokenize_snark_proof, EthersClientConfig, Relayer};
+use bonsai_ethereum_relay::{tokenize_snark_receipt, EthersClientConfig, Relayer};
 use bonsai_ethereum_relay_cli::{resolve_guest_entry, resolve_image_output, Output};
 use bonsai_sdk::alpha_async::{get_client_from_parts, upload_img};
 use clap::{Args, Parser, Subcommand};
@@ -129,7 +129,7 @@ async fn main() -> anyhow::Result<()> {
                             vec![
                                 Token::Bytes(snark_proof.journal),
                                 Token::FixedBytes(snark_proof.post_state_digest),
-                                Token::Bytes(ethers::abi::encode(&[tokenize_snark_proof(
+                                Token::Bytes(ethers::abi::encode(&[tokenize_snark_receipt(
                                     &snark_proof.snark,
                                 )?])),
                             ]
