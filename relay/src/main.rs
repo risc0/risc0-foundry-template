@@ -124,12 +124,12 @@ async fn main() -> anyhow::Result<()> {
                         (true, Output::Execution { journal }) => {
                             vec![Token::Bytes(journal)]
                         }
-                        (false, Output::Bonsai { snark_proof }) => {
+                        (false, Output::Bonsai { snark_receipt }) => {
                             vec![
-                                Token::Bytes(snark_proof.journal),
-                                Token::FixedBytes(snark_proof.post_state_digest),
+                                Token::Bytes(snark_receipt.journal),
+                                Token::FixedBytes(snark_receipt.post_state_digest),
                                 Token::Bytes(ethers::abi::encode(&[tokenize_snark_receipt(
-                                    &snark_proof.snark,
+                                    &snark_receipt.snark,
                                 )?])),
                             ]
                         }
