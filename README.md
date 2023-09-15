@@ -104,8 +104,8 @@ Below are the primary files in the project directory
 ```
 
 
-[methods]: /methods/README
-[contracts]: /contracts/README
+[methods]: /methods
+[contracts]: /contracts
 [deploy your project]: /deployment-guide
 [coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
 [Bonsai]: https://dev.bonsai.xyz/
