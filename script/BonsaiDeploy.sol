@@ -22,7 +22,7 @@ import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
 import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
 import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
 import {BonsaiTestRelay} from "bonsai/BonsaiTestRelay.sol";
-import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 
 /// @notice Base deployment script for Bonsai projects with Foundry and it's dependencies.
@@ -80,7 +80,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
-                verifier = new RiscZeroGroth16Verifier();
+                verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
                 console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
             }
 
