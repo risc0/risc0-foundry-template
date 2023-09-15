@@ -69,7 +69,7 @@ RISC0_DEV_MODE=false forge test
 ```
 
 ## Next Steps
-To build a basic Bonsai project, you'll need to make changes in two folders: 
+To build your application, you'll need to make changes in two folders: 
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
 
