@@ -106,7 +106,7 @@ Below are the primary files in the project directory
 
 [methods]: /methods
 [contracts]: /contracts
-[deploy your project]: /deployment-guide
+[deploy your project]: /deployment-guide.md
 [coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
 [Bonsai]: https://dev.bonsai.xyz/
 [Foundry]: https://getfoundry.sh/
