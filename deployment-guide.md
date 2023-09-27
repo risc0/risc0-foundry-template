@@ -1,4 +1,4 @@
-## Bonsai Deployment Guide
+# Bonsai Deployment Guide
 > **Note: This software is not production ready. Do not use in production.**
 
 Welcome to the [Bonsai] Deployment guide! 
@@ -45,7 +45,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     Setting `RISC0_DEV_MODE=true` deploys the `BonsaiTestRelay`, for use in local development and testing, instead of the fully verifying `BonsaiRelay` contract.
     See the section below on using the fully-verifying relay for more information on this setting and testnet deployment.
 
-**Interact with your deployment:**
+### Interact with your deployment:
 
 You now have a locally running testnet and relay deployment that you can interact with using `cast`, a wallet, or any application you write.
 
@@ -61,7 +61,7 @@ You now have a locally running testnet and relay deployment that you can interac
     cast call "$APP_ADDRESS" 'fibonacci(uint256)' 5
     ```
 
-**Deploy a new version of your application:**
+### Deploy a new version of your application:
 
 When you want to deploy a new version of the application contract, run the following command with the relay contract address noted earlier.
 Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a new version to Bonsai.
@@ -73,7 +73,7 @@ RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=tru
 This will deploy only your application address and upload any updated images.
 The existing relay contract and, by setting `DEPLOY_RELAY_ADDRESS`, the running relay will continue to be used.
 
-**Use the fully verifying relay:**
+## Use the fully verifying relay:
 
 In each of the commands above, the environment variable `RISC0_DEV_MODE=true` is added.
 With this environment variable set, the `BonsaiTestRelay` contract is used, which does not check callbacks for authentication.
@@ -89,7 +89,7 @@ See the [Configuring Bonsai](#Configuring Bonsai) section below for more informa
 You can also deploy on a testnet by following the instructions described in [Deploy your project on a testnet](#deploy-your-project-on-a-testnet).
 If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
 
-### Off-chain Callback Request
+## Off-chain Callback Request
 
 The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it, as an alternative to the on-chain requests.
 It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/callback_request.rs.rs).
@@ -147,7 +147,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     The relay will keep monitoring the chain for callback requests, generated when your contract calls `bonsaiRelay.requestCallback(...)`, and relay their result back to your contract after computing them.
     Keep the relay running and switch to a new terminal.
 
-**Interact with your deployment:**
+## Interact with your deployment:
 
 You now have a deployment on a testnet that you can interact with using `cast`, a wallet, or any application you write.
 
