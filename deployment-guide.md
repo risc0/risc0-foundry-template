@@ -84,7 +84,7 @@ When unset, or set to `false`, the fully-verifying `BonsaiRelay` contract will b
 This is what provides the security guarantees of Bonsai, that only legitimate outputs from your guest program can be sent to your application contract.
 
 Producing SNARK receipts that are verifiable on-chain requires the Bonsai proving service.
-See the [Configuring Bonsai](#Configuring Bonsai) section below for more information about using the Bonsai proving service.
+See the [Configuring Bonsai](/README.md#configuring-bonsai) section on the main README for more information about using the Bonsai proving service.
 
 You can also deploy on a testnet by following the instructions described in [Deploy your project on a testnet](#deploy-your-project-on-a-testnet).
 If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
@@ -167,3 +167,4 @@ You now have a deployment on a testnet that you can interact with using `cast`, 
 [contracts]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
 [methods]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods
 [tested]: https://github.com/risc0/bonsai-foundry-template/tree/main#test-your-project
+[Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
