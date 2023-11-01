@@ -1,0 +1,13 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "./methods/guest/Cargo.toml"
+    ],
+    "[solidity]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "JuanBlanco.solidity"
+    },
+    "solidity.formatter": "forge",
+    "solidity.compileUsingRemoteVersion": "v0.8.21",
+    "solidity.packageDefaultDependenciesContractsDirectory": "src",
+    "solidity.packageDefaultDependenciesDirectory": "lib"
+}

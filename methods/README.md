@@ -1,19 +1,19 @@
 ## zkVM Methods
 
-This directory contains the [zkVM] portion of your [Bonsai] application. 
+This directory contains the [zkVM] portion of your [Bonsai] application.
 This is where you will define one or more [guest programs] to act as a coprocessor to your [on-chain logic].
 
-> In typical use cases, the only code in this directory that you will need to edit is inside [`guest/src/bin`]. 
+> In typical use cases, the only code in this directory that you will need to edit is inside [`guest/src/bin`].
 
 ### Writing Guest Code
-To learn to write code for the zkVM, we recommend [Guest Code 101]. 
+To learn to write code for the zkVM, we recommend [Guest Code 101].
 Note that you don't need to write host code because the Bonsai Ethereum Relay acts as the zkVM host.
 
 Examples of what you can do in the guest can be found in the [RISC Zero examples].
 
 ### From Guest Code to Binary File
 
-Code in the `methods/guest` directory will be compiled into one or more [RISC-V] binaries. 
+Code in the `methods/guest` directory will be compiled into one or more [RISC-V] binaries.
 Build configuration for the methods is included in `methods/build.rs`.
 
 Each will have a corresponding image ID, which is a hash identifying the program.
