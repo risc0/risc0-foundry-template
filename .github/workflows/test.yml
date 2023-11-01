@@ -30,7 +30,7 @@ jobs:
           submodules: recursive
 
       - name: install rust
-        uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
+        uses: risc0/risc0/.github/actions/rustup@release-0.19
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
@@ -58,7 +58,7 @@ jobs:
           submodules: recursive
 
       - name: install rust
-        uses: risc0/risc0/.github/actions/rustup@42266f0b6bd28de208b7c47b50dd4bcf241f76ce
+        uses: risc0/risc0/.github/actions/rustup@release-0.19
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
