@@ -44,7 +44,7 @@ jobs:
       - name: Cargo binstall cargo-risczero
         run: cargo binstall -y cargo-risczero@0.19.0
 
-      - name: risczero toolchain isntall
+      - name: risczero toolchain install
         run: cargo risczero install
 
       - name: build solidity contracts
