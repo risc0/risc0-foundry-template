@@ -16,7 +16,7 @@ First, [install Rust] and [Foundry], and then restart your terminal. Next, you w
 cargo install cargo-risczero
 ```
 
-For the above commands to build successfully you will need to have installed the required dependencies. 
+For the above commands to build successfully you will need to have installed the required dependencies.
 
 ```bash
 sudo apt install curl build-essential libssl-dev pkgconf
@@ -29,9 +29,9 @@ cargo risczero install
 ```
 
 ## Quick Start
-First, install the RISC Zero toolchain using the instructions above. 
+First, install the RISC Zero toolchain using the instructions above.
 
-Now, you can initialize a new Bonsai project at a location of your choosing: 
+Now, you can initialize a new Bonsai project at a location of your choosing:
 
 ```bash
 forge init -t risc0/bonsai-foundry-template ./my-project
@@ -48,7 +48,7 @@ Your new project consists of:
 
 ### Test Your Project
 - Use `cargo build` to test compilation of your zkVM program.
-- Use `cargo test` to run the tests in your zkVM program. 
+- Use `cargo test` to run the tests in your zkVM program.
 - Use `forge test` to test your Solidity contracts and their interaction with your zkVM program.
 
 ### Configuring Bonsai
@@ -69,7 +69,7 @@ RISC0_DEV_MODE=false forge test
 ```
 
 ## Next Steps
-To build your application, you'll need to make changes in two folders: 
+To build your application, you'll need to make changes in two folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
 

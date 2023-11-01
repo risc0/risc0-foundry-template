@@ -122,7 +122,7 @@ async fn main() -> anyhow::Result<()> {
                         .context("failed to resolve image output")?;
                     match (dev_mode, output) {
                         (true, Output::Execution { journal }) => {
-                            vec![Token::Bytes(journal)]
+                            vec![Token::Bytes(journal.bytes)]
                         }
                         (false, Output::Bonsai { snark_receipt }) => {
                             vec![
@@ -234,8 +234,12 @@ async fn upload_images(
         )));
 
         // upload binary to Bonsai
-        let bonsai_client =
-            get_client_from_parts(bonsai_api_url.to_string(), bonsai_api_key.to_string()).await?;
+        let bonsai_client = get_client_from_parts(
+            bonsai_api_url.to_string(),
+            bonsai_api_key.to_string(),
+            risc0_zkvm::VERSION,
+        )
+        .await?;
         let img_id = image_id.clone();
 
         upload_img(

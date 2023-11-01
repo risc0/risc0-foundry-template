@@ -17,11 +17,13 @@ use std::time::Duration;
 use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk::alpha::{responses::SnarkReceipt, Client};
 use risc0_build::GuestListEntry;
-use risc0_zkvm::{Executor, ExecutorEnv, MemoryImage, Program, Receipt, MEM_SIZE, PAGE_SIZE};
+use risc0_zkvm::{
+    default_executor, ExecutorEnv, Journal, MemoryImage, Program, Receipt, GUEST_MAX_MEM, PAGE_SIZE,
+};
 
 /// Result of executing a guest image, possibly containing a proof.
 pub enum Output {
-    Execution { journal: Vec<u8> },
+    Execution { journal: Journal },
     Bonsai { snark_receipt: SnarkReceipt },
 }
 
@@ -31,13 +33,13 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
     // Execute the guest program, generating the session trace needed to prove the
     // computation.
     let env = ExecutorEnv::builder()
-        .add_input(&input)
+        .write_slice(&input)
         .build()
         .context("Failed to build exec env")?;
-    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
+    let exec = default_executor();
     let session = exec
-        .run()
-        .context(format!("Failed to run executor {:?}", &input))?;
+        .execute_elf(env, elf)
+        .with_context(|| format!("Failed to run executor {:?}", &input))?;
 
     Ok(Output::Execution {
         journal: session.journal,
@@ -47,13 +49,14 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
 pub const POLL_INTERVAL_SEC: u64 = 4;
 
 fn get_digest(elf: &[u8]) -> Result<String> {
-    let program = Program::load_elf(elf, MEM_SIZE as u32)?;
+    let program = Program::load_elf(elf, GUEST_MAX_MEM as u32)?;
     let image = MemoryImage::new(&program, PAGE_SIZE as u32)?;
     Ok(hex::encode(image.compute_id()))
 }
 
 pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
-    let client = Client::from_env().context("Failed to create client from env var")?;
+    let client =
+        Client::from_env(risc0_zkvm::VERSION).context("Failed to create client from env var")?;
 
     let img_id = get_digest(elf).context("Failed to generate elf memory image")?;
     client.upload_img(&img_id, elf.to_vec())?;
