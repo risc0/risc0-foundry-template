@@ -33,18 +33,11 @@ contract BonsaiStarterTest is BonsaiTest {
         );
 
         // Anticipate a callback invocation on the starter contract
-        vm.expectCall(
-            address(starter),
-            abi.encodeWithSelector(BonsaiStarter.storeResult.selector)
-        );
+        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
         uint64 BONSAI_CALLBACK_GAS_LIMIT = 100000;
         runCallbackRequest(
-            imageId,
-            abi.encode(128),
-            address(starter),
-            starter.storeResult.selector,
-            BONSAI_CALLBACK_GAS_LIMIT
+            imageId, abi.encode(128), address(starter), starter.storeResult.selector, BONSAI_CALLBACK_GAS_LIMIT
         );
 
         // Validate the Fibonacci solution value
@@ -61,18 +54,12 @@ contract BonsaiStarterTest is BonsaiTest {
         );
 
         // Anticipate an on-chain callback request to the relay
-        vm.expectCall(
-            address(bonsaiRelay),
-            abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector)
-        );
+        vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
         // Request the on-chain callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
-        vm.expectCall(
-            address(starter),
-            abi.encodeWithSelector(BonsaiStarter.storeResult.selector)
-        );
+        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
         runPendingCallbackRequest();
 
