@@ -23,6 +23,7 @@ import {BonsaiStarter} from "contracts/BonsaiStarter.sol";
 contract BonsaiStarterTest is BonsaiTest {
     function setUp() public withRelay {}
 
+    // Test the BonsaiStarter contract by mocking an off-chain callback request
     function testOffChainMock() public {
         bytes32 imageId = queryImageId("FIBONACCI");
         // Deploy a new starter instance
@@ -51,6 +52,7 @@ contract BonsaiStarterTest is BonsaiTest {
         assertEq(result, uint256(407305795904080553832073954));
     }
 
+    // Test the BonsaiStarter contract by mocking an on-chain callback request
     function testOnChainMock() public {
         // Deploy a new starter instance
         BonsaiStarter starter = new BonsaiStarter(
@@ -58,12 +60,12 @@ contract BonsaiStarterTest is BonsaiTest {
             queryImageId("FIBONACCI")
         );
 
-        // Anticipate a callback request to the relay
+        // Anticipate an on-chain callback request to the relay
         vm.expectCall(
             address(bonsaiRelay),
             abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector)
         );
-        // Request the callback
+        // Request the on-chain callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
