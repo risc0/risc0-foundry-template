@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloy_primitives::U256;
+use alloy_sol_types::SolValue;
 use anyhow::Context;
 use bonsai_ethereum_relay::sdk::client::{CallbackRequest, Client};
 use clap::Parser;
-use ethers::{abi::ethabi, types::Address};
+use ethers::{types::Address, utils::id};
 use methods::FIBONACCI_ID;
 use risc0_zkvm::sha::Digest;
 
@@ -29,7 +31,7 @@ struct Args {
     address: Address,
 
     /// Input N for calculating the Nth Fibonacci number.
-    number: u64,
+    number: u32,
 
     /// Bonsai Relay API URL.
     #[arg(long, env, default_value = "http://localhost:8080")]
@@ -52,15 +54,17 @@ async fn main() -> anyhow::Result<()> {
     .context("Failed to initialize the relay client")?;
 
     // Initialize the input for the FIBONACCI guest.
-    let input = ethabi::encode(&[ethers::abi::Token::Uint(args.number.into())]);
+    let input = U256::from(args.number).abi_encode();
+
+    // Set the function selector of the callback function.
+    let function_signature = "storeResult(uint256,uint256)";
+    let function_selector = id(function_signature);
 
     // Create a CallbackRequest for your contract
     // example: (contracts/BonsaiStarter.sol).
     let request = CallbackRequest {
-        callback_contract: args.address,
-        // you can use the command `solc --hashes contracts/BonsaiStarter.sol`
-        // to get the value for your actual contract (9f2275c0: storeResult(uint256,uint256))
-        function_selector: [0x9f, 0x22, 0x75, 0xc0],
+        callback_contract: args.address.into(),
+        function_selector,
         gas_limit: 3000000,
         image_id: Digest::from(FIBONACCI_ID).into(),
         input,

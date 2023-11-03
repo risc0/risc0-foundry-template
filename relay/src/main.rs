@@ -70,6 +70,13 @@ enum Command {
         )]
         private_key: String,
     },
+    OffchainRequest {
+        /// Adress for the BonsaiStarter application contract.
+        address: Address,
+
+        /// Input for the guest.
+        number: u32,
+    },
 }
 
 #[derive(Debug, Args)]

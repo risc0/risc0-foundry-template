@@ -97,7 +97,7 @@ It also provides an SDK in Rust that can be used to interact with it. You can ch
 Assuming that Anvil and the Relay are running and both an `IBonsaiRelay` and the `BonsaiStarter` app contract are deployed (first 4 steps of the previous section), you can send a callback request directly to the Relay by running:
 
 ```bash
-cargo run --example callback_request "$APP_ADDRESS" 10
+cargo run --example offchain_request "$APP_ADDRESS" 10
 ```
 
 This example's arguments are the `BonsaiStarter` contract address and the number, N, to compute the Nth Fibonacci number.

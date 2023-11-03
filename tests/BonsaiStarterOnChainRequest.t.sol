@@ -27,15 +27,22 @@ contract BonsaiStarterTest is BonsaiTest {
         // Deploy a new starter instance
         BonsaiStarter starter = new BonsaiStarter(
             IBonsaiRelay(bonsaiRelay),
-            queryImageId('FIBONACCI'));
+            queryImageId("FIBONACCI")
+        );
 
         // Anticipate a callback request to the relay
-        vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
+        vm.expectCall(
+            address(bonsaiRelay),
+            abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector)
+        );
         // Request the callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
-        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
+        vm.expectCall(
+            address(starter),
+            abi.encodeWithSelector(BonsaiStarter.storeResult.selector)
+        );
         // Relay the solution as a callback
         runPendingCallbackRequest();
 
