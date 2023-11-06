@@ -9,22 +9,30 @@ It provides a starting point for building powerful new applications on Ethereum 
 
 *For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
 
+## Overview
+
+The picture below shows a simplified overview of how users can integrate Bonsai into their Ethereum smart contracts:
+
+![Bonsai Relay Diagram](images/BonsaiRelay.png)
+
+1. Users can delegate their smart contract's logic to Bonsai. The [Bonsai Relay Contract](lib/risc0/bonsai/ethereum/contracts/BonsaiRelay.sol) provides a `Request Callback` interface. This interface, accessible both *off-chain* (through HTTP REST API) and *on-chain*, emits an event detected by the `Ethereum Bonsai Relayer`.
+2. The `Ethereum Bonsai Relayer` sends the proof request to Bonsai.
+3. Bonsai generates a Snark proof and its result, encapsulated in a journal.
+4. The `Ethereum Bonsai Relayer` submits this proof and journal on-chain to the `Bonsai Relay Contract` for validation.
+5. If validated, the journal is dispatched to the user's smart contract via the specified callback.
+
 ## Dependencies
-First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero tool`:
+First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero` tool.
+We'll use `cargo binstall` to get `cargo-risczero` installed. See [cargo-binstall] for more details.
 
 ```bash
-cargo install cargo-risczero
-```
-
-For the above commands to build successfully you will need to have installed the required dependencies.
-
-```bash
-sudo apt install curl build-essential libssl-dev pkgconf
+cargo install cargo-binstall
+cargo binstall cargo-risczero
 ```
 
 Next we'll need to install the `risc0` toolchain with:
 
-```bash
+```
 cargo risczero install
 ```
 
@@ -39,10 +47,13 @@ forge init -t risc0/bonsai-foundry-template ./my-project
 Congratulations! You've just built your first Bonsai project.
 Your new project consists of:
 - a [`zkVM program`] (written in Rust), which specifies a computation that will be proven
-- a [`contract`] (written in Solidity), which requests a proof and receives the response
+- a [`contract`] (written in Solidity), which receives the response
+
+Requesting a proof can be done via both *off-chain* or *on-chain* requests.
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
+[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
 [`zkVM program`]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
 [`contract`]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
 

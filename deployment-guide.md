@@ -47,7 +47,29 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 ### Interact with your deployment:
 
-You now have a locally running testnet and relay deployment that you can interact with using `cast`, a wallet, or any application you write.
+#### Off-chain callback request
+
+The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it.
+It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/offchain_request.rs).
+
+1. Send a callback request directly to the Relay by running:
+
+    ```bash
+    cargo run --example offchain_request "$APP_ADDRESS" 10
+    ```
+
+2. Check the relayed result:
+
+    ```bash
+    cast call "$APP_ADDRESS" 'fibonacci(uint256)' 10
+    ```
+
+This example's arguments are the `BonsaiStarter` contract address and the number, N, to compute the Nth Fibonacci number.
+You may need to change these values accordingly.
+
+The Relay source code with its SDK can be found in the [risc0/risc0] github repo.
+
+#### On-chain callback request
 
 1. Send a transaction to the starter contract:
 
@@ -89,28 +111,6 @@ See the [Configuring Bonsai](/README.md#configuring-bonsai) section on the main 
 You can also deploy on a testnet by following the instructions described in [Deploy your project on a testnet](#deploy-your-project-on-a-testnet).
 If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
 
-## Off-chain Callback Request
-
-The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it, as an alternative to the on-chain requests.
-It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/callback_request.rs.rs).
-
-Assuming that Anvil and the Relay are running and both an `IBonsaiRelay` and the `BonsaiStarter` app contract are deployed (first 4 steps of the previous section), you can send a callback request directly to the Relay by running:
-
-```bash
-cargo run --example callback_request "$APP_ADDRESS" 10
-```
-
-This example's arguments are the `BonsaiStarter` contract address and the number, N, to compute the Nth Fibonacci number.
-You may need to change these values accordingly.
-
-Just as with on-chain callback requests, you can check the relayed result
-
-```bash
-cast call "$APP_ADDRESS" 'fibonacci(uint256)' 10
-```
-
-The Relay source code with its SDK can be found in the [risc0/risc0] github repo.
-
 ## Deploy your project on a testnet
 
 You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-end test or demo as follows:
@@ -149,7 +149,23 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
 ## Interact with your deployment:
 
-You now have a deployment on a testnet that you can interact with using `cast`, a wallet, or any application you write.
+You now have a deployment on a testnet that you can interact with sending either off-chain or on-chain callback requests.
+
+### Off-chain callback request
+
+1. Send a callback request directly to the Relay by running:
+
+    ```bash
+    cargo run --example offchain_request "$APP_ADDRESS" 10
+    ```
+
+2. Check the relayed result:
+
+    ```bash
+    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY "$APP_ADDRESS" 'fibonacci(uint256)' 10
+    ```
+
+### On-chain callback request
 
 1. Send a transaction to the starter contract:
 
