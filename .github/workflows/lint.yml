@@ -18,7 +18,7 @@ jobs:
           submodules: recursive
 
       - name: install rust
-        uses: risc0/risc0/.github/actions/rustup@release-0.19.1
+        uses: risc0/risc0/.github/actions/rustup@release-0.19
 
       - name: install cargo-sort
         uses: risc0/cargo-install@v1
