@@ -6,7 +6,6 @@ resolver = "2"
 risc0-build = { version = "0.19.1" }
 risc0-zkvm = { version = "0.19.1", default-features = false }
 bonsai-sdk = { version = "0.5.1" }
-bonsai-ethereum = { version = "0.5.1" }
 bonsai-ethereum-relay = { version = "0.5.1" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
 
