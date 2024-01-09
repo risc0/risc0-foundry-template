@@ -40,7 +40,7 @@ struct Args {
     bonsai_relay_api_url: String,
 
     /// Bonsai API key. Used by the relay to send requests to the Bonsai proving
-    /// service. Defaults to empty, providing no authentication.
+    /// service. Can be set to an empty string when DEV_MODE is enabled.
     #[arg(long, env)]
     bonsai_api_key: Option<String>,
 }
