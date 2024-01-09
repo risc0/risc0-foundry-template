@@ -27,10 +27,7 @@ contract BonsaiStarterTest is BonsaiTest {
     function testOffChainMock() public {
         bytes32 imageId = queryImageId("FIBONACCI");
         // Deploy a new starter instance
-        BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(bonsaiRelay),
-            imageId
-        );
+        BonsaiStarter starter = new BonsaiStarter(IBonsaiRelay(bonsaiRelay), imageId);
 
         // Anticipate a callback invocation on the starter contract
         vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
@@ -48,10 +45,7 @@ contract BonsaiStarterTest is BonsaiTest {
     // Test the BonsaiStarter contract by mocking an on-chain callback request
     function testOnChainMock() public {
         // Deploy a new starter instance
-        BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(bonsaiRelay),
-            queryImageId("FIBONACCI")
-        );
+        BonsaiStarter starter = new BonsaiStarter(IBonsaiRelay(bonsaiRelay), queryImageId("FIBONACCI"));
 
         // Anticipate an on-chain callback request to the relay
         vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
