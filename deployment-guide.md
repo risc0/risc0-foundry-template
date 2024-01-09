@@ -55,7 +55,7 @@ It also provides an SDK in Rust that can be used to interact with it. You can ch
 1. Send a callback request directly to the Relay by running:
 
     ```bash
-    cargo run --example offchain_request "$APP_ADDRESS" 10
+    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
     ```
 
 2. Check the relayed result:
@@ -156,7 +156,7 @@ You now have a deployment on a testnet that you can interact with sending either
 1. Send a callback request directly to the Relay by running:
 
     ```bash
-    cargo run --example offchain_request "$APP_ADDRESS" 10
+    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
     ```
 
 2. Check the relayed result:
