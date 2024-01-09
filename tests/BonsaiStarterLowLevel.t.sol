@@ -25,9 +25,7 @@ contract BonsaiStarterLowLevelTest is BonsaiTest {
 
     function testMockLowLevelCall() public {
         // Deploy a new starter instance
-        BonsaiStarterLowLevel starter = new BonsaiStarterLowLevel(
-            IBonsaiRelay(bonsaiRelay),
-            queryImageId('FIBONACCI'));
+        BonsaiStarterLowLevel starter = new BonsaiStarterLowLevel(IBonsaiRelay(bonsaiRelay), queryImageId("FIBONACCI"));
 
         // Anticipate a callback request to the relay
         vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
