@@ -59,8 +59,8 @@ async fn main() -> anyhow::Result<()> {
     }
     // initialize a relay client
     let relay_client = Client::from_parts(
-        args.bonsai_relay_api_url.clone(), // Set BONSAI_API_URL or replace this line.
-        args.bonsai_api_key.unwrap(),      // Set BONSAI_API_KEY or replace this line.
+        args.bonsai_relay_api_url.clone(),
+        args.bonsai_api_key.unwrap(),
     )
     .context("Failed to initialize the relay client")?;
 
