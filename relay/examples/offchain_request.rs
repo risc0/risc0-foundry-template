@@ -23,13 +23,13 @@ use ethers::{types::Address, utils::id};
 use methods::FIBONACCI_ID;
 use risc0_zkvm::sha::Digest;
 
-/// Exmaple code for sending a REST API request to the Bonsai relay service to
+/// Example code for sending a REST API request to the Bonsai relay service to
 /// requests, execution, proving, and on-chain callback for a zkVM guest
 /// application.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]
 struct Args {
-    /// Adress for the BonsaiStarter application contract.
+    /// Address for the BonsaiStarter application contract.
     address: Address,
 
     /// Input N for calculating the Nth Fibonacci number.
