@@ -18,11 +18,12 @@ pragma solidity ^0.8.17;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
-import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
-import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
+import {IBonsaiRelay} from "bonsai/relay/IBonsaiRelay.sol";
+import {BonsaiRelay} from "bonsai/relay/BonsaiRelay.sol";
 import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
-import {BonsaiTestRelay} from "bonsai/BonsaiTestRelay.sol";
-import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {BonsaiTestRelay} from "bonsai/relay/BonsaiTestRelay.sol";
+import {ControlID} from "bonsai/groth16/ControlID.sol";
+import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 
 /// @notice Base deployment script for Bonsai projects with Foundry and it's dependencies.
@@ -80,7 +81,10 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
-                verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
+                verifier = new RiscZeroGroth16Verifier(
+                    ControlID.CONTROL_ID_0,
+                    ControlID.CONTROL_ID_1
+                );
                 console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
             }
 
@@ -103,7 +107,12 @@ contract BonsaiDeploy is Script, BonsaiCheats {
             // Use a long and unweildy environment variable name for overriding
             // the expected chain ID for the test relay so that it is hard to
             // trigger without thinking about it.
-            bonsaiRelay = new BonsaiTestRelay(vm.envOr("DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID", uint256(31337)));
+            bonsaiRelay = new BonsaiTestRelay(
+                vm.envOr(
+                    "DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID",
+                    uint256(31337)
+                )
+            );
             console2.log("Deployed BonsaiTestRelay to ", address(bonsaiRelay));
         }
         return bonsaiRelay;
