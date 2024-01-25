@@ -8,3 +8,6 @@ methods = ["guest"]
 
 [build-dependencies]
 risc0-build = { version = "0.20.0-rc.2", features = ["guest-list"] }
+
+[dependencies]
+risc0-build = { version = "0.20.0-rc.2", features = ["guest-list"] }
