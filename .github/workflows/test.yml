@@ -44,7 +44,7 @@ jobs:
           version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.2
+        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.3
 
       - name: risczero toolchain install
         run: cargo risczero install
@@ -86,7 +86,7 @@ jobs:
           version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.2
+        run: cargo binstall -y --force cargo-risczero@0.20.0-3
 
       - name: risczero toolchain install
         run: cargo risczero install
