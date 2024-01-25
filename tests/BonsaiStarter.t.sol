@@ -1,70 +1,27 @@
-// Copyright 2023 RISC Zero, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
 
-pragma solidity ^0.8.17;
+import "forge-std/Test.sol";
+import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 
-import {BonsaiTest} from "bonsai/BonsaiTest.sol";
-import {IBonsaiRelay} from "bonsai/relay/IBonsaiRelay.sol";
-import {BonsaiStarter} from "contracts/BonsaiStarter.sol";
+import "../contracts/BonsaiStarter.sol";
 
-contract BonsaiStarterTest is BonsaiTest {
-    function setUp() public withRelay {}
+contract EvenNumberTest is Test {
+    RiscZeroGroth16Verifier public verifier;
+    EvenNumber public evenNumber;
 
-    // Test the BonsaiStarter contract by mocking an off-chain callback request
-    function testOffChainMock() public {
-        bytes32 imageId = queryImageId("FIBONACCI");
-        // Deploy a new starter instance
-        BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(bonsaiRelay),
-            imageId
-        );
-
-        // Anticipate a callback invocation on the starter contract
-        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
-        // Relay the solution as a callback
-        uint64 BONSAI_CALLBACK_GAS_LIMIT = 100000;
-        runCallbackRequest(
-            imageId, abi.encode(128), address(starter), starter.storeResult.selector, BONSAI_CALLBACK_GAS_LIMIT
-        );
-
-        // Validate the Fibonacci solution value
-        uint256 result = starter.fibonacci(128);
-        assertEq(result, uint256(407305795904080553832073954));
+    function setUp() public {
+        verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
+        evenNumber = new EvenNumber(verifier, 0xa233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757);
+        assertEq(evenNumber.get(), 0);
     }
 
-    // Test the BonsaiStarter contract by mocking an on-chain callback request
-    function testOnChainMock() public {
-        // Deploy a new starter instance
-        BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(bonsaiRelay),
-            queryImageId("FIBONACCI")
+    function testSet() public {
+        evenNumber.set(
+            12345678,
+            "\x23\xb4\xfd\xd8\x26\xb8\x84\x52\x76\x9f\x14\xfd\xcc\xb2\xc5\x8c\xb1\xc9\x0a\xf4\x4e\x52\x29\x0d\x1c\x97\xf7\xcd\x28\x95\xe0\xea\x18\x8a\x8b\xdd\x7d\x34\x05\x95\x03\x28\xcd\x47\x76\x4c\x11\x96\xb7\xaa\xf0\xaa\x05\x5e\x1c\xbb\x3b\xd3\x8a\xca\x69\x3e\x97\xfd\x04\x19\x59\xea\x4b\x98\xdf\xac\x7e\x29\xa4\x53\x04\x9a\x5d\x27\xd8\x6d\xe9\xc7\x70\x11\xd9\x82\x4a\x8e\x93\xf8\xe4\xcc\x20\xef\x0e\xaa\x9d\xbb\xe5\x2a\x02\x5d\xc2\x24\x7b\x31\xd4\xfa\xa1\xa7\x8b\xd6\xb9\x4e\x06\xc9\xcb\xb7\xd7\x20\x50\x3e\x5b\x8f\x79\x08\x12\x24\x9b\xa3\x5f\x20\xbf\x75\x14\xb1\x43\x1e\xef\x01\x59\x4a\x89\x69\x9d\x56\x5d\x99\xa1\xca\x1f\x0e\xa3\x65\x82\x1d\x19\x4f\x25\xee\xa2\x20\x0b\x32\xf7\xb2\x11\xe2\x7c\x0b\xd8\x4d\xd0\xda\xe5\x42\x4f\x7b\x07\xaf\x6c\xad\x7a\xf3\xbd\x26\x34\x55\x11\xf4\x01\xb1\x00\x25\xab\x6d\xa5\x7a\xc5\xa5\x79\x16\x96\xf5\x51\x8f\x19\x3b\xfc\xf1\xb8\x76\x14\xc3\x58\x49\x68\x7c\x2f\x71\x71\xe9\x0c\xdf\x32\x9c\x56\x3f\x6e\xb0\xfc\x5c\xe0\x20\x37\x39\x4c\x9a\x4a\x9d\xc5\x4d\xd9\x0c\xef\x0c\x0b\xac\x40\x8d\xde\x17\xf7\xd2",
+            0x7973c5b53a9b1f176e47b0a8bb96fe762c5902c70d2dfa29ab349f7e7d01cd15
         );
-
-        // Anticipate an on-chain callback request to the relay
-        vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
-        // Request the on-chain callback
-        starter.calculateFibonacci(128);
-
-        // Anticipate a callback invocation on the starter contract
-        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
-        // Relay the solution as a callback
-        runPendingCallbackRequest();
-
-        // Validate the Fibonacci solution value
-        uint256 result = starter.fibonacci(128);
-        assertEq(result, uint256(407305795904080553832073954));
+        assertEq(evenNumber.get(), 12345678);
     }
 }
