@@ -35,7 +35,7 @@ contract BonsaiStarterTest is BonsaiTest {
         // Anticipate a callback invocation on the starter contract
         vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
         // Relay the solution as a callback
-        uint64 BONSAI_CALLBACK_GAS_LIMIT = 300000;
+        uint64 BONSAI_CALLBACK_GAS_LIMIT = 100000;
         runCallbackRequest(
             imageId, abi.encode(128), address(starter), starter.storeResult.selector, BONSAI_CALLBACK_GAS_LIMIT
         );
