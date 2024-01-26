@@ -1,13 +1,13 @@
 [package]
 name = "bonsai-starter-methods"
-version = "0.1.0"
-edition = "2021"
+version = { workspace = true }
+edition = { workspace = true }
 
 [package.metadata.risc0]
 methods = ["guest"]
 
 [build-dependencies]
-risc0-build = { version = "0.20.0-rc.2", features = ["guest-list"] }
+risc0-build = { workspace = true }
 
 [dependencies]
-risc0-build = { version = "0.20.0-rc.2", features = ["guest-list"] }
+risc0-build = { workspace = true }

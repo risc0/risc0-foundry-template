@@ -1,0 +1,23 @@
+[package]
+name = "bonsai-starter-cli"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+alloy-primitives = { workspace = true }
+alloy-sol-types = { workspace = true }
+anyhow = { workspace = true }
+bincode = { workspace = true }
+bonsai-sdk = { workspace = true }
+bonsai-starter-sdk = { path = "../sdk" }
+bytemuck = { workspace = true }
+clap = { version = "4.0", features = ["derive"] }
+env_logger = { version = "0.10" }
+ethers = { version = "2.0" }
+hex = { version = "0.4" }
+log = { version = "0.4" }
+methods = { workspace = true }
+risc0-build = { workspace = true }
+risc0-zkvm = { workspace = true }
+serde = { workspace = true }
+tokio = { version = "1.35", features = ["full"] }
