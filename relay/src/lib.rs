@@ -17,7 +17,7 @@ use std::time::Duration;
 use anyhow::{anyhow, bail, Context, Result};
 use bonsai_sdk::alpha::{responses::SnarkReceipt, Client};
 use risc0_build::GuestListEntry;
-use risc0_zkvm::{compute_image_id, default_prover, ExecutorEnv, Receipt};
+use risc0_zkvm::{compute_image_id, default_executor, ExecutorEnv, Receipt};
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
 
@@ -34,10 +34,10 @@ pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         .write_slice(&input)
         .build()
         .context("Failed to build ExecutorEnv")?;
-    let prover = default_prover();
-    let receipt = prover.prove(env, elf).context("Execution failed")?;
+    let exec = default_executor();
+    let session_info = exec.execute(env, elf).context("Execution failed")?;
     Ok(Output::Execution {
-        journal: receipt.journal.bytes,
+        journal: session_info.journal.bytes,
     })
 }
 
