@@ -12,8 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use alloy_sol_types::sol;
 use anyhow::Result;
 use ethers::prelude::*;
+
+sol! {
+    struct Calldata {
+        bytes journal;
+        bytes32 post_state_digest;
+        bytes seal;
+    }
+}
 
 pub struct TxSender {
     chain_id: u64,

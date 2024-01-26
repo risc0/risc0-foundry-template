@@ -34,8 +34,6 @@ jobs:
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
-        with:
-          version: nightly-09fe3e041369a816365a020f715ad6f94dbce9f2
 
       - name: Install cargo-install
         uses: risc0/cargo-install@v1
@@ -44,7 +42,7 @@ jobs:
           version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.2
+        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.3
 
       - name: risczero toolchain install
         run: cargo risczero install
@@ -76,8 +74,6 @@ jobs:
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
-        with:
-          version: nightly-09fe3e041369a816365a020f715ad6f94dbce9f2
 
       - name: Install cargo-install
         uses: risc0/cargo-install@v1
@@ -86,7 +82,7 @@ jobs:
           version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.2
+        run: cargo binstall -y --force cargo-risczero@0.20.0-rc.3
 
       - name: risczero toolchain install
         run: cargo risczero install

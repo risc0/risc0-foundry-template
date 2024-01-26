@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use alloy_primitives::U256;
+use alloy_primitives::{FixedBytes, U256};
 use alloy_sol_types::{sol, SolValue};
 use anyhow::{ensure, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
@@ -77,5 +77,22 @@ impl TryFrom<bonsai_sdk::responses::Groth16Seal> for Seal {
             b: [[b00, b01], [b10, b11]],
             c: [c0, c1],
         })
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Proof {
+    pub seal: Vec<u8>,
+    pub post_state_digest: FixedBytes<32>,
+    pub journal: Vec<u8>,
+}
+
+impl Proof {
+    pub fn new_empty(journal: Vec<u8>) -> Self {
+        Self {
+            seal: vec![],
+            post_state_digest: FixedBytes::<32>::default(),
+            journal,
+        }
     }
 }

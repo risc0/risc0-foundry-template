@@ -5,6 +5,7 @@ import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {RiscZeroGroth16VerifierTest} from "../tests/RiscZeroGroth16VerifierTest.sol";
 
 import "../contracts/BonsaiStarter.sol";
 
@@ -14,13 +15,39 @@ contract EvenNumberDeploy is Script {
 
         vm.startBroadcast(deployerKey);
 
-        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
-        console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
+        IRiscZeroVerifier verifier = deployRiscZeroGroth16Verifier();
 
-        EvenNumber evenNumber =
-            new EvenNumber(verifier, 0xa233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757);
+        EvenNumber evenNumber = new EvenNumber(
+            verifier,
+            0xa233b08506289266e2209d24fee095c44564e97eb303547c25220a7a0cd96757
+        );
         console2.log("Deployed EvenNumber to", address(evenNumber));
 
         vm.stopBroadcast();
+    }
+
+    /// @notice Deploy either a test or fully verifying `RiscZeroGroth16Verifier` depending on RISC0_DEV_MODE.
+    function deployRiscZeroGroth16Verifier()
+        internal
+        returns (IRiscZeroVerifier)
+    {
+        if (vm.envOr("RISC0_DEV_MODE", false) == false) {
+            IRiscZeroVerifier verifier = new RiscZeroGroth16VerifierTest();
+            console2.log(
+                "Deployed RiscZeroGroth16VerifierTest to",
+                address(verifier)
+            );
+            return verifier;
+        } else {
+            IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(
+                ControlID.CONTROL_ID_0,
+                ControlID.CONTROL_ID_1
+            );
+            console2.log(
+                "Deployed RiscZeroGroth16Verifier to",
+                address(verifier)
+            );
+            return verifier;
+        }
     }
 }
