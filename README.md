@@ -53,6 +53,7 @@ Your new project consists of:
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
 [`zkVM program`]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
 [`contract`]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
+[`interface`]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli/src/interface.rs
 
 ### Test Your Project
 - Use `cargo build` to test compilation of your zkVM program.
