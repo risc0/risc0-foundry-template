@@ -95,12 +95,15 @@ Below are the primary files in the project directory
 .
 ├── Cargo.toml                      // Definitions for cargo and rust
 ├── foundry.toml                    // Definitions for foundry
+├── cli                             // CLI for interacting with your application
+│    ├── Cargo.toml
+│    └── src
+│       ├── interface.rs            // Interface for interacting with your contract
+│       └── main.rs                 // CLI for interacting with your application
 ├── contracts                       // Your Ethereum contracts live here
-│   ├── BonsaiStarter.sol           // Starter template for basic callback contract
-│   └── BonsaiStarterLowLevel.sol   // Starter template for low-level callback contract
+│   └── BonsaiStarter.sol           // Starter template for basic callback contract
 ├── tests                           // Your Ethereum contract tests live here
-│   ├── BonsaiStarter.t.sol         // Tests for basic callback contract
-│   └── BonsaiStarterLowLevel.t.sol // Tests for low-level callback contract
+│   └── BonsaiStarter.t.sol         // Tests for basic callback contract
 └── methods                         // [zkVM guest programs] are built here
     ├── Cargo.toml
     ├── build.rs                    // Instructions for the risc0-build rust crate
@@ -108,9 +111,8 @@ Below are the primary files in the project directory
     │   ├── Cargo.toml
     │   └── src
     │       └── bin                 // Your [zkVM guest programs] live here
-    │           └── fibonacci.rs    // Example [guest program] for fibonacci number calculation
+    │           └── is_even.rs      // Example [guest program] for cheking if a number is even
     └── src
-        ├── main.rs                 // Glue binary for locally testing Bonsai applications
         └── lib.rs                  // Built RISC Zero guest programs are compiled into here
 ```
 

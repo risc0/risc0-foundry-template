@@ -25,6 +25,7 @@ sol! {
     }
 }
 
+///
 pub fn set(x: U256, post_state_digest: FixedBytes<32>, seal: Vec<u8>) -> Vec<u8> {
     let calldata = IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {
         x,
@@ -35,10 +36,12 @@ pub fn set(x: U256, post_state_digest: FixedBytes<32>, seal: Vec<u8>) -> Vec<u8>
     calldata.abi_encode()
 }
 
+///
 pub fn parse_input(input: String) -> Result<Vec<u8>> {
     serialize(U256::from_str(&input)?)
 }
 
+///
 pub fn parse_output(proof: Proof) -> Result<Vec<u8>> {
     let x = U256::from_be_slice(proof.journal.as_slice());
     let calldata = set(x, proof.post_state_digest, proof.seal);

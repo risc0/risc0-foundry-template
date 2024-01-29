@@ -89,7 +89,7 @@ pub struct Proof {
 }
 
 impl Proof {
-    pub fn new_empty(journal: Vec<u8>) -> Self {
+    pub(crate) fn new_empty(journal: Vec<u8>) -> Self {
         Self {
             journal,
             post_state_digest: FixedBytes::<32>::default(),

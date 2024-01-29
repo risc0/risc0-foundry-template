@@ -12,47 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::{anyhow, Result};
-use risc0_build::GuestListEntry;
-use risc0_zkvm::serde::to_vec;
-
 pub mod cli;
 pub mod eth;
 pub mod prover;
 pub mod snark;
 
-pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
-    let input_data = to_vec(&input)?;
-    Ok(bytemuck::cast_slice(&input_data).to_vec())
-}
-
-pub fn resolve_guest_entry<'a>(
-    guest_list: &[GuestListEntry<'a>],
-    guest_binary: &String,
-) -> Result<Vec<u8>> {
-    // Search list for requested binary name
-    let potential_guest_image_id: [u8; 32] =
-        match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {
-            Ok(byte_vector) => byte_vector.try_into().unwrap_or([0u8; 32]),
-            Err(_) => [0u8; 32],
-        };
-    let guest_entry = guest_list
-        .iter()
-        .find(|entry| {
-            entry.name == guest_binary.to_uppercase()
-                || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
-        })
-        .ok_or_else(|| {
-            let found_guests: Vec<String> = guest_list
-                .iter()
-                .map(|g| hex::encode(bytemuck::cast::<[u32; 8], [u8; 32]>(g.image_id)))
-                .collect();
-            anyhow!(
-                "Unknown guest binary {}, found: {:?}",
-                guest_binary,
-                found_guests
-            )
-        })
-        .cloned()?;
-    Ok(guest_entry.elf.to_vec())
-}
+pub use prover::serialize;

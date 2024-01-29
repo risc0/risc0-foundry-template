@@ -13,11 +13,11 @@
 // limitations under the License.
 
 use anyhow::Result;
-use contract_interface::{parse_input, parse_output};
+use interface::{parse_input, parse_output};
 use methods::IS_EVEN_ELF;
 use risc0_ethereum_sdk::cli;
 
-mod contract_interface;
+mod interface;
 
 fn main() -> Result<()> {
     env_logger::init();

@@ -14,11 +14,17 @@
 
 use std::io::Write;
 
-use crate::{eth, prover, resolve_guest_entry, snark::Proof};
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::Parser;
 use methods::GUEST_LIST;
+use risc0_build::GuestListEntry;
 use risc0_zkvm::compute_image_id;
+
+use crate::{
+    eth::{self, TxSender},
+    prover,
+    snark::Proof,
+};
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -31,7 +37,8 @@ enum Command {
         /// The input to provide to the guest binary
         input: Option<String>,
     },
-    /// Upload the RISC-V ELF binary to Bonsai.
+    /// Runs the RISC-V ELF binary on Bonsai
+    /// and publish the result to Ethererum.
     Publish {
         #[clap(short, long, require_equals = true)]
         chain_id: u64,
@@ -47,6 +54,7 @@ enum Command {
     },
 }
 
+///
 pub fn query<T: serde::Serialize + Sized>(
     guest_binary: String,
     input: Option<T>,
@@ -68,6 +76,7 @@ pub fn query<T: serde::Serialize + Sized>(
     Ok(())
 }
 
+///
 pub fn publish<T: serde::Serialize + Sized>(
     elf: &[u8],
     chain_id: u64,
@@ -94,15 +103,19 @@ pub fn publish<T: serde::Serialize + Sized>(
     let calldata = parse_output(proof)?;
 
     let runtime = tokio::runtime::Runtime::new()?;
-    runtime.block_on(async {
-        if let Some(tx_sender) = tx_sender {
-            tx_sender.send(calldata).await.unwrap();
-        }
-    });
+    runtime.block_on(send_transaction(tx_sender, calldata))?;
 
     Ok(())
 }
 
+async fn send_transaction(tx_sender: Option<TxSender>, calldata: Vec<u8>) -> Result<()> {
+    if let Some(tx_sender) = tx_sender {
+        tx_sender.send(calldata).await?;
+    }
+    Ok(())
+}
+
+///
 pub fn run(
     elf: &[u8],
     parse_input: fn(input: String) -> Result<Vec<u8>>,
@@ -130,4 +143,35 @@ pub fn run(
     }
 
     Ok(())
+}
+
+fn resolve_guest_entry<'a>(
+    guest_list: &[GuestListEntry<'a>],
+    guest_binary: &String,
+) -> Result<Vec<u8>> {
+    // Search list for requested binary name
+    let potential_guest_image_id: [u8; 32] =
+        match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {
+            Ok(byte_vector) => byte_vector.try_into().unwrap_or([0u8; 32]),
+            Err(_) => [0u8; 32],
+        };
+    let guest_entry = guest_list
+        .iter()
+        .find(|entry| {
+            entry.name == guest_binary.to_uppercase()
+                || bytemuck::cast::<[u32; 8], [u8; 32]>(entry.image_id) == potential_guest_image_id
+        })
+        .ok_or_else(|| {
+            let found_guests: Vec<String> = guest_list
+                .iter()
+                .map(|g| hex::encode(bytemuck::cast::<[u32; 8], [u8; 32]>(g.image_id)))
+                .collect();
+            anyhow!(
+                "Unknown guest binary {}, found: {:?}",
+                guest_binary,
+                found_guests
+            )
+        })
+        .cloned()?;
+    Ok(guest_entry.elf.to_vec())
 }

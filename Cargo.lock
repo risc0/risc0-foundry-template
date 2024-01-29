@@ -602,20 +602,11 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "anyhow",
- "bincode",
- "bonsai-sdk",
  "bonsai-starter-methods",
- "bytemuck",
- "clap",
  "env_logger",
- "ethers",
- "hex",
- "log",
  "risc0-build",
  "risc0-ethereum-sdk",
  "risc0-zkvm",
- "serde",
- "tokio",
 ]
 
 [[package]]

@@ -17,9 +17,17 @@ use std::time::Duration;
 use alloy_primitives::FixedBytes;
 use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
-use risc0_zkvm::{compute_image_id, default_executor, is_dev_mode, ExecutorEnv, Receipt};
+use risc0_zkvm::{
+    compute_image_id, default_executor, is_dev_mode, serde::to_vec, ExecutorEnv, Receipt,
+};
 
 use crate::snark::{Proof, Seal};
+
+///
+pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
+    let input_data = to_vec(&input)?;
+    Ok(bytemuck::cast_slice(&input_data).to_vec())
+}
 
 /// TODO
 pub fn generate_proof(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
