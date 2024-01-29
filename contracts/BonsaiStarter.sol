@@ -11,28 +11,49 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0
 
-// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 
+/// @title A starter application using Bonsai.
+/// @dev This contract demonstrates one pattern for offloading the computation of an expensive
+//       or difficult to implement function to a RISC Zero guest running on Bonsai.
 contract EvenNumber {
+    /// @notice RISC Zero verifier contract address.
     IRiscZeroVerifier verifier;
+    /// @notice Image ID of the only zkVM binary to accept verification from.
     bytes32 imageId;
+    /// @notice Value of the last successfully updtated number.
     uint256 number;
 
+    /// @notice Initialize the contract, binding it to a specified RISC Zero verifier and guest image.
     constructor(IRiscZeroVerifier _verifier, bytes32 _imageId) {
         verifier = _verifier;
         imageId = _imageId;
         number = 0;
     }
 
-    function set(uint256 x, bytes32 postStateDigest, bytes calldata seal) public {
-        require(verifier.verify(seal, imageId, postStateDigest, sha256(abi.encode(x))));
+    /// @notice Function logic for processing verified journals from Bonsai.
+    function set(
+        uint256 x,
+        bytes32 postStateDigest,
+        bytes calldata seal
+    ) public {
+        require(
+            verifier.verify(
+                seal,
+                imageId,
+                postStateDigest,
+                sha256(abi.encode(x))
+            )
+        );
         number = x;
     }
 
+    /// @notice Returns the number stored.
     function get() public view returns (uint256) {
         return number;
     }
