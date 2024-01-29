@@ -23,13 +23,15 @@ use risc0_zkvm::{
 
 use crate::snark::{Proof, Seal};
 
-///
+/// Serializes the given input as a `Vec<u8>` compatible with the zkVM and Bonsai.
 pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
     let input_data = to_vec(&input)?;
     Ok(bytemuck::cast_slice(&input_data).to_vec())
 }
 
-/// TODO
+/// Generates a snark proof for the given elf and input.
+/// When `RISC0_DEV_MODE` is set, executes the elf locally,
+/// as opposed to sending the proof request to the Bonsai service.
 pub fn generate_proof(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
     match is_dev_mode() {
         true => DevModeProver::prove(elf, input),

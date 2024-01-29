@@ -26,6 +26,7 @@ use crate::{
     snark::Proof,
 };
 
+/// CLI commands.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 enum Command {
@@ -40,21 +41,26 @@ enum Command {
     /// Runs the RISC-V ELF binary on Bonsai
     /// and publish the result to Ethererum.
     Publish {
+        /// Ethereum chain ID
         #[clap(short, long, require_equals = true)]
         chain_id: u64,
 
+        /// Ethereum Node endpoint.
         #[clap(short, long, require_equals = true)]
         rpc_url: String,
 
+        /// Application's contract address on Ethereum
         #[clap(short, long, require_equals = true)]
         contract: String,
 
+        /// The input to provide to the guest binary
         #[clap(short, long, require_equals = true)]
         input: String,
     },
 }
 
-///
+/// Execute or return image id.
+/// If some input is provided, returns the Ethereum ABI encoded proof.
 pub fn query<T: serde::Serialize + Sized>(
     guest_binary: String,
     input: Option<T>,
@@ -63,10 +69,12 @@ pub fn query<T: serde::Serialize + Sized>(
     let elf = resolve_guest_entry(GUEST_LIST, &guest_binary)?;
     let image_id = compute_image_id(&elf)?;
     let output = match input {
+        // Input provided. Return the Ethereum ABI encoded proof.
         Some(input) => {
             let proof = prover::generate_proof(&elf, parser(input)?)?;
             hex::encode(proof.abi_encode())
         }
+        // No input. Return the Ethereum ABI encoded bytes32 image ID.
         None => format!("0x{}", image_id.to_string()),
     };
     print!("{output}");
@@ -76,7 +84,7 @@ pub fn query<T: serde::Serialize + Sized>(
     Ok(())
 }
 
-///
+/// Request a proof and publish it on Ethereum.
 pub fn publish<T: serde::Serialize + Sized>(
     elf: &[u8],
     chain_id: u64,
@@ -115,7 +123,7 @@ async fn send_transaction(tx_sender: Option<TxSender>, calldata: Vec<u8>) -> Res
     Ok(())
 }
 
-///
+/// Run the CLI.
 pub fn run(
     elf: &[u8],
     parse_input: fn(input: String) -> Result<Vec<u8>>,

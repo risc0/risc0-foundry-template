@@ -21,11 +21,15 @@ use risc0_zkvm::guest::env;
 risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
+    // Read data sent from the application contract.
     let mut number: U256 = env::read();
 
+    // Run the computation.
     if number.bit(0) {
         number = U256::ZERO;
     }
 
+    // Commit the journal that will be received by the application contract.
+    // Encoded types should match the args expected by the application.
     env::commit_slice(number.abi_encode().as_slice());
 }

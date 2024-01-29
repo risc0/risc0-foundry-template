@@ -14,19 +14,8 @@ contract EvenNumber {
         number = 0;
     }
 
-    function set(
-        uint256 x,
-        bytes32 postStateDigest,
-        bytes calldata seal
-    ) public {
-        require(
-            verifier.verify(
-                seal,
-                imageId,
-                postStateDigest,
-                sha256(abi.encode(x))
-            )
-        );
+    function set(uint256 x, bytes32 postStateDigest, bytes calldata seal) public {
+        require(verifier.verify(seal, imageId, postStateDigest, sha256(abi.encode(x))));
         number = x;
     }
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 pub mod cli;
-pub mod eth;
+mod eth;
 pub mod prover;
 pub mod snark;
 

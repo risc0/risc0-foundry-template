@@ -20,7 +20,16 @@ pragma solidity ^0.8.9;
 import {SafeCast} from "openzeppelin/contracts/utils/math/SafeCast.sol";
 
 import {Groth16Verifier} from "bonsai/groth16/Groth16Verifier.sol";
-import {ExitCode, IRiscZeroVerifier, Output, OutputLib, Receipt, ReceiptClaim, ReceiptClaimLib, SystemExitCode} from "bonsai/IRiscZeroVerifier.sol";
+import {
+    ExitCode,
+    IRiscZeroVerifier,
+    Output,
+    OutputLib,
+    Receipt,
+    ReceiptClaim,
+    ReceiptClaimLib,
+    SystemExitCode
+} from "bonsai/IRiscZeroVerifier.sol";
 
 /// @notice Groth16 verifier contract for RISC Zero receipts of execution.
 contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier, Groth16Verifier {
@@ -33,25 +42,18 @@ contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier, Groth16Verifier {
     }
 
     /// @inheritdoc IRiscZeroVerifier
-    function verify(
-        bytes calldata seal,
-        bytes32 /*imageId*/,
-        bytes32 postStateDigest,
-        bytes32 /*journalDigest*/
-    ) public view returns (bool) {
+    function verify(bytes calldata seal, bytes32, /*imageId*/ bytes32 postStateDigest, bytes32 /*journalDigest*/ )
+        public
+        view
+        returns (bool)
+    {
         // Require that the seal be specifically empty.
         // Reject if the caller may have sent a real seal.
-        return
-            CONTROL_ID_0 == 0 &&
-            CONTROL_ID_1 == 0 &&
-            seal.length == 0 &&
-            postStateDigest == bytes32(0);
+        return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0 && seal.length == 0 && postStateDigest == bytes32(0);
     }
 
     /// @inheritdoc IRiscZeroVerifier
-    function verify_integrity(
-        Receipt memory /*receipt*/
-    ) public view returns (bool) {
+    function verify_integrity(Receipt memory /*receipt*/ ) public view returns (bool) {
         return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0;
     }
 }

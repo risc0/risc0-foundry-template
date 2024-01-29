@@ -15,14 +15,14 @@
 use anyhow::Result;
 use ethers::prelude::*;
 
-pub struct TxSender {
+pub(crate) struct TxSender {
     chain_id: u64,
     client: SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>,
     contract: Address,
 }
 
 impl TxSender {
-    pub fn new(
+    pub(crate) fn new(
         chain_id: u64,
         rpc_url: &String,
         private_key: &String,
@@ -40,7 +40,7 @@ impl TxSender {
         })
     }
 
-    pub async fn send(&self, calldata: Vec<u8>) -> Result<Option<TransactionReceipt>> {
+    pub(crate) async fn send(&self, calldata: Vec<u8>) -> Result<Option<TransactionReceipt>> {
         let tx = TransactionRequest::new()
             .chain_id(self.chain_id)
             .to(self.contract)

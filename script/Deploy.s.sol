@@ -15,10 +15,7 @@ contract EvenNumberDeploy is Script, BonsaiCheats {
 
         vm.startBroadcast(deployerKey);
 
-        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(
-            ControlID.CONTROL_ID_0,
-            ControlID.CONTROL_ID_1
-        );
+        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
         console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
 
         bytes32 imageId = queryImageId("IS_EVEN");
