@@ -19,97 +19,46 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
     Once anvil is started, keep it running in the terminal, and switch to a new terminal.
 
-2. Deploy an `IBonsaiRelay` contract by running:
+2. Set your private key:
 
     ```bash
-    RISC0_DEV_MODE=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
+    export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
     ```
 
-3. Check the logs for the address of the deployed `BonsaiTestRelay` contract and your application contract.
-   Save them to a couple of environment variables to reference later.
+3. Deploy your contract by running:
+    > This requires that `ETH_WALLET_PRIVATE_KEY` be set.
 
     ```bash
-    export BONSAI_RELAY_ADDRESS="#copy relay address from the deploy logs#"
-    export APP_ADDRESS="#copy app address from the deploy logs#"
+    forge script --rpc-url http://localhost:8545 --broadcast script/Deploy.s.sol
     ```
 
-4. Start the Bonsai Ethereum Relay by running:
-
+    This command should output something similar to:
+    
     ```bash
-    RISC0_DEV_MODE=true cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address "$BONSAI_RELAY_ADDRESS"
+    ...
+    == Logs ==
+    Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+    ...
     ```
-
-    The relay will keep monitoring the chain for callback requests, generated when your contract calls `bonsaiRelay.requestCallback(...)`, and relay their result back to your contract after computing them.
-    Keep the relay running and switch to a new terminal.
-
-    Setting `RISC0_DEV_MODE=true` deploys the `BonsaiTestRelay`, for use in local development and testing, instead of the fully verifying `BonsaiRelay` contract.
-    See the section below on using the fully-verifying relay for more information on this setting and testnet deployment.
 
 ### Interact with your deployment:
 
-#### Off-chain callback request
-
-The Relay exposes an HTTP REST API interface that can be used to directly send *off-chain* callback requests to it.
-It also provides an SDK in Rust that can be used to interact with it. You can check out this [example](relay/examples/offchain_request.rs).
-
-1. Send a callback request directly to the Relay by running:
-
+1. Query the state:
     ```bash
-    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
+    cast call --rpc-url http://localhost:8545 0xe7f1725e7734ce288f8367e1bb143e90bb3f0512 'get()(uint256)'
     ```
 
-2. Check the relayed result:
+2. Publish a new state
+    > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
     ```bash
-    cast call "$APP_ADDRESS" 'fibonacci(uint256)' 10
+    RISC0_DEV_MODE=false BONSAI_API_URL="BONSAI_API_URL" BONSAI_API_KEY="BONSAI_API_KEY" cargo run --release -- publish \
+        --chain-id=31337 \
+        --rpc-url=http://localhost:8545 \
+        --contract=e7f1725E7734CE288F8367e1Bb143E90bb3F0512 \
+        --input=12345678
     ```
-
-This example's arguments are the `BonsaiStarter` contract address and the number, N, to compute the Nth Fibonacci number.
-You may need to change these values accordingly.
-
-The Relay source code with its SDK can be found in the [risc0/risc0] github repo.
-
-#### On-chain callback request
-
-1. Send a transaction to the starter contract:
-
-    ```bash
-    cast send --private-key 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d --gas-limit 100000 "$APP_ADDRESS" 'calculateFibonacci(uint256)' 5
-    ```
-
-2. Check the relayed result:
-
-    ```bash
-    cast call "$APP_ADDRESS" 'fibonacci(uint256)' 5
-    ```
-
-### Deploy a new version of your application:
-
-When you want to deploy a new version of the application contract, run the following command with the relay contract address noted earlier.
-Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a new version to Bonsai.
-
-```bash
-RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
-```
-
-This will deploy only your application address and upload any updated images.
-The existing relay contract and, by setting `DEPLOY_RELAY_ADDRESS`, the running relay will continue to be used.
-
-## Use the fully verifying relay:
-
-In each of the commands above, the environment variable `RISC0_DEV_MODE=true` is added.
-With this environment variable set, the `BonsaiTestRelay` contract is used, which does not check callbacks for authentication.
-This provides fast development, allowing you to iterate on your application.
-
-When it's time to deploy you application to a live chain, such as the Sepolia testnet, you should remove this environment or set `RISC0_DEV_MODE=false`.
-When unset, or set to `false`, the fully-verifying `BonsaiRelay` contract will be used and all callbacks will require a [Groth16 SNARK proof] for authentication.
-This is what provides the security guarantees of Bonsai, that only legitimate outputs from your guest program can be sent to your application contract.
-
-Producing SNARK receipts that are verifiable on-chain requires the Bonsai proving service.
-See the [Configuring Bonsai](/README.md#configuring-bonsai) section on the main README for more information about using the Bonsai proving service.
-
-You can also deploy on a testnet by following the instructions described in [Deploy your project on a testnet](#deploy-your-project-on-a-testnet).
-If you want to know more about the relay, you can follow this [link](https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay).
 
 ## Deploy your project on a testnet
 
@@ -119,64 +68,50 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
     ```bash
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
-    export BONSAI_API_URL="BONSAI_URL" # provided with your api key
+    export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
-    export DEPLOYER_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
+    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
     ```
 
-2.  Deploy an `IBonsaiRelay` contract by running:
+2.  Deploy your contract by running:
 
     ```bash
-    RISC0_DEV_MODE=false forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --broadcast
+    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --broadcast
     ```
 
-3. Check the logs for the address of the deployed `BonsaiRelay` contract and your application contract.
-   Save them to a couple of environment variables to reference later.
+     This command should output something similar to:
+    
+    ```bash
+    ...
+    == Logs ==
+    Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+    ...
+    ```
+
+    Save the `EvenNumber` contract address to an env variable:
 
     ```bash
-    export BONSAI_RELAY_ADDRESS="#copy relay address from the deploy logs#"
-    export APP_ADDRESS="#copy app address from the deploy logs#"
+    export EVEN_NUMBER_ADDRESS=0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ```
 
-4. Start the Bonsai Ethereum Relay by running:
-
-    ```bash
-    RISC0_DEV_MODE=false cargo run --bin bonsai-ethereum-relay-cli -- run --relay-address "$BONSAI_RELAY_ADDRESS" --eth-node wss://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --eth-chain-id 11155111 --private-key "$DEPLOYER_PRIVATE_KEY"
-    ```
-
-    The relay will keep monitoring the chain for callback requests, generated when your contract calls `bonsaiRelay.requestCallback(...)`, and relay their result back to your contract after computing them.
-    Keep the relay running and switch to a new terminal.
 
 ## Interact with your deployment:
 
-You now have a deployment on a testnet that you can interact with sending either off-chain or on-chain callback requests.
-
-### Off-chain callback request
-
-1. Send a callback request directly to the Relay by running:
-
+1. Query the state:
     ```bash
-    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
+    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY $EVEN_NUMBER_ADDRESS 'get()(uint256)'
     ```
 
-2. Check the relayed result:
+2. Publish a new state
+    > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
     ```bash
-    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY "$APP_ADDRESS" 'fibonacci(uint256)' 10
-    ```
-
-### On-chain callback request
-
-1. Send a transaction to the starter contract:
-
-    ```bash
-    cast send --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --private-key "$DEPLOYER_PRIVATE_KEY" --gas-limit 100000 "$APP_ADDRESS" 'calculateFibonacci(uint256)' 5
-    ```
-
-2. Check the relayed result:
-
-    ```bash
-    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY "$APP_ADDRESS" 'fibonacci(uint256)' 5
+    RISC0_DEV_MODE=false cargo run --release -- publish \
+        --chain-id=11155111 \
+        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY \
+        --contract=$EVEN_NUMBER_ADDRESS \
+        --input=12345678
     ```
 
 [Bonsai]: https://risczero.com/bonsai

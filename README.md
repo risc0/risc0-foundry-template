@@ -7,19 +7,16 @@ Starter template for writing an application using [Bonsai].
 This repository implements an application on Ethereum utilizing Bonsai as a [coprocessor] to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive, or difficult to implement, tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
 
-*For a 60 second overview of how this template and off-chain computation with Bonsai work, [check out the video here](https://www.youtube.com/watch?v=WDS8X8H9mIk).*
-
 ## Overview
 
 The picture below shows a simplified overview of how users can integrate Bonsai into their Ethereum smart contracts:
 
-![Bonsai Relay Diagram](images/BonsaiRelay.png)
+![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
 
-1. Users can delegate their smart contract's logic to Bonsai. The [Bonsai Relay Contract](lib/risc0/bonsai/ethereum/contracts/relay/BonsaiRelay.sol) provides a `Request Callback` interface. This interface, accessible both *off-chain* (through HTTP REST API) and *on-chain*, emits an event detected by the `Ethereum Bonsai Relayer`.
-2. The `Ethereum Bonsai Relayer` sends the proof request to Bonsai.
-3. Bonsai generates a Snark proof and its result, encapsulated in a journal.
-4. The `Ethereum Bonsai Relayer` submits this proof and journal on-chain to the `Bonsai Relay Contract` for validation.
-5. If validated, the journal is dispatched to the user's smart contract via the specified callback.
+1. Delegate your smart contract's logic to Bonsai. Use a Command Line Interface (`CLI`) to initiate an off-chain proof request, which is sent to Bonsai.
+2. Bonsai generates a Snark proof and its result, encapsulated in a journal.
+3. The `CLI` submits this proof and journal on-chain to `Your Contract` for validation.
+4. `Your Contract` calls the `RISC0 Verifier` to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
 ## Dependencies
 First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero` tool.
@@ -46,10 +43,10 @@ forge init -t risc0/bonsai-foundry-template ./my-project
 ```
 Congratulations! You've just built your first Bonsai project.
 Your new project consists of:
-- a [`zkVM program`] (written in Rust), which specifies a computation that will be proven
-- a [`contract`] (written in Solidity), which receives the response
+- a [`zkVM program`] (written in Rust), which specifies a computation that will be proven;
+- a [`contract`] (written in Solidity), which receives the response;
+- an [`interface`] (written in Rust), which lets you define how to parse input and output so that your contract can interact with Bonsai. 
 
-Requesting a proof can be done via both *off-chain* or *on-chain* requests.
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
@@ -73,16 +70,17 @@ export BONSAI_API_KEY="YOUR_API_KEY" # see form linked above
 export BONSAI_API_URL="BONSAI_URL" # provided with your api key
 ```
 
-Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `BonsaiRelay` contract instead of `BonsaiTestRelay` and will request a SNARK receipt from Bonsai.
+Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `RiscZeroGroth16VerifierTest` and will request a SNARK receipt from Bonsai.
 
 ```bash
 RISC0_DEV_MODE=false forge test
 ```
 
 ## Next Steps
-To build your application, you'll need to make changes in two folders:
+To build your application, you'll need to make changes in three folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
+- write the Rust interface of your contract
 
 Then, you're ready to [deploy your project]. <br/>
 
