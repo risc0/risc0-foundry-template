@@ -16,6 +16,7 @@ use alloy_primitives::{FixedBytes, U256};
 use alloy_sol_types::{sol, SolValue};
 use anyhow::{ensure, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
+use ethers::abi::Token;
 
 sol! {
     #[derive(Debug)]
@@ -82,17 +83,26 @@ impl TryFrom<bonsai_sdk::responses::Groth16Seal> for Seal {
 
 #[derive(Clone, Debug)]
 pub struct Proof {
-    pub seal: Vec<u8>,
-    pub post_state_digest: FixedBytes<32>,
     pub journal: Vec<u8>,
+    pub post_state_digest: FixedBytes<32>,
+    pub seal: Vec<u8>,
 }
 
 impl Proof {
     pub fn new_empty(journal: Vec<u8>) -> Self {
         Self {
-            seal: vec![],
-            post_state_digest: FixedBytes::<32>::default(),
             journal,
+            post_state_digest: FixedBytes::<32>::default(),
+            seal: vec![],
         }
+    }
+
+    pub fn abi_encode(self) -> Vec<u8> {
+        let calldata = vec![
+            Token::Bytes(self.journal),
+            Token::FixedBytes(self.post_state_digest.to_vec()),
+            Token::Bytes(self.seal),
+        ];
+        ethers::abi::encode(&calldata)
     }
 }

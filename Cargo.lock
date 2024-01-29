@@ -596,7 +596,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bonsai-starter-cli"
+name = "bonsai-starter"
 version = "0.1.0"
 dependencies = [
  "alloy-primitives",

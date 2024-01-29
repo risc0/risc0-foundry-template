@@ -11,7 +11,7 @@ alloy-primitives = { version = "0.6", default-features = false, features = ["rlp
 alloy-sol-types = { version = "0.6" }
 anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
-bonsai-sdk = { version = "0.6.0-rc.1" }
+bonsai-sdk = { version = "0.6.0-rc.4" }
 bytemuck = { version = "1.14" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
 risc0-build = { version = "0.20.0-rc.4", features = ["guest-list"] }

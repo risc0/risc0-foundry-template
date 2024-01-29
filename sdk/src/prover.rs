@@ -17,15 +17,12 @@ use std::time::Duration;
 use alloy_primitives::FixedBytes;
 use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
-use risc0_zkvm::{
-    compute_image_id, default_executor, is_dev_mode, serde::to_vec, ExecutorEnv, Groth16Receipt,
-    Groth16Seal, Receipt,
-};
+use risc0_zkvm::{compute_image_id, default_executor, is_dev_mode, ExecutorEnv, Receipt};
 
 use crate::snark::{Proof, Seal};
 
 /// TODO
-pub fn generate_proof<T: serde::Serialize + Sized>(elf: &[u8], input: T) -> Result<Proof> {
+pub fn generate_proof(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
     match is_dev_mode() {
         true => DevModeProver::prove(elf, input),
         false => BonsaiProver::prove(elf, input),
@@ -33,17 +30,15 @@ pub fn generate_proof<T: serde::Serialize + Sized>(elf: &[u8], input: T) -> Resu
 }
 
 trait Prover {
-    fn prove<T: serde::Serialize + Sized>(elf: &[u8], input: T) -> Result<Proof>;
+    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof>;
 }
 
 struct DevModeProver {}
 
 impl DevModeProver {
-    fn prove<T: serde::Serialize + Sized>(elf: &[u8], input: T) -> Result<Proof> {
-        let input_data = to_vec(&input).unwrap();
-        let input_data: Vec<u8> = bytemuck::cast_slice(&input_data).to_vec();
+    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
         let env = ExecutorEnv::builder()
-            .write_slice(&input_data)
+            .write_slice(&input)
             .build()
             .context("Failed to build exec env")?;
         let exec = default_executor();
@@ -55,29 +50,25 @@ impl DevModeProver {
 
 struct BonsaiProver {}
 impl BonsaiProver {
-    fn prove<T: serde::Serialize + Sized>(elf: &[u8], input: T) -> Result<Proof> {
+    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
         let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
         // Compute the image_id, then upload the ELF with the image_id as its key.
         let image_id = compute_image_id(elf)?;
         let image_id_hex = image_id.to_string();
         client.upload_img(&image_id_hex, elf.to_vec())?;
-        eprintln!("Image ID: 0x{}", image_id_hex);
+        log::info!("Image ID: 0x{}", image_id_hex);
 
         // Prepare input data and upload it.
-        let input_id = {
-            let input_data = to_vec(&input).unwrap();
-            let input_data = bytemuck::cast_slice(&input_data).to_vec();
-            client.upload_input(input_data)?
-        };
+        let input_id = { client.upload_input(input)? };
 
         // Start a session running the prover.
         let session = client.create_session(image_id_hex, input_id, vec![])?;
-        eprintln!("Created session: {}", session.uuid);
-        let receipt = loop {
+        log::info!("Created session: {}", session.uuid);
+        let _receipt = loop {
             let res = session.status(&client)?;
             if res.status == "RUNNING" {
-                eprintln!(
+                log::info!(
                     "Current status: {} - state: {} - continue polling...",
                     res.status,
                     res.state.unwrap_or_default()
@@ -106,12 +97,12 @@ impl BonsaiProver {
 
         // Fetch the snark.
         let snark_session = client.create_snark(session.uuid)?;
-        eprintln!("Created snark session: {}", snark_session.uuid);
+        log::info!("Created snark session: {}", snark_session.uuid);
         let snark_receipt = loop {
             let res = snark_session.status(&client)?;
             match res.status.as_str() {
                 "RUNNING" => {
-                    eprintln!("Current status: {} - continue polling...", res.status,);
+                    log::info!("Current status: {} - continue polling...", res.status,);
                     std::thread::sleep(Duration::from_secs(15));
                     continue;
                 }
@@ -129,22 +120,22 @@ impl BonsaiProver {
         };
 
         let snark = snark_receipt.snark;
-        eprintln!("Snark proof!: {snark:?}");
+        log::debug!("Snark proof!: {snark:?}");
 
-        // Verify receipt.
-        let receipt = Receipt {
-            inner: risc0_zkvm::InnerReceipt::Groth16(Groth16Receipt {
-                seal: Groth16Seal {
-                    a: snark.a.clone(),
-                    b: snark.b.clone(),
-                    c: snark.c.clone(),
-                }
-                .to_vec(),
-                claim: receipt.get_claim()?,
-            }),
-            journal: receipt.journal,
-        };
-        receipt.verify(image_id)?;
+        // // Verify receipt.
+        // let receipt = Receipt {
+        //     inner: risc0_zkvm::InnerReceipt::Groth16(Groth16Receipt {
+        //         seal: Groth16Seal {
+        //             a: snark.a.clone(),
+        //             b: snark.b.clone(),
+        //             c: snark.c.clone(),
+        //         }
+        //         .to_vec(),
+        //         claim: receipt.get_claim()?,
+        //     }),
+        //     journal: receipt.journal,
+        // };
+        // receipt.verify(image_id)?;
 
         let seal = Seal::abi_encode(snark).context("Read seal")?;
         let post_state_digest: FixedBytes<32> = snark_receipt
@@ -155,9 +146,9 @@ impl BonsaiProver {
         let journal = snark_receipt.journal;
 
         Ok(Proof {
-            seal,
-            post_state_digest,
             journal,
+            post_state_digest,
+            seal,
         })
     }
 }

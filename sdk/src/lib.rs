@@ -14,10 +14,17 @@
 
 use anyhow::{anyhow, Result};
 use risc0_build::GuestListEntry;
+use risc0_zkvm::serde::to_vec;
 
-pub mod ethers;
+pub mod cli;
+pub mod eth;
 pub mod prover;
 pub mod snark;
+
+pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
+    let input_data = to_vec(&input)?;
+    Ok(bytemuck::cast_slice(&input_data).to_vec())
+}
 
 pub fn resolve_guest_entry<'a>(
     guest_list: &[GuestListEntry<'a>],
