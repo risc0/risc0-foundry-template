@@ -5,7 +5,7 @@
 Starter template for writing an application using [Bonsai].
 
 This repository implements an application on Ethereum utilizing Bonsai as a [coprocessor] to the smart contract application.
-It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive, or difficult to implement, tasks to be proven by the [RISC Zero] [zkVM], with verifiable results sent to your Ethereum contract.
+It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive, or difficult to implement, tasks to be proven by the [RISC Zero zkVM], with verifiable results sent to your Ethereum contract.
 
 ## Overview
 
@@ -129,5 +129,5 @@ Below are the primary files in the project directory
 [https://book.getfoundry.sh/forge/tests]: https://book.getfoundry.sh/forge/tests
 [receipt]: https://dev.risczero.com/zkvm/developer-guide/receipts
 [risc0/risc0]: https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay
-[zkVM guest program]: https://www.dev.risczero.com/terminology#guest-program
-[zkVM]: https://www.dev.risczero.com/terminology#zero-knowledge-virtual-machine-zkvm
+[zkVM guest program]: https://dev.risczero.com/zkvm/developer-guide/guest-code-101
+[RISC Zero zkVM]: https://dev.risczero.com/zkvm
