@@ -54,6 +54,8 @@ jobs:
         run: cargo build
 
       - name: run foundry tests with local exec
+        env:
+            RISC0_DEV_MODE: true
         run: forge test -vvv
 
   e2e:

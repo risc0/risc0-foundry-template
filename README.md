@@ -57,7 +57,7 @@ Your new project consists of:
 ### Test Your Project
 - Use `cargo build` to test compilation of your zkVM program.
 - Use `cargo test` to run the tests in your zkVM program.
-- Use `forge test` to test your Solidity contracts and their interaction with your zkVM program.
+- Use `RISC0_DEV_MODE=false forge test -vvv` to test your Solidity contracts and their interaction with your zkVM program.
 
 ### Configuring Bonsai
 ***Note:*** *The Bonsai proving service is still in early Alpha. To request an API key [complete the form here](https://bonsai.xyz/apply).*
@@ -73,7 +73,7 @@ export BONSAI_API_URL="BONSAI_URL" # provided with your api key
 Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `RiscZeroGroth16VerifierTest` and will request a SNARK receipt from Bonsai.
 
 ```bash
-RISC0_DEV_MODE=false forge test
+RISC0_DEV_MODE=false forge test -vvv
 ```
 
 ## Next Steps
