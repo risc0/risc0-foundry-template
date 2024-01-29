@@ -80,7 +80,7 @@ RISC0_DEV_MODE=false forge test -vvv
 To build your application, you'll need to make changes in three folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
-- write the Rust interface of your contract
+- write the Rust interface of your contract in the [cli] folder
 
 Then, you're ready to [deploy your project]. <br/>
 
@@ -116,6 +116,7 @@ Below are the primary files in the project directory
 
 
 [methods]: /methods
+[cli]: /cli
 [contracts]: /contracts
 [deploy your project]: /deployment-guide.md
 [coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
