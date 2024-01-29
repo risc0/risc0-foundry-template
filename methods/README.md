@@ -7,7 +7,7 @@ This is where you will define one or more [guest programs] to act as a coprocess
 
 ### Writing Guest Code
 To learn to write code for the zkVM, we recommend [Guest Code 101]. 
-Note that you don't need to write host code because the Bonsai Ethereum Relay acts as the zkVM host.
+Note that you don't need to write host code because the CLI acts as the zkVM host.
 
 Examples of what you can do in the guest can be found in the [RISC Zero examples].
 

@@ -129,6 +129,5 @@ Below are the primary files in the project directory
 [RISC-V]: https://www.risczero.com/docs/reference-docs/about-risc-v
 [https://book.getfoundry.sh/forge/tests]: https://book.getfoundry.sh/forge/tests
 [receipt]: https://dev.risczero.com/zkvm/developer-guide/receipts
-[risc0/risc0]: https://github.com/risc0/risc0/tree/main/bonsai/ethereum-relay
 [zkVM guest program]: https://dev.risczero.com/zkvm/developer-guide/guest-code-101
 [RISC Zero zkVM]: https://dev.risczero.com/zkvm

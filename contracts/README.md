@@ -1,6 +1,6 @@
 # Bonsai Solidity Contracts
 
-This directory contains the Solidity contract for deploying a [Bonsai] application through the Ethereum relay. 
+This directory contains the Solidity contract for deploying a [Bonsai] application. 
 There are two primary starter template contracts included.
 
 The Solidity libraries for Bonsai can be found at [github.com/risc0/risc0](https://github.com/risc0/risc0/tree/main/bonsai/ethereum).
