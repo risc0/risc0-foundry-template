@@ -36,14 +36,14 @@ pub fn set(x: U256, post_state_digest: FixedBytes<32>, seal: Vec<u8>) -> Vec<u8>
     calldata.abi_encode()
 }
 
-/// Input parser from string to an encoded `Vec<u8>` compatible with the zkVM and Bonsai.
-pub fn parse_input(input: String) -> Result<Vec<u8>> {
+/// Input serializer returning an encoded `Vec<u8>` compatible with the zkVM and Bonsai.
+pub fn serialize_input(input: String) -> Result<Vec<u8>> {
     serialize(U256::from_str(&input)?)
 }
 
-/// Parses a proof to extract the required output from the journal.
-pub fn parse_output(proof: Proof) -> Result<Vec<u8>> {
-    let output = U256::abi_decode(&proof.journal, true)?;
-    let calldata = set(output, proof.post_state_digest, proof.seal);
+/// Parses a proof to extract the required calldata.
+pub fn calldata(proof: Proof) -> Result<Vec<u8>> {
+    let x = U256::abi_decode(&proof.journal, true)?;
+    let calldata = set(x, proof.post_state_digest, proof.seal);
     Ok(calldata)
 }

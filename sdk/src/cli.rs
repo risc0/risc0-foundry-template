@@ -64,14 +64,14 @@ enum Command {
 pub fn query<T: serde::Serialize + Sized>(
     guest_binary: String,
     input: Option<T>,
-    parser: fn(input: T) -> Result<Vec<u8>>,
+    serialize_input: fn(input: T) -> Result<Vec<u8>>,
 ) -> Result<()> {
     let elf = resolve_guest_entry(GUEST_LIST, &guest_binary)?;
     let image_id = compute_image_id(&elf)?;
     let output = match input {
         // Input provided. Return the Ethereum ABI encoded proof.
         Some(input) => {
-            let proof = prover::generate_proof(&elf, parser(input)?)?;
+            let proof = prover::generate_proof(&elf, serialize_input(input)?)?;
             hex::encode(proof.abi_encode())
         }
         // No input. Return the Ethereum ABI encoded bytes32 image ID.
@@ -91,8 +91,8 @@ pub fn publish<T: serde::Serialize + Sized>(
     rpc_url: String,
     contract: String,
     input: T,
-    parse_input: fn(input: T) -> Result<Vec<u8>>,
-    parse_output: fn(proof: Proof) -> Result<Vec<u8>>,
+    serialize_input: fn(input: T) -> Result<Vec<u8>>,
+    calldata: fn(proof: Proof) -> Result<Vec<u8>>,
 ) -> Result<()> {
     let tx_sender = match std::env::var("ETH_WALLET_PRIVATE_KEY") {
         Ok(private_key) => Some(eth::TxSender::new(
@@ -107,8 +107,8 @@ pub fn publish<T: serde::Serialize + Sized>(
     if tx_sender.is_some() {
         println!("Private key is set; transaction will be sent");
     }
-    let proof = prover::generate_proof(elf, parse_input(input)?)?;
-    let calldata = parse_output(proof)?;
+    let proof = prover::generate_proof(elf, serialize_input(input)?)?;
+    let calldata = calldata(proof)?;
 
     let runtime = tokio::runtime::Runtime::new()?;
     runtime.block_on(send_transaction(tx_sender, calldata))?;
@@ -126,14 +126,14 @@ async fn send_transaction(tx_sender: Option<TxSender>, calldata: Vec<u8>) -> Res
 /// Run the CLI.
 pub fn run(
     elf: &[u8],
-    parse_input: fn(input: String) -> Result<Vec<u8>>,
-    parse_output: fn(proof: Proof) -> Result<Vec<u8>>,
+    serialize_input: fn(input: String) -> Result<Vec<u8>>,
+    calldata: fn(proof: Proof) -> Result<Vec<u8>>,
 ) -> Result<()> {
     match Command::parse() {
         Command::Query {
             guest_binary,
             input,
-        } => query(guest_binary, input, parse_input)?,
+        } => query(guest_binary, input, serialize_input)?,
         Command::Publish {
             chain_id,
             rpc_url,
@@ -145,8 +145,8 @@ pub fn run(
             rpc_url,
             contract,
             input,
-            parse_input,
-            parse_output,
+            serialize_input,
+            calldata,
         )?,
     }
 

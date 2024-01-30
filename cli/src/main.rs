@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use anyhow::Result;
-use interface::{parse_input, parse_output};
+use interface::{calldata, serialize_input};
 use methods::IS_EVEN_ELF;
 use risc0_ethereum_sdk::cli;
 
@@ -21,5 +21,5 @@ mod interface;
 
 fn main() -> Result<()> {
     env_logger::init();
-    cli::run(IS_EVEN_ELF, parse_input, parse_output)
+    cli::run(IS_EVEN_ELF, serialize_input, calldata)
 }
