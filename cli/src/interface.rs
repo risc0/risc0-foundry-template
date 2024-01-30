@@ -15,7 +15,7 @@
 use std::str::FromStr;
 
 use alloy_primitives::{FixedBytes, U256};
-use alloy_sol_types::{sol, SolInterface};
+use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::Result;
 use risc0_ethereum_sdk::{serialize, snark::Proof};
 
@@ -43,7 +43,7 @@ pub fn parse_input(input: String) -> Result<Vec<u8>> {
 
 /// Parses a proof to extract the required output from the journal.
 pub fn parse_output(proof: Proof) -> Result<Vec<u8>> {
-    let output = U256::from_be_slice(proof.journal.as_slice());
+    let output = U256::abi_decode(&proof.journal, true)?;
     let calldata = set(output, proof.post_state_digest, proof.seal);
     Ok(calldata)
 }
