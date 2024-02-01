@@ -45,7 +45,7 @@ Congratulations! You've just built your first Bonsai project.
 Your new project consists of:
 - a [zkVM program] (written in Rust), which specifies a computation that will be proven;
 - a [app contract] (written in Solidity), which receives the response;
-- a [guest interface] (written in Rust), which lets you define how to parse input and output so that your contract can interact with Bonsai. 
+- a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] and Bonsai can interact with your contract. 
 
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
@@ -53,7 +53,7 @@ Your new project consists of:
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
 [zkVM program]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
 [app contract]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
-[guest interface]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli/src/interface.rs
+[guest interface]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli
 
 ### Test Your Project
 - Use `cargo build` to test compilation of your zkVM program.
@@ -81,7 +81,7 @@ RISC0_DEV_MODE=false forge test -vvv
 To build your application, you'll need to make changes in three folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
-- write the Rust interface of your contract in the [cli] folder
+- write the guest interface in the [cli] folder
 
 Then, you're ready to [deploy your project]. <br/>
 
