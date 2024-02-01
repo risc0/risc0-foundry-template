@@ -57,6 +57,7 @@ enum Command {
         contract: String,
 
         /// The name of the guest binary
+        #[clap(long)]
         guest_binary: String,
 
         /// The input to provide to the guest binary
