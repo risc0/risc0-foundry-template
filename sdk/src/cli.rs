@@ -16,12 +16,11 @@ use std::io::Write;
 
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
-use methods::GUEST_LIST;
 use risc0_build::GuestListEntry;
 use risc0_zkvm::compute_image_id;
 
 use crate::{
-    eth::{self, TxSender},
+    eth::{self},
     prover,
     snark::Proof,
 };
@@ -42,36 +41,54 @@ enum Command {
     /// and publish the result to Ethererum.
     Publish {
         /// Ethereum chain ID
-        #[clap(short, long, require_equals = true)]
+        #[clap(long)]
         chain_id: u64,
 
         /// Ethereum Node endpoint.
-        #[clap(short, long, require_equals = true)]
+        #[clap(long, env)]
+        eth_wallet_private_key: String,
+
+        /// Ethereum Node endpoint.
+        #[clap(long)]
         rpc_url: String,
 
         /// Application's contract address on Ethereum
-        #[clap(short, long, require_equals = true)]
+        #[clap(long)]
         contract: String,
 
+        /// The name of the guest binary
+        guest_binary: String,
+
         /// The input to provide to the guest binary
-        #[clap(short, long, require_equals = true)]
+        #[clap(short, long)]
         input: String,
     },
 }
 
+/// GuestInterface for parsing guest input and calldata.
+pub trait GuestInterface {
+    /// Parses a `String` as the guest input returning its serialization,
+    /// encoded as `Vec<u8>`, compatible with the zkVM and Bonsai.
+    fn serialize_input(&self, input: String) -> Result<Vec<u8>>;
+
+    /// Extracts the calldata ABI encoded from a proof.
+    fn calldata(&self, proof: Proof) -> Result<Vec<u8>>;
+}
+
 /// Execute or return image id.
-/// If some input is provided, returns the Ethereum ABI encoded proof.
-pub fn query<T: serde::Serialize + Sized>(
+/// If some input is provided, returns the Ethereum ABI and hex encoded proof.
+pub fn query<'a>(
+    guest_list: &[GuestListEntry<'a>],
     guest_binary: String,
-    input: Option<T>,
-    serialize_input: fn(input: T) -> Result<Vec<u8>>,
+    input: Option<String>,
+    guest_interface: &dyn GuestInterface,
 ) -> Result<()> {
-    let elf = resolve_guest_entry(GUEST_LIST, &guest_binary)?;
+    let elf = resolve_guest_entry(guest_list, &guest_binary)?;
     let image_id = compute_image_id(&elf)?;
     let output = match input {
         // Input provided. Return the Ethereum ABI encoded proof.
         Some(input) => {
-            let proof = prover::generate_proof(&elf, serialize_input(input)?)?;
+            let proof = prover::generate_proof(&elf, guest_interface.serialize_input(input)?)?;
             hex::encode(proof.abi_encode())
         }
         // No input. Return the Ethereum ABI encoded bytes32 image ID.
@@ -85,68 +102,53 @@ pub fn query<T: serde::Serialize + Sized>(
 }
 
 /// Request a proof and publish it on Ethereum.
-pub fn publish<T: serde::Serialize + Sized>(
-    elf: &[u8],
+pub fn publish<'a>(
     chain_id: u64,
+    eth_wallet_private_key: String,
     rpc_url: String,
     contract: String,
-    input: T,
-    serialize_input: fn(input: T) -> Result<Vec<u8>>,
-    calldata: fn(proof: Proof) -> Result<Vec<u8>>,
+    guest_list: &[GuestListEntry<'a>],
+    guest_binary: String,
+    input: String,
+    guest_interface: &dyn GuestInterface,
 ) -> Result<()> {
-    let tx_sender = match std::env::var("ETH_WALLET_PRIVATE_KEY") {
-        Ok(private_key) => Some(eth::TxSender::new(
-            chain_id,
-            &rpc_url,
-            &private_key,
-            &contract,
-        )?),
-        _ => None,
-    };
-
-    if tx_sender.is_some() {
-        println!("Private key is set; transaction will be sent");
-    }
-    let proof = prover::generate_proof(elf, serialize_input(input)?)?;
-    let calldata = calldata(proof)?;
+    let elf = resolve_guest_entry(guest_list, &guest_binary)?;
+    let tx_sender = eth::TxSender::new(chain_id, &rpc_url, &eth_wallet_private_key, &contract)?;
+    let proof = prover::generate_proof(&elf, guest_interface.serialize_input(input)?)?;
+    let calldata = guest_interface.calldata(proof)?;
 
     let runtime = tokio::runtime::Runtime::new()?;
-    runtime.block_on(send_transaction(tx_sender, calldata))?;
+    runtime.block_on(tx_sender.send(calldata))?;
 
-    Ok(())
-}
-
-async fn send_transaction(tx_sender: Option<TxSender>, calldata: Vec<u8>) -> Result<()> {
-    if let Some(tx_sender) = tx_sender {
-        tx_sender.send(calldata).await?;
-    }
     Ok(())
 }
 
 /// Run the CLI.
-pub fn run(
-    elf: &[u8],
-    serialize_input: fn(input: String) -> Result<Vec<u8>>,
-    calldata: fn(proof: Proof) -> Result<Vec<u8>>,
+pub fn run<'a>(
+    guest_list: &[GuestListEntry<'a>],
+    guest_interface: &dyn GuestInterface,
 ) -> Result<()> {
     match Command::parse() {
         Command::Query {
             guest_binary,
             input,
-        } => query(guest_binary, input, serialize_input)?,
+        } => query(guest_list, guest_binary, input, guest_interface)?,
         Command::Publish {
             chain_id,
+            eth_wallet_private_key,
             rpc_url,
             contract,
+            guest_binary,
             input,
         } => publish(
-            elf,
             chain_id,
+            eth_wallet_private_key,
             rpc_url,
             contract,
+            guest_list,
+            guest_binary,
             input,
-            serialize_input,
-            calldata,
+            guest_interface,
         )?,
     }
 

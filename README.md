@@ -13,10 +13,10 @@ The picture below shows a simplified overview of how users can integrate Bonsai 
 
 ![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
 
-1. Delegate your smart contract's logic to Bonsai. Use a Command Line Interface (`CLI`) to initiate an off-chain proof request, which is sent to Bonsai.
-2. Bonsai generates a Snark proof and its result, encapsulated in a journal.
-3. The `CLI` submits this proof and journal on-chain to `Your Contract` for validation.
-4. `Your Contract` calls the `RISC0 Verifier` to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
+1. Delegate your smart contract's logic to the [RISC Zero zkVM] simply using a Command Line Interface (CLI) to initiate an off-chain proof request, which is sent to the Bonsai proving service.
+2. Bonsai generates a SNARK proof and its result, encapsulated in a journal.
+3. The CLI submits this proof and journal on-chain to your app contract for validation.
+4. Your app contract calls the RISC Zero Verifier to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
 ## Dependencies
 First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero` tool.
@@ -43,17 +43,17 @@ forge init -t risc0/bonsai-foundry-template ./my-project
 ```
 Congratulations! You've just built your first Bonsai project.
 Your new project consists of:
-- a [`zkVM program`] (written in Rust), which specifies a computation that will be proven;
-- a [`contract`] (written in Solidity), which receives the response;
-- an [`interface`] (written in Rust), which lets you define how to parse input and output so that your contract can interact with Bonsai. 
+- a [zkVM program] (written in Rust), which specifies a computation that will be proven;
+- a [app contract] (written in Solidity), which receives the response;
+- a [guest interface] (written in Rust), which lets you define how to parse input and output so that your contract can interact with Bonsai. 
 
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-[`zkVM program`]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
-[`contract`]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
-[`interface`]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli/src/interface.rs
+[zkVM program]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
+[app contract]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
+[guest interface]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli/src/interface.rs
 
 ### Test Your Project
 - Use `cargo build` to test compilation of your zkVM program.

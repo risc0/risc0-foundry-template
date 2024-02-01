@@ -14,11 +14,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.20;
 
 import {SafeCast} from "openzeppelin/contracts/utils/math/SafeCast.sol";
 
-import {Groth16Verifier} from "bonsai/groth16/Groth16Verifier.sol";
 import {
     ExitCode,
     IRiscZeroVerifier,
@@ -31,7 +30,7 @@ import {
 } from "bonsai/IRiscZeroVerifier.sol";
 
 /// @notice Groth16 verifier contract for RISC Zero receipts of execution.
-contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier, Groth16Verifier {
+contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier {
     uint256 public immutable CONTROL_ID_0;
     uint256 public immutable CONTROL_ID_1;
 
@@ -54,7 +53,10 @@ contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier, Groth16Verifier {
     }
 
     /// @inheritdoc IRiscZeroVerifier
-    function verify_integrity(Receipt memory /*receipt*/ ) public view returns (bool) {
-        return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0;
+    function verify_integrity(Receipt memory receipt) public view returns (bool) {
+        // Require that the seal be specifically empty.
+        // Reject if the caller may have sent a real seal.
+        return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0 && receipt.seal.length == 0
+            && receipt.claim.postStateDigest == bytes32(0);
     }
 }

@@ -57,6 +57,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
         --chain-id=31337 \
         --rpc-url=http://localhost:8545 \
         --contract=e7f1725E7734CE288F8367e1Bb143E90bb3F0512 \
+        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 
@@ -111,6 +112,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
         --chain-id=11155111 \
         --rpc-url=https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY \
         --contract=$EVEN_NUMBER_ADDRESS \
+        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 

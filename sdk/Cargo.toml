@@ -10,12 +10,11 @@ anyhow = { workspace = true }
 bincode = { workspace = true }
 bonsai-sdk = { workspace = true }
 bytemuck = { workspace = true }
-clap = { version = "4.0", features = ["derive"] }
+clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
 ethers = { version = "2.0" }
 hex = { version = "0.4" }
 log = { version = "0.4" }
-methods = { workspace = true }
 risc0-build = { workspace = true }
 risc0-zkvm = { workspace = true, features = ["client"] }
 serde = { workspace = true }

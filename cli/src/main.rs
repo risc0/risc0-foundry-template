@@ -13,13 +13,19 @@
 // limitations under the License.
 
 use anyhow::Result;
-use interface::{calldata, serialize_input};
-use methods::IS_EVEN_ELF;
-use risc0_ethereum_sdk::cli;
+use guest_interface::EvenNumberInterface;
+use methods::GUEST_LIST;
+use risc0_ethereum_sdk::cli::{self, GuestInterface};
 
-mod interface;
+mod guest_interface;
 
 fn main() -> Result<()> {
     env_logger::init();
-    cli::run(IS_EVEN_ELF, serialize_input, calldata)
+
+    // Initialize an EvenNumberInterface for parsing guest input and generating
+    // calldata.
+    let interface: &dyn GuestInterface = &EvenNumberInterface {};
+
+    // Run the CLI for publishing on Ethereum
+    cli::run(GUEST_LIST, interface)
 }

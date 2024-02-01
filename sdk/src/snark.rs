@@ -19,6 +19,9 @@ use bonsai_sdk::alpha as bonsai_sdk;
 use ethers::abi::Token;
 
 sol! {
+    /// Groth16 seal construction from [RiscZeroGroth16Verifier.sol].
+    ///
+    /// [RiscZeroGroth16Verifier.sol]: https://github.com/risc0/risc0/blob/v0.20.0/bonsai/ethereum/contracts/groth16/RiscZeroGroth16Verifier.sol#L76-L81
     #[derive(Debug)]
     struct Seal {
         uint256[2] a;

@@ -11,12 +11,12 @@ alloy-primitives = { version = "0.6", default-features = false, features = ["rlp
 alloy-sol-types = { version = "0.6" }
 anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
-bonsai-sdk = { version = "0.6.0-rc.4" }
+bonsai-sdk = { version = "0.6.0" }
 bytemuck = { version = "1.14" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
-risc0-build = { version = "0.20.0-rc.4", features = ["guest-list"] }
+risc0-build = { version = "0.20.0", features = ["guest-list"] }
 risc0-ethereum-sdk = { version = "0.1.0", path = "sdk" }
-risc0-zkvm = { version = "0.20.0-rc.4", default-features = false }
+risc0-zkvm = { version = "0.20.0", default-features = false }
 serde = { version = "1.0", features = ["derive"] }
 
 # Always optimize; building and running the guest takes much longer without optimization.

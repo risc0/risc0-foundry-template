@@ -14,7 +14,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
 import {Script} from "forge-std/Script.sol";
@@ -22,8 +22,11 @@ import {console2} from "forge-std/console2.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 
-import "../contracts/BonsaiStarter.sol";
+import {EvenNumber} from "../contracts/EvenNumber.sol";
 
+/// @notice Deployment script for the BonsaiStarter project.
+/// @dev Use the following environment variable to control the deployment:
+///     * ETH_WALLET_PRIVATE_KEY private key of the wallet to be used for deployment.
 contract EvenNumberDeploy is Script, BonsaiCheats {
     function run() external {
         uint256 deployerKey = vm.envOr("ETH_WALLET_PRIVATE_KEY", uint256(0));

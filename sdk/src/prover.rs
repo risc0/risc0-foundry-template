@@ -23,7 +23,8 @@ use risc0_zkvm::{
 
 use crate::snark::{Proof, Seal};
 
-/// Serializes the given input as a `Vec<u8>` compatible with the zkVM and Bonsai.
+/// Serializes the given input as a `Vec<u8>` compatible with the zkVM and
+/// Bonsai.
 pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
     let input_data = to_vec(&input)?;
     Ok(bytemuck::cast_slice(&input_data).to_vec())

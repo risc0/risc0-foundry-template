@@ -22,12 +22,14 @@ risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
     // Read data sent from the application contract.
-    let mut number: U256 = env::read();
+    let number: U256 = env::read();
 
     // Run the computation.
-    if number.bit(0) {
-        number = U256::ZERO;
-    }
+    // In this case, asserting that the provided number is even.
+    assert!(
+        number != U256::ZERO && number.bit(0) == false,
+        "number is not even"
+    );
 
     // Commit the journal that will be received by the application contract.
     // Encoded types should match the args expected by the application.

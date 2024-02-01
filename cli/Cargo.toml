@@ -9,6 +9,4 @@ alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
 env_logger = { version = "0.10" }
 methods = { workspace = true }
-risc0-build = { workspace = true }
 risc0-ethereum-sdk = { workspace = true }
-risc0-zkvm = { workspace = true }
