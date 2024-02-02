@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod interface;
+
 use anyhow::Result;
-use guest_interface::EvenNumberInterface;
+use interface::EvenNumberInterface;
 use methods::GUEST_LIST;
 use risc0_ethereum_sdk::cli::{self, GuestInterface};
-
-mod guest_interface;
 
 fn main() -> Result<()> {
     env_logger::init();
