@@ -42,7 +42,7 @@ contract EvenNumberTest is BonsaiTest {
         set(123456789);
     }
 
-    function testFail_Set_Zero() public {
+    function test_Set_Zero() public {
         set(0);
     }
 
