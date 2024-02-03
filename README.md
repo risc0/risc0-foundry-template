@@ -82,7 +82,6 @@ Your new project consists of:
 
 ### Run the Tests
 
-<!-- TODO(victor): Make cargo test actually do something -->
 - Use `cargo test` to run the tests in your zkVM program.
 <!-- TODO(victor): Tests are failing -->
 - Use `RISC0_DEV_MODE=true forge test -vvv` to test your Solidity contracts and their interaction with your zkVM program.

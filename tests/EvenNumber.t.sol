@@ -34,21 +34,22 @@ contract EvenNumberTest is BonsaiTest {
         assertEq(evenNumber.get(), 0);
     }
 
-    function test_Set_Even() public {
+    function testSetEven() public {
         set(12345678);
     }
 
-    function testFail_Set_Odd() public {
+    function testFailSetOdd() public {
         set(123456789);
     }
 
-    function test_Set_Zero() public {
+    function testSetZero() public {
         set(0);
     }
 
     function set(uint256 number) internal {
         (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
             queryImageOutputAndSeal(imageId, abi.encode(number));
+
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);
     }
