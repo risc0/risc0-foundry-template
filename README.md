@@ -76,9 +76,9 @@ Your new project consists of:
 - a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] and Bonsai can interact with your contract.
 
 [instructions above]: #dependencies
-[zkVM program]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods/guest/src/bin
-[app contract]: https://github.com/risc0/bonsai-foundry-template/tree/main/contracts
-[guest interface]: https://github.com/risc0/bonsai-foundry-template/tree/main/cli
+[zkVM program]: ./methods/guest/src/bin
+[app contract]: ./contracts
+[guest interface]: ./cli
 
 ### Run the Tests
 
@@ -92,6 +92,10 @@ To build your application, you'll need to make changes in three folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
 - write the guest interface in the [cli] folder
+
+[methods]: ./methods
+[cli]: ./cli
+[contracts]: ./contracts
 
 ### Configuring Bonsai
 
@@ -148,7 +152,3 @@ Below are the primary files in the project directory
         ├── interface.rs            // Interface for interacting with your contract
         └── main.rs                 // CLI for interacting with your application
 ```
-
-[methods]: /methods
-[cli]: /cli
-[contracts]: /contracts
