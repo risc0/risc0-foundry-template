@@ -72,16 +72,13 @@ pub trait GuestInterface {
     /// Input type expected by the guest from `env::read()`.
     type Input: serde::Serialize;
 
-    /// Journal data type written by the guest via `env::commit()`.
-    type Journal: serde::de::DeserializeOwned;
-
     /// Parses a `String` as the guest input.
     fn parse_input(&self, input: String) -> Result<Self::Input>;
 
     /// Encodes the proof into calldata to match the function to call on the Ethereum contract.
     fn encode_calldata(
         &self,
-        journal: Self::Journal,
+        journal: Vec<u8>,
         post_state_digest: FixedBytes<32>,
         seal: Vec<u8>,
     ) -> Result<Vec<u8>>;

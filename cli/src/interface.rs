@@ -15,7 +15,7 @@
 use std::str::FromStr;
 
 use alloy_primitives::{FixedBytes, U256};
-use alloy_sol_types::{sol, SolInterface};
+use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::Result;
 use risc0_ethereum_sdk::cli::GuestInterface;
 
@@ -37,7 +37,6 @@ pub struct EvenNumberInterface;
 
 impl GuestInterface for EvenNumberInterface {
     type Input = U256;
-    type Journal = U256;
 
     /// Parses a `String` as the guest input.
     ///
@@ -49,12 +48,12 @@ impl GuestInterface for EvenNumberInterface {
     /// Encodes the proof into calldata to match the function to call on the Ethereum contract.
     fn encode_calldata(
         &self,
-        journal: Self::Journal,
+        journal: Vec<u8>,
         post_state_digest: FixedBytes<32>,
         seal: Vec<u8>,
     ) -> Result<Vec<u8>> {
-        // Unpack the journal. In this this it only contains a single number.
-        let x = journal;
+        // Decode the journal. Must match what was written in the guest with `env::commit_slice`
+        let x = U256::abi_decode(&journal, true)?;
 
         // Encode the function call for `IEvenNumber.set(x)`
         Ok(IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {

@@ -18,6 +18,7 @@ include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 #[cfg(test)]
 mod tests {
     use alloy_primitives::U256;
+    use alloy_sol_types::SolValue;
     use risc0_zkvm::{default_prover, ExecutorEnv};
 
     #[test]
@@ -32,7 +33,7 @@ mod tests {
 
         let receipt = default_prover().prove(env, super::IS_EVEN_ELF).unwrap();
 
-        let x: U256 = receipt.journal.decode().unwrap();
+        let x = U256::abi_decode(&receipt.journal.bytes, true).unwrap();
         assert_eq!(x, even_number);
     }
 
