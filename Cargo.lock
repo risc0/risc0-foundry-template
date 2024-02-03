@@ -596,7 +596,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bonsai-starter"
+name = "bonsai-starter-cli"
 version = "0.1.0"
 dependencies = [
  "alloy-primitives",
@@ -604,6 +604,7 @@ dependencies = [
  "anyhow",
  "bonsai-starter-methods",
  "env_logger",
+ "hex",
  "risc0-ethereum-sdk",
 ]
 
@@ -611,7 +612,9 @@ dependencies = [
 name = "bonsai-starter-methods"
 version = "0.1.0"
 dependencies = [
+ "alloy-primitives",
  "risc0-build",
+ "risc0-zkvm",
 ]
 
 [[package]]

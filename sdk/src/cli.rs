@@ -14,6 +14,7 @@
 
 use std::io::Write;
 
+use alloy_primitives::FixedBytes;
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
 use risc0_build::GuestListEntry;
@@ -66,34 +67,44 @@ enum Command {
     },
 }
 
-/// GuestInterface for parsing guest input and calldata.
+/// GuestInterface for parsing guest input and encoding calldata.
 pub trait GuestInterface {
-    /// Parses a `String` as the guest input returning its serialization,
-    /// encoded as `Vec<u8>`, compatible with the zkVM and Bonsai.
-    fn serialize_input(&self, input: String) -> Result<Vec<u8>>;
+    /// Input type expected by the guest from `env::read()`.
+    type Input: serde::Serialize;
 
-    /// Extracts the calldata ABI encoded from a proof.
-    fn calldata(&self, proof: Proof) -> Result<Vec<u8>>;
+    /// Journal data type written by the guest via `env::commit()`.
+    type Journal: serde::de::DeserializeOwned;
+
+    /// Parses a `String` as the guest input.
+    fn parse_input(&self, input: String) -> Result<Self::Input>;
+
+    /// Encodes the proof into calldata to match the function to call on the Ethereum contract.
+    fn encode_calldata(
+        &self,
+        journal: Self::Journal,
+        post_state_digest: FixedBytes<32>,
+        seal: Vec<u8>,
+    ) -> Result<Vec<u8>>;
 }
 
 /// Execute or return image id.
 /// If some input is provided, returns the Ethereum ABI and hex encoded proof.
-pub fn query<'a>(
-    guest_list: &[GuestListEntry<'a>],
+pub fn query(
+    guest_list: &[GuestListEntry],
     guest_binary: String,
     input: Option<String>,
-    guest_interface: &dyn GuestInterface,
+    guest_interface: impl GuestInterface,
 ) -> Result<()> {
     let elf = resolve_guest_entry(guest_list, &guest_binary)?;
     let image_id = compute_image_id(&elf)?;
     let output = match input {
         // Input provided. Return the Ethereum ABI encoded proof.
         Some(input) => {
-            let proof = prover::generate_proof(&elf, guest_interface.serialize_input(input)?)?;
+            let proof = prover::generate_proof(&elf, guest_interface.parse_input(input)?)?;
             hex::encode(proof.abi_encode())
         }
         // No input. Return the Ethereum ABI encoded bytes32 image ID.
-        None => format!("0x{}", image_id.to_string()),
+        None => format!("0x{}", hex::encode(image_id)),
     };
     print!("{output}");
     std::io::stdout()
@@ -103,20 +114,30 @@ pub fn query<'a>(
 }
 
 /// Request a proof and publish it on Ethereum.
-pub fn publish<'a>(
+pub fn publish(
     chain_id: u64,
     eth_wallet_private_key: String,
     rpc_url: String,
     contract: String,
-    guest_list: &[GuestListEntry<'a>],
+    guest_list: &[GuestListEntry],
     guest_binary: String,
     input: String,
-    guest_interface: &dyn GuestInterface,
+    guest_interface: impl GuestInterface,
 ) -> Result<()> {
     let elf = resolve_guest_entry(guest_list, &guest_binary)?;
     let tx_sender = eth::TxSender::new(chain_id, &rpc_url, &eth_wallet_private_key, &contract)?;
-    let proof = prover::generate_proof(&elf, guest_interface.serialize_input(input)?)?;
-    let calldata = guest_interface.calldata(proof)?;
+
+    let input = guest_interface.parse_input(input)?;
+    let Proof {
+        journal,
+        post_state_digest,
+        seal,
+    } = prover::generate_proof(&elf, input)?;
+    let calldata = guest_interface.encode_calldata(
+        risc0_zkvm::serde::from_slice(journal.as_slice())?,
+        post_state_digest,
+        seal,
+    )?;
 
     let runtime = tokio::runtime::Runtime::new()?;
     runtime.block_on(tx_sender.send(calldata))?;
@@ -125,10 +146,7 @@ pub fn publish<'a>(
 }
 
 /// Run the CLI.
-pub fn run<'a>(
-    guest_list: &[GuestListEntry<'a>],
-    guest_interface: &dyn GuestInterface,
-) -> Result<()> {
+pub fn run(guest_list: &[GuestListEntry], guest_interface: impl GuestInterface) -> Result<()> {
     match Command::parse() {
         Command::Query {
             guest_binary,
@@ -156,10 +174,7 @@ pub fn run<'a>(
     Ok(())
 }
 
-fn resolve_guest_entry<'a>(
-    guest_list: &[GuestListEntry<'a>],
-    guest_binary: &String,
-) -> Result<Vec<u8>> {
+fn resolve_guest_entry(guest_list: &[GuestListEntry], guest_binary: &String) -> Result<Vec<u8>> {
     // Search list for requested binary name
     let potential_guest_image_id: [u8; 32] =
         match hex::decode(guest_binary.to_lowercase().trim_start_matches("0x")) {

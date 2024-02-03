@@ -17,23 +17,14 @@ use std::time::Duration;
 use alloy_primitives::FixedBytes;
 use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
-use risc0_zkvm::{
-    compute_image_id, default_executor, is_dev_mode, serde::to_vec, ExecutorEnv, Receipt,
-};
+use risc0_zkvm::{compute_image_id, default_executor, is_dev_mode, ExecutorEnv, Receipt};
 
 use crate::snark::{Proof, Seal};
-
-/// Serializes the given input as a `Vec<u8>` compatible with the zkVM and
-/// Bonsai.
-pub fn serialize<T: serde::Serialize + Sized>(input: T) -> Result<Vec<u8>> {
-    let input_data = to_vec(&input)?;
-    Ok(bytemuck::cast_slice(&input_data).to_vec())
-}
 
 /// Generates a snark proof for the given elf and input.
 /// When `RISC0_DEV_MODE` is set, executes the elf locally,
 /// as opposed to sending the proof request to the Bonsai service.
-pub fn generate_proof(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
+pub(crate) fn generate_proof(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
     match is_dev_mode() {
         true => DevModeProver::prove(elf, input),
         false => BonsaiProver::prove(elf, input),
@@ -47,9 +38,9 @@ trait Prover {
 struct DevModeProver {}
 
 impl DevModeProver {
-    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
+    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
         let env = ExecutorEnv::builder()
-            .write_slice(&input)
+            .write(&input)?
             .build()
             .context("Failed to build exec env")?;
         let exec = default_executor();
@@ -59,9 +50,15 @@ impl DevModeProver {
     }
 }
 
+/// Serializes the given input as a `Vec<u8>` compatible with Bonsai.
+fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<Vec<u8>> {
+    let input_encoded = risc0_zkvm::serde::to_vec(&input)?;
+    Ok(bytemuck::allocation::cast_vec(input_encoded))
+}
+
 struct BonsaiProver {}
 impl BonsaiProver {
-    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof> {
+    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
         let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
         // Compute the image_id, then upload the ELF with the image_id as its key.
@@ -71,7 +68,8 @@ impl BonsaiProver {
         log::info!("Image ID: 0x{}", image_id_hex);
 
         // Prepare input data and upload it.
-        let input_id = { client.upload_input(input)? };
+        let input_bytes = serialize_input_to_bytes(input)?;
+        let input_id = client.upload_input(input_bytes)?;
 
         // Start a session running the prover.
         let session = client.create_session(image_id_hex, input_id, vec![])?;
@@ -91,7 +89,7 @@ impl BonsaiProver {
                 // Download the receipt, containing the output.
                 let receipt_url = res
                     .receipt_url
-                    .expect("API error, missing receipt on completed session");
+                    .context("API error, missing receipt on completed session")?;
 
                 let receipt_buf = client.download(&receipt_url)?;
                 let receipt: Receipt = bincode::deserialize(&receipt_buf)?;
@@ -118,7 +116,7 @@ impl BonsaiProver {
                     continue;
                 }
                 "SUCCEEDED" => {
-                    break res.output.expect("No snark generated :(");
+                    break res.output.context("No snark generated :(")?;
                 }
                 _ => {
                     panic!(

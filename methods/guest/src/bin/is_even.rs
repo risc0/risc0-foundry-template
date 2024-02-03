@@ -12,13 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![no_main]
-
 use alloy_primitives::U256;
-use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
-
-risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
     // Read data sent from the application contract.
@@ -29,6 +24,6 @@ pub fn main() {
     assert!(number.bit(0) == false, "number is not even");
 
     // Commit the journal that will be received by the application contract.
-    // Encoded types should match the args expected by the application.
-    env::commit_slice(number.abi_encode().as_slice());
+    // Data types committed here (e.g. U256) should match your `GuestInterface::Journal`.
+    env::commit(&number);
 }
