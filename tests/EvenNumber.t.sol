@@ -34,15 +34,15 @@ contract EvenNumberTest is BonsaiTest {
         assertEq(evenNumber.get(), 0);
     }
 
-    function testSetEven() public {
+    function test_SetEven() public {
         set(12345678);
     }
 
-    function testFailSetOdd() public {
+    function testFail_SetOdd() public {
         set(123456789);
     }
 
-    function testSetZero() public {
+    function test_SetZero() public {
         set(0);
     }
 
