@@ -20,7 +20,7 @@ import {BonsaiTest} from "bonsai/BonsaiTest.sol";
 import {console2} from "forge-std/console2.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
-import {RiscZeroGroth16VerifierTest} from "./RiscZeroGroth16VerifierTest.sol";
+import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
 
 contract EvenNumberTest is BonsaiTest {
@@ -35,18 +35,22 @@ contract EvenNumberTest is BonsaiTest {
     }
 
     function test_SetEven() public {
-        set(12345678);
+        uint256 number = 12345678;
+        (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
+            queryImageOutputAndSeal(imageId, abi.encode(number));
+
+        evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
+        assertEq(evenNumber.get(), number);
     }
 
     function testFail_SetOdd() public {
-        set(123456789);
+        uint256 number = 123456789;
+        // Attempting to prove that 123456789 is even should fail.
+        queryImageOutputAndSeal(imageId, abi.encode(number));
     }
 
     function test_SetZero() public {
-        set(0);
-    }
-
-    function set(uint256 number) internal {
+        uint256 number = 0;
         (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
             queryImageOutputAndSeal(imageId, abi.encode(number));
 
@@ -61,7 +65,7 @@ contract EvenNumberTest is BonsaiTest {
             console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
             return verifier;
         } else {
-            IRiscZeroVerifier verifier = new RiscZeroGroth16VerifierTest();
+            IRiscZeroVerifier verifier = new MockRiscZeroVerifier();
             console2.log("Deployed RiscZeroGroth16VerifierTest to", address(verifier));
             return verifier;
         }

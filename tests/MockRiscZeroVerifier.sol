@@ -29,16 +29,8 @@ import {
     SystemExitCode
 } from "bonsai/IRiscZeroVerifier.sol";
 
-/// @notice Groth16 verifier contract for RISC Zero receipts of execution.
-contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier {
-    uint256 public immutable CONTROL_ID_0;
-    uint256 public immutable CONTROL_ID_1;
-
-    constructor() {
-        CONTROL_ID_0 = 0;
-        CONTROL_ID_1 = 0;
-    }
-
+/// @notice Mock verifier contract for RISC Zero receipts of execution.
+contract MockRiscZeroVerifier is IRiscZeroVerifier {
     /// @inheritdoc IRiscZeroVerifier
     function verify(
         bytes calldata seal,
@@ -49,14 +41,13 @@ contract RiscZeroGroth16VerifierTest is IRiscZeroVerifier {
     ) public view returns (bool) {
         // Require that the seal be specifically empty.
         // Reject if the caller may have sent a real seal.
-        return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0 && seal.length == 0 && postStateDigest == bytes32(0);
+        return seal.length == 0 && postStateDigest == bytes32(0);
     }
 
     /// @inheritdoc IRiscZeroVerifier
     function verify_integrity(Receipt memory receipt) public view returns (bool) {
         // Require that the seal be specifically empty.
         // Reject if the caller may have sent a real seal.
-        return CONTROL_ID_0 == 0 && CONTROL_ID_1 == 0 && receipt.seal.length == 0
-            && receipt.claim.postStateDigest == bytes32(0);
+        return receipt.seal.length == 0 && receipt.claim.postStateDigest == bytes32(0);
     }
 }
