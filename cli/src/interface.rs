@@ -14,10 +14,10 @@
 
 use std::str::FromStr;
 
-use alloy_primitives::U256;
+use alloy_primitives::{FixedBytes, U256};
 use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::Result;
-use risc0_ethereum_sdk::{cli::GuestInterface, serialize, snark::Proof};
+use risc0_ethereum_sdk::cli::GuestInterface;
 
 // You can modify this file to implement the `GuestInterface` trait
 // that lets you define how to parse and serialize the guest input and calldata
@@ -32,24 +32,35 @@ sol! {
     }
 }
 
-// `EvenNumberInterface` implementing the `GuestInterface` trait.
-pub struct EvenNumberInterface {}
+/// Implementation of `GuestInterface` for the `EvenNumber` example application.
+pub struct EvenNumberInterface;
+
 impl GuestInterface for EvenNumberInterface {
-    // Parses a `String` as the guest input returning its serialization,
-    // encoded as `Vec<u8>`, compatible with the zkVM and Bonsai.
-    fn serialize_input(&self, input: String) -> Result<Vec<u8>> {
-        serialize(U256::from_str(&input)?)
+    type Input = U256;
+
+    /// Parses a `String` as the guest input.
+    ///
+    /// Returned data will be what is read into the guest with `env::read()`.
+    fn parse_input(&self, input: String) -> Result<Self::Input> {
+        Ok(U256::from_str(&input)?)
     }
 
-    // Extracts the calldata ABI encoded from a proof.
-    fn calldata(&self, proof: Proof) -> Result<Vec<u8>> {
-        let x = U256::abi_decode(&proof.journal, true)?;
-        let calldata = IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {
-            x,
-            post_state_digest: proof.post_state_digest,
-            seal: proof.seal,
-        });
+    /// Encodes the proof into calldata to match the function to call on the Ethereum contract.
+    fn encode_calldata(
+        &self,
+        journal: Vec<u8>,
+        post_state_digest: FixedBytes<32>,
+        seal: Vec<u8>,
+    ) -> Result<Vec<u8>> {
+        // Decode the journal. Must match what was written in the guest with `env::commit_slice`
+        let x = U256::abi_decode(&journal, true)?;
 
-        Ok(calldata.abi_encode())
+        // Encode the function call for `IEvenNumber.set(x)`
+        Ok(IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {
+            x,
+            post_state_digest,
+            seal,
+        })
+        .abi_encode())
     }
 }

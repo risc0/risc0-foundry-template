@@ -1,5 +1,5 @@
 [package]
-name = "bonsai-starter"
+name = "bonsai-starter-cli"
 version = { workspace = true }
 edition = { workspace = true }
 
@@ -8,5 +8,6 @@ alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
 env_logger = { version = "0.10" }
+hex = "0.4.3"
 methods = { workspace = true }
 risc0-ethereum-sdk = { workspace = true }

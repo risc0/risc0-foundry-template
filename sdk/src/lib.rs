@@ -16,5 +16,3 @@ pub mod cli;
 mod eth;
 pub mod prover;
 pub mod snark;
-
-pub use prover::serialize;

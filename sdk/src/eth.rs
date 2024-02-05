@@ -24,9 +24,9 @@ pub(crate) struct TxSender {
 impl TxSender {
     pub(crate) fn new(
         chain_id: u64,
-        rpc_url: &String,
-        private_key: &String,
-        contract: &String,
+        rpc_url: &str,
+        private_key: &str,
+        contract: &str,
     ) -> Result<Self> {
         let provider = Provider::<Http>::try_from(rpc_url)?;
         let wallet: LocalWallet = private_key.parse::<LocalWallet>()?.with_chain_id(chain_id);

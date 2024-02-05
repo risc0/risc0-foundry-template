@@ -12,20 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-use guest_interface::EvenNumberInterface;
-use methods::GUEST_LIST;
-use risc0_ethereum_sdk::cli::{self, GuestInterface};
+mod interface;
 
-mod guest_interface;
+use anyhow::Result;
+use interface::EvenNumberInterface;
+use methods::GUEST_LIST;
+use risc0_ethereum_sdk::cli;
 
 fn main() -> Result<()> {
     env_logger::init();
 
-    // Initialize an EvenNumberInterface for parsing guest input and generating
-    // calldata.
-    let interface: &dyn GuestInterface = &EvenNumberInterface {};
-
     // Run the CLI for publishing on Ethereum
-    cli::run(GUEST_LIST, interface)
+    cli::run(GUEST_LIST, EvenNumberInterface)
 }

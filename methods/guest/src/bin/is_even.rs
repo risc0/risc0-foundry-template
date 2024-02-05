@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![no_main]
-
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
-
-risc0_zkvm::guest::entry!(main);
 
 pub fn main() {
     // Read data sent from the application contract.
