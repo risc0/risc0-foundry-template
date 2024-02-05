@@ -53,7 +53,7 @@ impl DevModeProver {
 /// Serializes the given input as a `Vec<u8>` compatible with Bonsai.
 fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<Vec<u8>> {
     let input_encoded = risc0_zkvm::serde::to_vec(&input)?;
-    Ok(bytemuck::allocation::cast_vec(input_encoded))
+    Ok(bytemuck::cast_slice(&input_encoded).to_vec())
 }
 
 struct BonsaiProver {}
