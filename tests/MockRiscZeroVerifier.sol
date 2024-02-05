@@ -38,14 +38,14 @@ contract MockRiscZeroVerifier is IRiscZeroVerifier {
         /*imageId*/
         bytes32 postStateDigest,
         bytes32 /*journalDigest*/
-    ) public view returns (bool) {
+    ) public pure returns (bool) {
         // Require that the seal be specifically empty.
         // Reject if the caller may have sent a real seal.
         return seal.length == 0 && postStateDigest == bytes32(0);
     }
 
     /// @inheritdoc IRiscZeroVerifier
-    function verify_integrity(Receipt memory receipt) public view returns (bool) {
+    function verify_integrity(Receipt memory receipt) public pure returns (bool) {
         // Require that the seal be specifically empty.
         // Reject if the caller may have sent a real seal.
         return receipt.seal.length == 0 && receipt.claim.postStateDigest == bytes32(0);
