@@ -16,7 +16,7 @@ use std::str::FromStr;
 
 use alloy_primitives::{FixedBytes, U256};
 use alloy_sol_types::{sol, SolInterface, SolValue};
-use anyhow::Result;
+use anyhow::{Context, Result};
 use risc0_ethereum_sdk::cli::GuestInterface;
 
 // You can modify this file to implement the `GuestInterface` trait
@@ -53,7 +53,7 @@ impl GuestInterface for EvenNumberInterface {
         seal: Vec<u8>,
     ) -> Result<Vec<u8>> {
         // Decode the journal. Must match what was written in the guest with `env::commit_slice`
-        let x = U256::abi_decode(&journal, true)?;
+        let x = U256::abi_decode(&journal, true).context("decoding journal data")?;
 
         // Encode the function call for `IEvenNumber.set(x)`
         Ok(IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {

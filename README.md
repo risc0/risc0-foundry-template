@@ -15,12 +15,12 @@ Verifiable results are sent to your Ethereum contract.
 
 ## Overview
 
-The picture below shows a simplified overview of how users can integrate [Bonsai] into their Ethereum smart contracts:
+Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai] proving, into their Ethereum smart contracts:
 
 ![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
 
-1. Run your application logic in the [RISC Zero zkVM]. The provided Command Line Interface (CLI) sends an off-chain proof request to the Bonsai proving service.
-2. Bonsai generates the computation result, written to the [journal], and a SNARK proof of its correctness.
+1. Run your application logic in the [RISC Zero zkVM]. The provided Command Line Interface (CLI) sends an off-chain proof request to the [Bonsai] proving service.
+2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
 3. The CLI submits this proof and journal on-chain to your app contract for validation.
 4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
@@ -51,7 +51,7 @@ Next we'll need to install the `risc0` toolchain with:
 cargo risczero install
 ```
 
-Now you have all the tools you need to develop and deploy an application with RISC Zero.
+Now you have all the tools you need to develop and deploy an application with [RISC Zero].
 
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
@@ -73,7 +73,7 @@ Your new project consists of:
 
 - a [zkVM program] (written in Rust), which specifies a computation that will be proven;
 - a [app contract] (written in Solidity), which receives the response;
-- a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] and Bonsai can interact with your contract.
+- a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] can integrate with your contract.
 
 [instructions above]: #dependencies
 [zkVM program]: ./methods/guest/src/bin
@@ -82,7 +82,7 @@ Your new project consists of:
 
 ### Run the Tests
 
-- Use `cargo test` to run the tests in your zkVM program.
+- Use `RISC0_DEV_MODE=true cargo test` to run the tests in your zkVM program.
 - Use `RISC0_DEV_MODE=true forge test -vvv` to test your Solidity contracts and their interaction with your zkVM program.
 
 ## Develop Your Application
@@ -93,9 +93,9 @@ To build your application, you'll need to make changes in three folders:
 - write the on-chain part of your project in the [contracts] folder
 - write the guest interface in the [cli] folder
 
-[methods]: ./methods
-[cli]: ./cli
-[contracts]: ./contracts
+[methods]: ./methods/
+[cli]: ./cli/
+[contracts]: ./contracts/
 
 ### Configuring Bonsai
 
@@ -109,8 +109,7 @@ export BONSAI_API_KEY="YOUR_API_KEY" # see form linked above
 export BONSAI_API_URL="BONSAI_URL" # provided with your api key
 ```
 
-<!-- TODO(victor): Rename the RiscZeroGroth16VerifierTest -->
-Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `RiscZeroGroth16VerifierTest` and will request a SNARK receipt from Bonsai.
+Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `MockRiscZeroVerifier` and will request a SNARK receipt from Bonsai.
 
 ```bash
 RISC0_DEV_MODE=false forge test -vvv
