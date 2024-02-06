@@ -103,6 +103,7 @@ pub fn query(
         // No input. Return the Ethereum ABI encoded bytes32 image ID.
         None => format!("0x{}", hex::encode(image_id)),
     };
+    // Forge test FFI calls expect hex encoded bytes sent to stdout
     print!("{output}");
     std::io::stdout()
         .flush()
@@ -130,11 +131,8 @@ pub fn publish(
         post_state_digest,
         seal,
     } = prover::generate_proof(&elf, input)?;
-    let calldata = guest_interface.encode_calldata(
-        risc0_zkvm::serde::from_slice(journal.as_slice())?,
-        post_state_digest,
-        seal,
-    )?;
+
+    let calldata = guest_interface.encode_calldata(journal, post_state_digest, seal)?;
 
     let runtime = tokio::runtime::Runtime::new()?;
     runtime.block_on(tx_sender.send(calldata))?;

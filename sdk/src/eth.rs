@@ -47,11 +47,12 @@ impl TxSender {
             .from(self.client.address())
             .data(calldata);
 
-        eprintln!("Transaction request: {:?}", &tx);
+        // TODO: Add these back as proper log lines istead of print statements
+        //eprintln!("Transaction request: {:?}", &tx);
 
         let tx = self.client.send_transaction(tx, None).await?.await?;
 
-        eprintln!("Transaction receipt: {:?}", &tx);
+        //eprintln!("Transaction receipt: {:?}", &tx);
 
         Ok(tx)
     }
