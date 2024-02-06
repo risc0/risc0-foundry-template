@@ -15,6 +15,4 @@ alloy-sol-types = { version = "0.6" }
 risc0-zkvm = { version = "0.20", default-features = false, features = ['std'] }
 
 [profile.release]
-codegen-units = 1
-panic = "abort"
 lto = "thin"
