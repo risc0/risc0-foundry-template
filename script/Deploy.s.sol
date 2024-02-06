@@ -27,9 +27,12 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 /// @notice Deployment script for the BonsaiStarter project.
 /// @dev Use the following environment variable to control the deployment:
 ///     * ETH_WALLET_PRIVATE_KEY private key of the wallet to be used for deployment.
+///
+/// See the Foundry documentation for more information about Solidity scripts.
+/// https://book.getfoundry.sh/tutorials/solidity-scripting
 contract EvenNumberDeploy is Script, BonsaiCheats {
     function run() external {
-        uint256 deployerKey = vm.envOr("ETH_WALLET_PRIVATE_KEY", uint256(0));
+        uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
 
         vm.startBroadcast(deployerKey);
 

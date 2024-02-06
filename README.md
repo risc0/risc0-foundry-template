@@ -93,9 +93,9 @@ To build your application, you'll need to make changes in three folders:
 - write the on-chain part of your project in the [contracts] folder
 - write the guest interface in the [cli] folder
 
-[methods]: ./methods
-[cli]: ./cli
-[contracts]: ./contracts
+[methods]: ./methods/
+[cli]: ./cli/
+[contracts]: ./contracts/
 
 ### Configuring Bonsai
 
