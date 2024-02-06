@@ -11,12 +11,6 @@ You can either:
 - [Deploy your project to a local network]
 - [Deploy to a testnet]
 
-[methods]: ./methods/
-[contracts]: ./contracts/
-[tested]: ./README.md#run-the-tests
-[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
-[Deploy to a testnet]: #deploy-your-project-on-a-testnet
-
 ## Deploy your project on a local network
 
 You can deploy your contracts and run an end-to-end test or demo as follows:
@@ -158,3 +152,9 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     ```bash
     cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
+
+[methods]: ./methods/
+[contracts]: ./contracts/
+[tested]: ./README.md#run-the-tests
+[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
+[Deploy to a testnet]: #deploy-your-project-on-a-testnet

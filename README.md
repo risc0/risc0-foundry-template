@@ -8,11 +8,6 @@ This repository implements an application on Ethereum utilizing [Bonsai] as a [c
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive (i.e. gas expensive), or difficult to implement, tasks to be proven by the [RISC Zero zkVM].
 Verifiable results are sent to your Ethereum contract.
 
-[RISC Zero]: https://www.risczero.com/
-[Bonsai]: https://dev.bonsai.xyz/
-[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
-[RISC Zero zkVM]: https://dev.risczero.com/zkvm
-
 ## Overview
 
 Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai] proving, into their Ethereum smart contracts:
@@ -23,9 +18,6 @@ Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai]
 2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
 3. The CLI submits this proof and journal on-chain to your app contract for validation.
 4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
-
-[journal]: https://dev.risczero.com/terminology#journal
-[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 
 ## Dependencies
 
@@ -53,10 +45,6 @@ cargo risczero install
 
 Now you have all the tools you need to develop and deploy an application with [RISC Zero].
 
-[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
-[Foundry]: https://getfoundry.sh/
-[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-
 ## Quick Start
 
 First, install the RISC Zero toolchain using the [instructions above].
@@ -75,11 +63,6 @@ Your new project consists of:
 - a [app contract] (written in Solidity), which receives the response;
 - a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] can integrate with your contract.
 
-[instructions above]: #dependencies
-[zkVM program]: ./methods/guest/src/bin
-[app contract]: ./contracts
-[guest interface]: ./cli
-
 ### Run the Tests
 
 - Use `RISC0_DEV_MODE=true cargo test` to run the tests in your zkVM program.
@@ -92,10 +75,6 @@ To build your application, you'll need to make changes in three folders:
 - write the code you want proven in the [methods] folder
 - write the on-chain part of your project in the [contracts] folder
 - write the guest interface in the [cli] folder
-
-[methods]: ./methods/
-[cli]: ./cli/
-[contracts]: ./contracts/
 
 ### Configuring Bonsai
 
@@ -115,14 +94,9 @@ Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as be
 RISC0_DEV_MODE=false forge test -vvv
 ```
 
-[Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
-
 ## Deploy Your Application
 
 When you're ready, follow the [deployment guide] to get your application running on [Sepolia].
-
-[deployment guide]: /deployment-guide.md
-[Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
 
 ## Project Structure
 
@@ -151,3 +125,23 @@ Below are the primary files in the project directory
         ├── interface.rs            // Interface for interacting with your contract
         └── main.rs                 // CLI for interacting with your application
 ```
+
+[RISC Zero]: https://www.risczero.com/
+[Bonsai]: https://dev.bonsai.xyz/
+[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
+[RISC Zero zkVM]: https://dev.risczero.com/zkvm
+[journal]: https://dev.risczero.com/terminology#journal
+[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
+[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
+[Foundry]: https://getfoundry.sh/
+[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
+[instructions above]: #dependencies
+[zkVM program]: ./methods/guest/src/bin
+[app contract]: ./contracts
+[guest interface]: ./cli
+[methods]: ./methods/
+[cli]: ./cli/
+[contracts]: ./contracts/
+[Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
+[deployment guide]: /deployment-guide.md
+[Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
