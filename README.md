@@ -30,7 +30,7 @@ curl https://sh.rustup.rs -sSf | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-We'll use `cargo binstall` to get `cargo-risczero` installed. See [cargo-binstall] for more details.
+We'll use `cargo binstall` to get `cargo-risczero` installed. See [RISC Zero installation] for more details.
 
 ```sh
 cargo install cargo-binstall
@@ -145,3 +145,4 @@ Below are the primary files in the project directory
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
 [deployment guide]: /deployment-guide.md
 [Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
+[RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
