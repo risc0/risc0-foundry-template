@@ -64,7 +64,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     You can also use the following command to set the contract address if you have `jq` installed:
 
     ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -r '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
+    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
     ```
 
 ### Interact with your local deployment
@@ -96,7 +96,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-end test or demo as follows:
 
-1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia (in this example, we will be using [alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
+1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia (in this example, we will be using [Alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
     > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
     ```bash
@@ -109,7 +109,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 2. Deploy your contract by running:
 
     ```bash
-    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/$ALCHEMY_API_KEY --broadcast
+    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
     ```
 
      This command should output something similar to:
@@ -131,7 +131,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     You can also use the following command to set the contract address if you have `jq` installed:
 
     ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -r '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
+    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
     ```
 
 ### Interact with your testnet deployment
@@ -145,10 +145,16 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 2. Publish a new state
 
     ```bash
-    RISC0_DEV_MODE=false cargo run --release -- publish \
+    cargo run --release -- publish \
         --chain-id=11155111 \
         --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
         --guest-binary="IS_EVEN" \
         --input=12345678
+    ```
+
+3. Query the state again to see the change:
+
+    ```bash
+    cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
