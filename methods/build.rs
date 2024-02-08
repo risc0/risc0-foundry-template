@@ -43,9 +43,9 @@ library ImageID {
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
 
 fn main() {
-    let use_docker = env::var("RISC0_USE_DOCKER")
-        .ok()
-        .map(|_| DockerOptions { root_dir: None });
+    let use_docker = env::var("RISC0_USE_DOCKER").ok().map(|_| DockerOptions {
+        root_dir: Some("../".into()),
+    });
 
     let methods = embed_methods_with_options(HashMap::from([(
         "bonsai-starter-methods-guest",
