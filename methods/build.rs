@@ -43,44 +43,41 @@ library ImageID {
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
 
 fn main() {
-    let docker_opts = DockerOptions { root_dir: None };
-
-    let use_docker = if env::var("RISC0_USE_DOCKER").is_ok() {
-        Some(docker_opts)
-    } else {
-        None
-    };
+    let use_docker = env::var("RISC0_USE_DOCKER")
+        .ok()
+        .map(|_| DockerOptions { root_dir: None });
 
     let methods = embed_methods_with_options(HashMap::from([(
         "bonsai-starter-methods-guest",
         GuestOptions {
-            features: vec![],
+            features: Vec::new(),
             use_docker,
         },
     )]));
 
-    let mut file_content = format!("{SOL_HEADER}{LIB_HEADER}\n");
-    let mut image_ids = vec![];
-    for method in methods {
-        let name = method.name.clone().to_uppercase().replace('-', "_");
-        let image_id = hex::encode(method.make_image_id());
-        image_ids.push(format!(
-            "bytes32 public constant {name}_ID = bytes32(0x{image_id});"
-        ));
-    }
-    for image_id in image_ids {
-        file_content.push_str(&image_id)
-    }
-    file_content.push_str("\n}");
-    fs::write(SOLIDITY_IMAGE_ID_PATH, file_content).expect(&format!(
-        "failed to save changes to {}",
-        SOLIDITY_IMAGE_ID_PATH
-    ));
+    let image_ids = methods
+        .into_iter()
+        .map(|method| {
+            let name = method.name.to_uppercase().replace('-', "_");
+            let image_id = hex::encode(method.make_image_id());
+            format!("bytes32 public constant {name}_ID = bytes32(0x{image_id});")
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
 
-    // Use forge fmt to format the file.
+    // Building the final file content.
+    let file_content = format!("{SOL_HEADER}{LIB_HEADER}\n{image_ids}\n}}");
+    fs::write(SOLIDITY_IMAGE_ID_PATH, &file_content).unwrap_or_else(|err| {
+        panic!(
+            "failed to save changes to {}: {}",
+            SOLIDITY_IMAGE_ID_PATH, err
+        );
+    });
+
+    // use `forge fmt` to format the generated code
     Command::new("forge")
         .arg("fmt")
         .arg(SOLIDITY_IMAGE_ID_PATH)
         .status()
-        .expect("failed to format {SOLIDITY_CONTROL_ID_PATH}");
+        .expect(&format!("failed to format {}", SOLIDITY_IMAGE_ID_PATH));
 }
