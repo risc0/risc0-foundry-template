@@ -14,9 +14,9 @@ bincode = { version = "1.3" }
 bonsai-sdk = { version = "0.6.0" }
 bytemuck = { version = "1.14" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
-risc0-build = { version = "0.20", features = ["guest-list"] }
+risc0-build = { git = "http://github.com/risc0/risc0", rev = "0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478", features = ["guest-list", "docker"] }
 risc0-ethereum-sdk = { version = "0.1.0", path = "sdk" }
-risc0-zkvm = { version = "0.20", default-features = false }
+risc0-zkvm = { git = "http://github.com/risc0/risc0", rev = "0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478", default-features = false }
 serde = { version = "1.0", features = ["derive", "std"] }
 
 [profile.release]

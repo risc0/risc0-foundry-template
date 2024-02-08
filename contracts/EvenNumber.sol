@@ -17,6 +17,7 @@
 pragma solidity ^0.8.20;
 
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
+import {ImageID} from "./ImageID.sol";
 
 /// @title A starter application using Bonsai.
 /// @notice This basic application holds a number, guaranteed to be even.
@@ -32,9 +33,9 @@ contract EvenNumber {
     uint256 number;
 
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier and guest image.
-    constructor(IRiscZeroVerifier _verifier, bytes32 _imageId) {
+    constructor(IRiscZeroVerifier _verifier) {
         verifier = _verifier;
-        imageId = _imageId;
+        imageId = ImageID.IS_EVEN_ID;
         number = 0;
     }
 

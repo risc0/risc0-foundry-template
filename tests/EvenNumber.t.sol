@@ -22,22 +22,21 @@ import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
+import {ImageID} from "../contracts/ImageID.sol";
 
 contract EvenNumberTest is BonsaiTest {
     EvenNumber public evenNumber;
-    bytes32 private imageId;
 
     function setUp() public {
-        imageId = queryImageId("IS_EVEN");
         IRiscZeroVerifier verifier = deployRiscZeroGroth16Verifier();
-        evenNumber = new EvenNumber(verifier, imageId);
+        evenNumber = new EvenNumber(verifier);
         assertEq(evenNumber.get(), 0);
     }
 
     function test_SetEven() public {
         uint256 number = 12345678;
         (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
-            queryImageOutputAndSeal(imageId, abi.encode(number));
+            queryImageOutputAndSeal(ImageID.IS_EVEN_ID, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);
@@ -46,13 +45,13 @@ contract EvenNumberTest is BonsaiTest {
     function testFail_SetOdd() public {
         uint256 number = 123456789;
         // Attempting to prove that 123456789 is even should fail.
-        queryImageOutputAndSeal(imageId, abi.encode(number));
+        queryImageOutputAndSeal(ImageID.IS_EVEN_ID, abi.encode(number));
     }
 
     function test_SetZero() public {
         uint256 number = 0;
         (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
-            queryImageOutputAndSeal(imageId, abi.encode(number));
+            queryImageOutputAndSeal(ImageID.IS_EVEN_ID, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);
