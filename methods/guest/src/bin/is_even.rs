@@ -18,7 +18,9 @@ use risc0_zkvm::guest::env;
 
 pub fn main() {
     // Read data sent from the application contract.
-    let number: U256 = env::read();
+    let input: Vec<u8> = env::read();
+    // Decode and parse the input
+    let number = <U256>::abi_decode(&input, true).unwrap();
 
     // Run the computation.
     // In this case, asserting that the provided number is even.

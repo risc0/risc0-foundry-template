@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::io::Write;
+use std::{io::Write, path::Path};
 
 use alloy_primitives::FixedBytes;
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
 use risc0_build::GuestListEntry;
-use risc0_zkvm::compute_image_id;
 
 use crate::{
     eth::{self},
@@ -36,35 +35,35 @@ enum Command {
         guest_binary: String,
 
         /// The input to provide to the guest binary
-        input: Option<String>,
-    },
-    /// Runs the RISC-V ELF binary on Bonsai
-    /// and publish the result to Ethererum.
-    Publish {
-        /// Ethereum chain ID
-        #[clap(long)]
-        chain_id: u64,
-
-        /// Ethereum Node endpoint.
-        #[clap(long, env)]
-        eth_wallet_private_key: String,
-
-        /// Ethereum Node endpoint.
-        #[clap(long)]
-        rpc_url: String,
-
-        /// Application's contract address on Ethereum
-        #[clap(long)]
-        contract: String,
-
-        /// The name of the guest binary
-        #[clap(long)]
-        guest_binary: String,
-
-        /// The input to provide to the guest binary
-        #[clap(short, long)]
         input: String,
     },
+    // /// Runs the RISC-V ELF binary on Bonsai
+    // /// and publish the result to Ethererum.
+    // Publish {
+    //     /// Ethereum chain ID
+    //     #[clap(long)]
+    //     chain_id: u64,
+
+    //     /// Ethereum Node endpoint.
+    //     #[clap(long, env)]
+    //     eth_wallet_private_key: String,
+
+    //     /// Ethereum Node endpoint.
+    //     #[clap(long)]
+    //     rpc_url: String,
+
+    //     /// Application's contract address on Ethereum
+    //     #[clap(long)]
+    //     contract: String,
+
+    //     /// The name of the guest binary
+    //     #[clap(long)]
+    //     guest_binary: String,
+
+    //     /// The input to provide to the guest binary
+    //     #[clap(short, long)]
+    //     input: String,
+    // },
 }
 
 /// GuestInterface for parsing guest input and encoding calldata.
@@ -86,23 +85,11 @@ pub trait GuestInterface {
 
 /// Execute or return image id.
 /// If some input is provided, returns the Ethereum ABI and hex encoded proof.
-pub fn query(
-    guest_list: &[GuestListEntry],
-    guest_binary: String,
-    input: Option<String>,
-    guest_interface: impl GuestInterface,
-) -> Result<()> {
-    let elf = resolve_guest_entry(guest_list, &guest_binary)?;
-    let image_id = compute_image_id(&elf)?;
-    let output = match input {
-        // Input provided. Return the Ethereum ABI encoded proof.
-        Some(input) => {
-            let proof = prover::generate_proof(&elf, guest_interface.parse_input(input)?)?;
-            hex::encode(proof.abi_encode())
-        }
-        // No input. Return the Ethereum ABI encoded bytes32 image ID.
-        None => format!("0x{}", hex::encode(image_id)),
-    };
+pub fn query<P: AsRef<Path>>(path: P, input: Vec<u8>) -> Result<()> {
+    let elf = std::fs::read(path)?;
+    let proof = prover::generate_proof(&elf, &input)?;
+    let output = hex::encode(proof.abi_encode());
+
     // Forge test FFI calls expect hex encoded bytes sent to stdout
     print!("{output}");
     std::io::stdout()
@@ -125,12 +112,12 @@ pub fn publish(
     let elf = resolve_guest_entry(guest_list, &guest_binary)?;
     let tx_sender = eth::TxSender::new(chain_id, &rpc_url, &eth_wallet_private_key, &contract)?;
 
-    let input = guest_interface.parse_input(input)?;
+    let input = hex::decode(input.strip_prefix("0x").unwrap_or(&input))?;
     let Proof {
         journal,
         post_state_digest,
         seal,
-    } = prover::generate_proof(&elf, input)?;
+    } = prover::generate_proof(&elf, &input)?;
 
     let calldata = guest_interface.encode_calldata(journal, post_state_digest, seal)?;
 
@@ -141,29 +128,32 @@ pub fn publish(
 }
 
 /// Run the CLI.
-pub fn run(guest_list: &[GuestListEntry], guest_interface: impl GuestInterface) -> Result<()> {
+pub fn run() -> Result<()> {
     match Command::parse() {
         Command::Query {
             guest_binary,
             input,
-        } => query(guest_list, guest_binary, input, guest_interface)?,
-        Command::Publish {
-            chain_id,
-            eth_wallet_private_key,
-            rpc_url,
-            contract,
-            guest_binary,
-            input,
-        } => publish(
-            chain_id,
-            eth_wallet_private_key,
-            rpc_url,
-            contract,
-            guest_list,
-            guest_binary,
-            input,
-            guest_interface,
+        } => query(
+            &Path::new(&guest_binary),
+            hex::decode(input.strip_prefix("0x").unwrap_or(&input))?,
         )?,
+        // Command::Publish {
+        //     chain_id,
+        //     eth_wallet_private_key,
+        //     rpc_url,
+        //     contract,
+        //     guest_binary,
+        //     input,
+        // } => publish(
+        //     chain_id,
+        //     eth_wallet_private_key,
+        //     rpc_url,
+        //     contract,
+        //     guest_list,
+        //     guest_binary,
+        //     input,
+        //     guest_interface,
+        // )?,
     }
 
     Ok(())

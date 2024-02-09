@@ -15,13 +15,11 @@
 mod interface;
 
 use anyhow::Result;
-use interface::EvenNumberInterface;
-use methods::GUEST_LIST;
 use risc0_ethereum_sdk::cli;
 
 fn main() -> Result<()> {
     env_logger::init();
 
     // Run the CLI for publishing on Ethereum
-    cli::run(GUEST_LIST, EvenNumberInterface)
+    cli::run()
 }

@@ -24,7 +24,7 @@ use crate::snark::{Proof, Seal};
 /// Generates a snark proof for the given elf and input.
 /// When `RISC0_DEV_MODE` is set, executes the elf locally,
 /// as opposed to sending the proof request to the Bonsai service.
-pub(crate) fn generate_proof(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
+pub(crate) fn generate_proof(elf: &[u8], input: &[u8]) -> Result<Proof> {
     match is_dev_mode() {
         true => DevModeProver::prove(elf, input),
         false => BonsaiProver::prove(elf, input),
@@ -32,15 +32,15 @@ pub(crate) fn generate_proof(elf: &[u8], input: impl serde::Serialize) -> Result
 }
 
 trait Prover {
-    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof>;
+    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof>;
 }
 
 struct DevModeProver {}
 
 impl DevModeProver {
-    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
+    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof> {
         let env = ExecutorEnv::builder()
-            .write(&input)?
+            .write_slice(&serialize_input_to_bytes(input)?)
             .build()
             .context("Failed to build exec env")?;
         let exec = default_executor();
@@ -51,14 +51,14 @@ impl DevModeProver {
 }
 
 /// Serializes the given input as a `Vec<u8>` compatible with Bonsai.
-fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<Vec<u8>> {
+pub(crate) fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<Vec<u8>> {
     let input_encoded = risc0_zkvm::serde::to_vec(&input)?;
     Ok(bytemuck::cast_slice(&input_encoded).to_vec())
 }
 
 struct BonsaiProver {}
 impl BonsaiProver {
-    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
+    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof> {
         let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
         // Compute the image_id, then upload the ELF with the image_id as its key.
