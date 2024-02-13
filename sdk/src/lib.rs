@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod cli;
-mod eth;
+pub mod eth;
 pub mod prover;
 pub mod snark;

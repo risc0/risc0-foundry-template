@@ -35,12 +35,18 @@ const SOL_HEADER: &str = r#"// Copyright 2024 RISC Zero, Inc.
 
 "#;
 
-const LIB_HEADER: &str = r#"pragma solidity ^0.8.20;
+const IMAGE_ID_LIB_HEADER: &str = r#"pragma solidity ^0.8.20;
 
 library ImageID {
 "#;
 
+const ELF_LIB_HEADER: &str = r#"pragma solidity ^0.8.20;
+
+library Elf {
+"#;
+
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
+const SOLIDITY_ELF_PATH: &str = "../tests/elf.sol";
 
 fn main() {
     let use_docker = env::var("RISC0_USE_DOCKER").ok().map(|_| DockerOptions {
@@ -56,7 +62,7 @@ fn main() {
     )]));
 
     let image_ids = methods
-        .into_iter()
+        .iter()
         .map(|method| {
             let name = method.name.to_uppercase().replace('-', "_");
             let image_id = hex::encode(method.make_image_id());
@@ -65,13 +71,29 @@ fn main() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    // Building the final file content.
-    let file_content = format!("{SOL_HEADER}{LIB_HEADER}\n{image_ids}\n}}");
+    let elfs = methods
+        .into_iter()
+        .map(|method| {
+            let name = method.name.to_uppercase().replace('-', "_");
+            let elf = hex::encode(std::fs::read(method.elf_path).unwrap());
+            format!("bytes public constant {name} = hex\"{elf}\";")
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    // Building the final image_ID file content.
+    let file_content = format!("{SOL_HEADER}{IMAGE_ID_LIB_HEADER}\n{image_ids}\n}}");
     fs::write(SOLIDITY_IMAGE_ID_PATH, &file_content).unwrap_or_else(|err| {
         panic!(
             "failed to save changes to {}: {}",
             SOLIDITY_IMAGE_ID_PATH, err
         );
+    });
+
+    // Building the final image_ID file content.
+    let file_content = format!("{SOL_HEADER}{ELF_LIB_HEADER}\n{elfs}\n}}");
+    fs::write(SOLIDITY_ELF_PATH, &file_content).unwrap_or_else(|err| {
+        panic!("failed to save changes to {}: {}", SOLIDITY_ELF_PATH, err);
     });
 
     // use `forge fmt` to format the generated code
@@ -80,4 +102,11 @@ fn main() {
         .arg(SOLIDITY_IMAGE_ID_PATH)
         .status()
         .expect(&format!("failed to format {}", SOLIDITY_IMAGE_ID_PATH));
+
+    // use `forge fmt` to format the generated code
+    Command::new("forge")
+        .arg("fmt")
+        .arg(SOLIDITY_ELF_PATH)
+        .status()
+        .expect(&format!("failed to format {}", SOLIDITY_ELF_PATH));
 }

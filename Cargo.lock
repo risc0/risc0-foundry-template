@@ -613,9 +613,11 @@ dependencies = [
  "alloy-sol-types",
  "anyhow",
  "bonsai-starter-methods",
+ "clap",
  "env_logger",
  "hex",
  "risc0-ethereum-sdk",
+ "tokio",
 ]
 
 [[package]]

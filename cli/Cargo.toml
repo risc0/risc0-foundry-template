@@ -7,7 +7,9 @@ edition = { workspace = true }
 alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
+clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
 hex = "0.4.3"
 methods = { workspace = true }
 risc0-ethereum-sdk = { workspace = true }
+tokio = { version = "1.35", features = ["full"] }

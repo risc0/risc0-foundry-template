@@ -19,12 +19,13 @@ use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
 use risc0_zkvm::{compute_image_id, default_executor, is_dev_mode, ExecutorEnv, Receipt};
 
-use crate::snark::{Proof, Seal};
+use crate::snark::Seal;
 
-/// Generates a snark proof for the given elf and input.
+/// Generates a snark proof as a triplet (`Vec<u8>`, `FixedBytes<32>`, `Vec<u8>)
+/// for the given elf and input.
 /// When `RISC0_DEV_MODE` is set, executes the elf locally,
 /// as opposed to sending the proof request to the Bonsai service.
-pub(crate) fn generate_proof(elf: &[u8], input: &[u8]) -> Result<Proof> {
+pub fn prove(elf: &[u8], input: &[u8]) -> Result<(Vec<u8>, FixedBytes<32>, Vec<u8>)> {
     match is_dev_mode() {
         true => DevModeProver::prove(elf, input),
         false => BonsaiProver::prove(elf, input),
@@ -32,21 +33,25 @@ pub(crate) fn generate_proof(elf: &[u8], input: &[u8]) -> Result<Proof> {
 }
 
 trait Prover {
-    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof>;
+    fn prove(elf: &[u8], input: &[u8]) -> Result<(Vec<u8>, FixedBytes<32>, Vec<u8>)>;
 }
 
 struct DevModeProver {}
 
 impl DevModeProver {
-    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof> {
+    fn prove(elf: &[u8], input: &[u8]) -> Result<(Vec<u8>, FixedBytes<32>, Vec<u8>)> {
         let env = ExecutorEnv::builder()
             .write_slice(&serialize_input_to_bytes(input)?)
             .build()
             .context("Failed to build exec env")?;
         let exec = default_executor();
-        let session = exec.execute(env, elf).context("Failed to run executor")?;
+        let session_info = exec.execute(env, elf).context("Failed to run executor")?;
 
-        Ok(Proof::new_empty(session.journal.bytes))
+        Ok((
+            session_info.journal.bytes,
+            FixedBytes::<32>::default(),
+            Vec::new(),
+        ))
     }
 }
 
@@ -58,7 +63,7 @@ pub(crate) fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<V
 
 struct BonsaiProver {}
 impl BonsaiProver {
-    fn prove(elf: &[u8], input: &[u8]) -> Result<Proof> {
+    fn prove(elf: &[u8], input: &[u8]) -> Result<(Vec<u8>, FixedBytes<32>, Vec<u8>)> {
         let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
         // Compute the image_id, then upload the ELF with the image_id as its key.
@@ -154,10 +159,6 @@ impl BonsaiProver {
             .context("Read post_state_digest")?;
         let journal = snark_receipt.journal;
 
-        Ok(Proof {
-            journal,
-            post_state_digest,
-            seal,
-        })
+        Ok((journal, post_state_digest, seal))
     }
 }
