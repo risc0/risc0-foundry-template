@@ -134,21 +134,6 @@ impl BonsaiProver {
         let snark = snark_receipt.snark;
         log::debug!("Snark proof!: {snark:?}");
 
-        // // Verify receipt.
-        // let receipt = Receipt {
-        //     inner: risc0_zkvm::InnerReceipt::Groth16(Groth16Receipt {
-        //         seal: Groth16Seal {
-        //             a: snark.a.clone(),
-        //             b: snark.b.clone(),
-        //             c: snark.c.clone(),
-        //         }
-        //         .to_vec(),
-        //         claim: receipt.get_claim()?,
-        //     }),
-        //     journal: receipt.journal,
-        // };
-        // receipt.verify(image_id)?;
-
         let seal = Seal::abi_encode(snark).context("Read seal")?;
         let post_state_digest: FixedBytes<32> = snark_receipt
             .post_state_digest

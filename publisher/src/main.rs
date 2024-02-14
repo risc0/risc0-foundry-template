@@ -49,7 +49,7 @@ struct Args {
     #[clap(long)]
     contract: String,
 
-    /// The input to provide to the guest binary
+    /// The hex-encoded input to provide to the guest binary
     #[clap(short, long)]
     input: String,
 }
@@ -58,6 +58,7 @@ fn main() -> Result<()> {
     env_logger::init();
     let args = Args::parse();
 
+    // whatever
     let tx_sender = TxSender::new(
         args.chain_id,
         &args.rpc_url,
@@ -66,6 +67,7 @@ fn main() -> Result<()> {
     )?;
 
     let input = hex::decode(args.input.strip_prefix("0x").unwrap_or(&args.input))?;
+    // TODO: explina that this is an helper function and a better integration is a TODO
     let (journal, post_state_digest, seal) = BonsaiProver::prove(IS_EVEN_ELF, &input)?;
 
     // Decode the journal. Must match what was written in the guest with `env::commit_slice`

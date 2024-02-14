@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["cli", "methods", "sdk"]
+members = ["publisher", "methods", "sdk"]
 
 [workspace.package]
 version = "0.1.0"

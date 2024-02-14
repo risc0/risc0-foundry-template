@@ -606,28 +606,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bonsai-starter-cli"
-version = "0.1.0"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "anyhow",
- "bincode",
- "bonsai-sdk 0.6.0",
- "bonsai-starter-methods",
- "bytemuck",
- "clap",
- "env_logger",
- "ethers",
- "hex",
- "log",
- "risc0-ethereum-sdk",
- "risc0-zkvm",
- "serde",
- "tokio",
-]
-
-[[package]]
 name = "bonsai-starter-methods"
 version = "0.1.0"
 dependencies = [
@@ -2889,6 +2867,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "publisher"
+version = "0.1.0"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "anyhow",
+ "bincode",
+ "bonsai-sdk 0.6.0",
+ "bonsai-starter-methods",
+ "bytemuck",
+ "clap",
+ "env_logger",
+ "ethers",
+ "hex",
+ "log",
+ "risc0-ethereum-sdk",
+ "risc0-zkvm",
+ "serde",
+ "tokio",
+]
+
+[[package]]
 name = "quick-error"
 version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3193,7 +3193,6 @@ dependencies = [
  "risc0-build",
  "risc0-zkvm",
  "serde",
- "tokio",
 ]
 
 [[package]]

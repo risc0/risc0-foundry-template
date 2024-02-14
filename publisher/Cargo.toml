@@ -1,5 +1,5 @@
 [package]
-name = "bonsai-starter-cli"
+name = "publisher"
 version = { workspace = true }
 edition = { workspace = true }
 
