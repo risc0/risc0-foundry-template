@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 use std::{collections::HashMap, env, fs, process::Command};
+
+use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 
 const SOL_HEADER: &str = r#"// Copyright 2024 RISC Zero, Inc.
 //
