@@ -61,25 +61,23 @@ fn main() {
         },
     )]));
 
-    let image_ids = methods
+    let (image_ids, elfs): (Vec<_>, Vec<_>) = methods
         .iter()
         .map(|method| {
             let name = method.name.to_uppercase().replace('-', "_");
             let image_id = hex::encode(method.make_image_id());
-            format!("bytes32 public constant {name}_ID = bytes32(0x{image_id});")
-        })
-        .collect::<Vec<_>>()
-        .join("\n");
+            let image_id_declaration =
+                format!("bytes32 public constant {name}_ID = bytes32(0x{image_id});");
 
-    let elfs = methods
-        .into_iter()
-        .map(|method| {
-            let name = method.name.to_uppercase().replace('-', "_");
-            let elf = hex::encode(std::fs::read(method.elf_path).unwrap());
-            format!("bytes public constant {name} = hex\"{elf}\";")
+            let elf = method.elf_path.to_string_lossy().to_string();
+            let elf_declaration = format!("string public constant {name}_PATH = \"{elf}\";");
+
+            (image_id_declaration, elf_declaration)
         })
-        .collect::<Vec<_>>()
-        .join("\n");
+        .unzip();
+
+    let image_ids = image_ids.join("\n");
+    let elfs = elfs.join("\n");
 
     // Building the final image_ID file content.
     let file_content = format!("{SOL_HEADER}{IMAGE_ID_LIB_HEADER}\n{image_ids}\n}}");
@@ -90,7 +88,7 @@ fn main() {
         );
     });
 
-    // Building the final image_ID file content.
+    // Building the final elf file content.
     let file_content = format!("{SOL_HEADER}{ELF_LIB_HEADER}\n{elfs}\n}}");
     fs::write(SOLIDITY_ELF_PATH, &file_content).unwrap_or_else(|err| {
         panic!("failed to save changes to {}: {}", SOLIDITY_ELF_PATH, err);
@@ -100,13 +98,9 @@ fn main() {
     Command::new("forge")
         .arg("fmt")
         .arg(SOLIDITY_IMAGE_ID_PATH)
-        .status()
-        .expect(&format!("failed to format {}", SOLIDITY_IMAGE_ID_PATH));
-
-    // use `forge fmt` to format the generated code
-    Command::new("forge")
-        .arg("fmt")
         .arg(SOLIDITY_ELF_PATH)
         .status()
-        .expect(&format!("failed to format {}", SOLIDITY_ELF_PATH));
+        .expect(&format!(
+            "failed to format {SOLIDITY_IMAGE_ID_PATH}, {SOLIDITY_ELF_PATH}"
+        ));
 }

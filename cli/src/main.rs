@@ -12,11 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod utils;
+
 use alloy_primitives::U256;
 use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::{Context, Result};
 use clap::Parser;
-use risc0_ethereum_sdk::{eth::TxSender, prover};
+use methods::IS_EVEN_ELF;
+use utils::{BonsaiProver, TxSender};
+
+// `IEvenNumber`` interface automatically generated via the alloy `sol!` macro.
+// The `set` function is then used as part of the `calldata` function of the
+// `EvenNumberInterface`.
+sol! {
+    interface IEvenNumber {
+        function set(uint256 x, bytes32 post_state_digest, bytes calldata seal);
+    }
+}
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -37,29 +49,15 @@ struct Args {
     #[clap(long)]
     contract: String,
 
-    /// The path of the guest binary
-    #[clap(long)]
-    guest_binary: String,
-
     /// The input to provide to the guest binary
     #[clap(short, long)]
     input: String,
-}
-
-// `IEvenNumber`` interface automatically generated via the alloy `sol!` macro.
-// The `set` function is then used as part of the `calldata` function of the
-// `EvenNumberInterface`.
-sol! {
-    interface IEvenNumber {
-        function set(uint256 x, bytes32 post_state_digest, bytes calldata seal);
-    }
 }
 
 fn main() -> Result<()> {
     env_logger::init();
     let args = Args::parse();
 
-    let elf = std::fs::read(args.guest_binary)?;
     let tx_sender = TxSender::new(
         args.chain_id,
         &args.rpc_url,
@@ -68,7 +66,7 @@ fn main() -> Result<()> {
     )?;
 
     let input = hex::decode(args.input.strip_prefix("0x").unwrap_or(&args.input))?;
-    let (journal, post_state_digest, seal) = prover::prove(&elf, &input)?;
+    let (journal, post_state_digest, seal) = BonsaiProver::prove(IS_EVEN_ELF, &input)?;
 
     // Decode the journal. Must match what was written in the guest with `env::commit_slice`
     let x = U256::abi_decode(&journal, true).context("decoding journal data")?;

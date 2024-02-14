@@ -7,9 +7,16 @@ edition = { workspace = true }
 alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
+bincode = { workspace = true }
+bonsai-sdk = { workspace = true }
+bytemuck = { workspace = true }
 clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
+ethers = { version = "2.0" }
 hex = "0.4.3"
+log = { version = "0.4" }
 methods = { workspace = true }
 risc0-ethereum-sdk = { workspace = true }
+risc0-zkvm = { workspace = true }
+serde = { workspace = true }
 tokio = { version = "1.35", features = ["full"] }

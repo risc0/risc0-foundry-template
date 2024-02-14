@@ -40,7 +40,7 @@ contract EvenNumberTest is BonsaiTest {
             bytes memory journal,
             bytes32 post_state_digest,
             bytes memory seal
-        ) = queryImageOutputAndSeal(Elf.IS_EVEN, abi.encode(number));
+        ) = queryImageOutputAndSeal(Elf.IS_EVEN_PATH, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);
@@ -49,7 +49,7 @@ contract EvenNumberTest is BonsaiTest {
     function testFail_SetOdd() public {
         uint256 number = 123456789;
         // Attempting to prove that 123456789 is even should fail.
-        queryImageOutputAndSeal(Elf.IS_EVEN, abi.encode(number));
+        queryImageOutputAndSeal(Elf.IS_EVEN_PATH, abi.encode(number));
     }
 
     function test_SetZero() public {
@@ -58,7 +58,7 @@ contract EvenNumberTest is BonsaiTest {
             bytes memory journal,
             bytes32 post_state_digest,
             bytes memory seal
-        ) = queryImageOutputAndSeal(Elf.IS_EVEN, abi.encode(number));
+        ) = queryImageOutputAndSeal(Elf.IS_EVEN_PATH, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);

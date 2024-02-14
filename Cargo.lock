@@ -612,11 +612,18 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "anyhow",
+ "bincode",
+ "bonsai-sdk 0.6.0",
  "bonsai-starter-methods",
+ "bytemuck",
  "clap",
  "env_logger",
+ "ethers",
  "hex",
+ "log",
  "risc0-ethereum-sdk",
+ "risc0-zkvm",
+ "serde",
  "tokio",
 ]
 
