@@ -1,6 +1,6 @@
 {
     "rust-analyzer.linkedProjects": [
-        "./publisher/Cargo.toml",
+        "./application/Cargo.toml",
         "./methods/Cargo.toml",
         "./methods/guest/Cargo.toml",
         "./sdk/Cargo.toml"

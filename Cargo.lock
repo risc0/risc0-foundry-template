@@ -176,6 +176,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
+name = "application"
+version = "0.1.0"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "anyhow",
+ "bincode",
+ "bonsai-sdk 0.6.0",
+ "bonsai-starter-methods",
+ "bytemuck",
+ "clap",
+ "env_logger",
+ "ethers",
+ "hex",
+ "log",
+ "risc0-ethereum-sdk",
+ "risc0-zkvm",
+ "serde",
+ "tokio",
+]
+
+[[package]]
 name = "ark-bn254"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2864,28 +2886,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7ac8852baeb3cc6fb83b93646fb93c0ffe5d14bf138c945ceb4b9948ee0e3c1"
 dependencies = [
  "autotools",
-]
-
-[[package]]
-name = "publisher"
-version = "0.1.0"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "anyhow",
- "bincode",
- "bonsai-sdk 0.6.0",
- "bonsai-starter-methods",
- "bytemuck",
- "clap",
- "env_logger",
- "ethers",
- "hex",
- "log",
- "risc0-ethereum-sdk",
- "risc0-zkvm",
- "serde",
- "tokio",
 ]
 
 [[package]]

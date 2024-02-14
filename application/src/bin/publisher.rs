@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod utils;
-
 use alloy_primitives::U256;
 use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::{Context, Result};
+use application::{BonsaiProver, TxSender};
 use clap::Parser;
 use methods::IS_EVEN_ELF;
-use utils::{BonsaiProver, TxSender};
 
 // `IEvenNumber`` interface automatically generated via the alloy `sol!` macro.
 // The `set` function is then used as part of the `calldata` function of the
