@@ -15,7 +15,7 @@
 use alloy_primitives::U256;
 use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::{Context, Result};
-use application::{BonsaiProver, TxSender};
+use apps::{BonsaiProver, TxSender};
 use clap::Parser;
 use methods::IS_EVEN_ELF;
 

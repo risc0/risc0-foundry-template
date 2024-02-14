@@ -1,5 +1,5 @@
 [package]
-name = "application"
+name = "apps"
 version = { workspace = true }
 edition = { workspace = true }
 

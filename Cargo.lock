@@ -176,7 +176,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
-name = "application"
+name = "apps"
 version = "0.1.0"
 dependencies = [
  "alloy-primitives",
@@ -609,7 +609,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.6.0-rc.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "reqwest",
  "serde",
@@ -3114,7 +3114,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "elf",
@@ -3127,7 +3127,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "cargo-platform",
@@ -3144,7 +3144,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-recursion"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -3157,7 +3157,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "risc0-core",
@@ -3169,7 +3169,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3198,7 +3198,7 @@ dependencies = [
 [[package]]
 name = "risc0-groth16"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -3215,7 +3215,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3234,7 +3234,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
  "bincode",
@@ -3260,13 +3260,14 @@ dependencies = [
  "semver 1.0.21",
  "serde",
  "sha2",
+ "tempfile",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478#0ab5fd50fc8822e7088a3bf2d2e5bfdcef9ad478"
+source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "bytemuck",
  "getrandom",
