@@ -22,4 +22,5 @@ docs/
 target/
 
 # Misc
+.DS_Store
 .idea

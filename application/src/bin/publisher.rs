@@ -28,6 +28,7 @@ sol! {
     }
 }
 
+/// Arguments of the publisher CLI.
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -56,7 +57,6 @@ fn main() -> Result<()> {
     env_logger::init();
     let args = Args::parse();
 
-    // whatever
     let tx_sender = TxSender::new(
         args.chain_id,
         &args.rpc_url,
