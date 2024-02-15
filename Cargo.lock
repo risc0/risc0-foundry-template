@@ -183,7 +183,7 @@ dependencies = [
  "alloy-sol-types",
  "anyhow",
  "bincode",
- "bonsai-sdk 0.6.1",
+ "bonsai-sdk 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "bonsai-starter-methods",
  "bytemuck",
  "clap",
@@ -608,8 +608,9 @@ dependencies = [
 
 [[package]]
 name = "bonsai-sdk"
-version = "0.6.0-rc.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d5f0a6b186dce8b2f945bd3ecc5d35a36280400200ed57878c7c3f2aeb01632e"
 dependencies = [
  "reqwest",
  "serde",
@@ -619,8 +620,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5f0a6b186dce8b2f945bd3ecc5d35a36280400200ed57878c7c3f2aeb01632e"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "reqwest",
  "serde",
@@ -3115,7 +3115,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "elf",
@@ -3128,7 +3128,7 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "cargo-platform",
@@ -3145,7 +3145,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-recursion"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -3158,7 +3158,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "risc0-core",
@@ -3170,7 +3170,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3184,31 +3184,14 @@ dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "anyhow",
- "bonsai-sdk 0.6.1",
+ "bonsai-sdk 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "ethers",
-]
-
-[[package]]
-name = "risc0-groth16"
-version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
-dependencies = [
- "anyhow",
- "ark-bn254",
- "ark-groth16",
- "ark-serialize 0.4.2",
- "hex",
- "num-bigint",
- "num-derive",
- "num-traits",
- "risc0-zkp",
- "serde",
 ]
 
 [[package]]
 name = "risc0-zkp"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3227,16 +3210,20 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
+ "ark-bn254",
+ "ark-groth16",
+ "ark-serialize 0.4.2",
  "bincode",
- "bonsai-sdk 0.6.0-rc.1",
+ "bonsai-sdk 0.6.1 (git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f)",
  "bytemuck",
  "bytes",
  "cfg-if",
  "getrandom",
  "hex",
+ "num-bigint",
  "num-derive",
  "num-traits",
  "prost",
@@ -3246,21 +3233,19 @@ dependencies = [
  "risc0-circuit-recursion",
  "risc0-circuit-rv32im",
  "risc0-core",
- "risc0-groth16",
  "risc0-zkp",
  "risc0-zkvm-platform",
  "rrs-lib",
  "semver 1.0.21",
  "serde",
  "sha2",
- "tempfile",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-zkvm-platform"
 version = "0.20.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
+source = "git+http://github.com/risc0/risc0?rev=74c59219f487f6963cff883d69c344088358891f#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "bytemuck",
  "getrandom",
