@@ -12,53 +12,70 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// The following library provides utility functions to help with sending
+// off-chain proof requests to the Bonsai proving service and publish the
+// received proofs directly to a deployed app contract on Ethereum.
+//
+// Please note that both `risc0_zkvm` and `bonsai_sdk` crates are still
+// under active development. As such, this library might change to adapt to
+// the upstream changes.
+
 use std::time::Duration;
 
 use alloy_primitives::FixedBytes;
 use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
-use risc0_zkvm::{compute_image_id, default_executor, is_dev_mode, ExecutorEnv, Receipt};
+use ethers::prelude::*;
+use risc0_ethereum_contracts::groth16::Seal;
+use risc0_zkvm::{compute_image_id, Receipt};
 
-use crate::snark::{Proof, Seal};
+/// Wrapper of a `SignerMiddleware` client to send transactions to the given
+/// contract's `Address`.
+pub struct TxSender {
+    chain_id: u64,
+    client: SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>,
+    contract: Address,
+}
 
-/// Generates a snark proof for the given elf and input.
-/// When `RISC0_DEV_MODE` is set, executes the elf locally,
-/// as opposed to sending the proof request to the Bonsai service.
-pub(crate) fn generate_proof(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
-    match is_dev_mode() {
-        true => DevModeProver::prove(elf, input),
-        false => BonsaiProver::prove(elf, input),
+impl TxSender {
+    /// Creates a new `TxSender`.
+    pub fn new(chain_id: u64, rpc_url: &str, private_key: &str, contract: &str) -> Result<Self> {
+        let provider = Provider::<Http>::try_from(rpc_url)?;
+        let wallet: LocalWallet = private_key.parse::<LocalWallet>()?.with_chain_id(chain_id);
+        let client = SignerMiddleware::new(provider.clone(), wallet.clone());
+        let contract = contract.parse::<Address>()?;
+
+        Ok(TxSender {
+            chain_id,
+            client,
+            contract,
+        })
+    }
+
+    /// Send a transaction with the given calldata.
+    pub async fn send(&self, calldata: Vec<u8>) -> Result<Option<TransactionReceipt>> {
+        let tx = TransactionRequest::new()
+            .chain_id(self.chain_id)
+            .to(self.contract)
+            .from(self.client.address())
+            .data(calldata);
+
+        log::info!("Transaction request: {:?}", &tx);
+
+        let tx = self.client.send_transaction(tx, None).await?.await?;
+
+        log::info!("Transaction receipt: {:?}", &tx);
+
+        Ok(tx)
     }
 }
 
-trait Prover {
-    fn prove(elf: &[u8], input: Vec<u8>) -> Result<Proof>;
-}
-
-struct DevModeProver {}
-
-impl DevModeProver {
-    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
-        let env = ExecutorEnv::builder()
-            .write(&input)?
-            .build()
-            .context("Failed to build exec env")?;
-        let exec = default_executor();
-        let session = exec.execute(env, elf).context("Failed to run executor")?;
-
-        Ok(Proof::new_empty(session.journal.bytes))
-    }
-}
-
-/// Serializes the given input as a `Vec<u8>` compatible with Bonsai.
-fn serialize_input_to_bytes(input: impl serde::Serialize) -> Result<Vec<u8>> {
-    let input_encoded = risc0_zkvm::serde::to_vec(&input)?;
-    Ok(bytemuck::cast_slice(&input_encoded).to_vec())
-}
-
-struct BonsaiProver {}
+/// An implementation of a Prover that runs on Bonsai.
+pub struct BonsaiProver {}
 impl BonsaiProver {
-    fn prove(elf: &[u8], input: impl serde::Serialize) -> Result<Proof> {
+    /// Generates a snark proof as a triplet (`Vec<u8>`, `FixedBytes<32>`,
+    /// `Vec<u8>) for the given elf and input.
+    pub fn prove(elf: &[u8], input: &[u8]) -> Result<(Vec<u8>, FixedBytes<32>, Vec<u8>)> {
         let client = bonsai_sdk::Client::from_env(risc0_zkvm::VERSION)?;
 
         // Compute the image_id, then upload the ELF with the image_id as its key.
@@ -68,8 +85,7 @@ impl BonsaiProver {
         log::info!("Image ID: 0x{}", image_id_hex);
 
         // Prepare input data and upload it.
-        let input_bytes = serialize_input_to_bytes(input)?;
-        let input_id = client.upload_input(input_bytes)?;
+        let input_id = client.upload_input(input.to_vec())?;
 
         // Start a session running the prover.
         let session = client.create_session(image_id_hex, input_id, vec![])?;
@@ -131,21 +147,6 @@ impl BonsaiProver {
         let snark = snark_receipt.snark;
         log::debug!("Snark proof!: {snark:?}");
 
-        // // Verify receipt.
-        // let receipt = Receipt {
-        //     inner: risc0_zkvm::InnerReceipt::Groth16(Groth16Receipt {
-        //         seal: Groth16Seal {
-        //             a: snark.a.clone(),
-        //             b: snark.b.clone(),
-        //             c: snark.c.clone(),
-        //         }
-        //         .to_vec(),
-        //         claim: receipt.get_claim()?,
-        //     }),
-        //     journal: receipt.journal,
-        // };
-        // receipt.verify(image_id)?;
-
         let seal = Seal::abi_encode(snark).context("Read seal")?;
         let post_state_digest: FixedBytes<32> = snark_receipt
             .post_state_digest
@@ -154,10 +155,6 @@ impl BonsaiProver {
             .context("Read post_state_digest")?;
         let journal = snark_receipt.journal;
 
-        Ok(Proof {
-            journal,
-            post_state_digest,
-            seal,
-        })
+        Ok((journal, post_state_digest, seal))
     }
 }

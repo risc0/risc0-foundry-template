@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::io::Read;
+
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
 
 pub fn main() {
     // Read data sent from the application contract.
-    let number: U256 = env::read();
+    let mut input_bytes = Vec::<u8>::new();
+    env::stdin().read_to_end(&mut input_bytes).unwrap();
+    // Decode and parse the input
+    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
 
     // Run the computation.
     // In this case, asserting that the provided number is even.

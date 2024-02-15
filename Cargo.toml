@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["cli", "methods", "sdk"]
+members = ["apps", "methods"]
 
 [workspace.package]
 version = "0.1.0"
@@ -11,11 +11,14 @@ alloy-primitives = { version = "0.6", default-features = false, features = ["rlp
 alloy-sol-types = { version = "0.6" }
 anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
-bonsai-sdk = { version = "0.6.0" }
+bonsai-sdk = { version = "0.6.1" }
 bytemuck = { version = "1.14" }
+ethers = { version = "2.0" }
+hex = { version = "0.4" }
+log = { version = "0.4" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
-risc0-build = { version = "0.20", features = ["guest-list"] }
-risc0-ethereum-sdk = { version = "0.1.0", path = "sdk" }
+risc0-build = { git = "http://github.com/risc0/risc0", branch = "capossele/foundry-template-0.20", features = ["guest-list", "docker"] }
+risc0-ethereum-contracts = { git = "http://github.com/risc0/risc0-ethereum", rev = "3be9ef901d723e8f3efd4536bcd742f33d6fb16d" }
 risc0-zkvm = { version = "0.20", default-features = false }
 serde = { version = "1.0", features = ["derive", "std"] }
 

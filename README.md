@@ -14,9 +14,9 @@ Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai]
 
 ![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
 
-1. Run your application logic in the [RISC Zero zkVM]. The provided Command Line Interface (CLI) sends an off-chain proof request to the [Bonsai] proving service.
+1. Run your application logic in the [RISC Zero zkVM]. The provided [Publisher] App sends an off-chain proof request to the [Bonsai] proving service.
 2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
-3. The CLI submits this proof and journal on-chain to your app contract for validation.
+3. The [Publisher] App submits this proof and journal on-chain to your app contract for validation.
 4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
 ## Dependencies
@@ -106,10 +106,14 @@ Below are the primary files in the project directory
 .
 ├── Cargo.toml                      // Configuration for Cargo and Rust
 ├── foundry.toml                    // Configuration for Foundry
+├── apps
+│   ├── Cargo.toml
+│   └── src
+│       └── lib.rs                  // Utility functions
+│       └── bin                     
+│           └── publisher.rs        // Example app to publish program results into your app contract 
 ├── contracts
 │   └── EvenNumber.sol              // Basic example contract for you to modify
-├── tests
-│   └── EvenNumber.t.sol            // Tests for the basic example contract
 ├── methods
 │   ├── Cargo.toml
 │   ├── guest
@@ -119,11 +123,9 @@ Below are the primary files in the project directory
 │   │           └── is_even.rs      // Example guest program for cheking if a number is even
 │   └── src
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
-└── cli
-    ├── Cargo.toml
-    └── src
-        ├── interface.rs            // Interface for interacting with your contract
-        └── main.rs                 // CLI for interacting with your application
+└── tests
+    ├── EvenNumber.t.sol            // Tests for the basic example contract
+    └── MockRiscZeroVerifier.sol    // RISC Zero Verifier mock contract
 ```
 
 [RISC Zero]: https://www.risczero.com/
@@ -146,3 +148,4 @@ Below are the primary files in the project directory
 [deployment guide]: /deployment-guide.md
 [Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
+[Publisher]: ./apps/README.md

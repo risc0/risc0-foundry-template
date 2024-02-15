@@ -7,12 +7,13 @@ edition = { workspace = true }
 methods = ["guest"]
 
 [build-dependencies]
+hex = { workspace = true }
 risc0-build = { workspace = true }
 
 [dependencies]
 risc0-build = { workspace = true }
 
 [dev-dependencies]
-alloy-primitives = { version = "0.6", default-features = false, features = ["rlp", "serde", "std"] }
-alloy-sol-types = { version = "0.6" }
-risc0-zkvm = { workspace = true }
+alloy-primitives = { workspace = true }
+alloy-sol-types = { workspace = true }
+risc0-zkvm = { workspace = true, features = ["client"] }

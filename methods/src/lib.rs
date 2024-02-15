@@ -26,8 +26,7 @@ mod tests {
         let even_number = U256::from(1304);
 
         let env = ExecutorEnv::builder()
-            .write(&even_number)
-            .unwrap()
+            .write_slice(&even_number.abi_encode())
             .build()
             .unwrap();
 
@@ -43,8 +42,7 @@ mod tests {
         let odd_number = U256::from(75);
 
         let env = ExecutorEnv::builder()
-            .write(&odd_number)
-            .unwrap()
+            .write_slice(&odd_number.abi_encode())
             .build()
             .unwrap();
 

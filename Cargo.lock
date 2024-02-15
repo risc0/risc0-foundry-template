@@ -176,6 +176,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "080e9890a082662b09c1ad45f567faeeb47f22b5fb23895fbe1e651e718e25ca"
 
 [[package]]
+name = "apps"
+version = "0.1.0"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "anyhow",
+ "bincode",
+ "bonsai-sdk",
+ "bonsai-starter-methods",
+ "bytemuck",
+ "clap",
+ "env_logger",
+ "ethers",
+ "hex",
+ "log",
+ "risc0-ethereum-contracts",
+ "risc0-zkvm",
+ "serde",
+ "tokio",
+]
+
+[[package]]
 name = "ark-bn254"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -586,26 +608,13 @@ dependencies = [
 
 [[package]]
 name = "bonsai-sdk"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6770f5e7d1a2f16d1f4910769157aac468ba4e81facaaae31adf3d085285352b"
+checksum = "d5f0a6b186dce8b2f945bd3ecc5d35a36280400200ed57878c7c3f2aeb01632e"
 dependencies = [
  "reqwest",
  "serde",
  "thiserror",
-]
-
-[[package]]
-name = "bonsai-starter-cli"
-version = "0.1.0"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "anyhow",
- "bonsai-starter-methods",
- "env_logger",
- "hex",
- "risc0-ethereum-sdk",
 ]
 
 [[package]]
@@ -614,6 +623,7 @@ version = "0.1.0"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
+ "hex",
  "risc0-build",
  "risc0-zkvm",
 ]
@@ -1491,6 +1501,7 @@ dependencies = [
  "const-hex",
  "enr",
  "ethers-core",
+ "futures-channel",
  "futures-core",
  "futures-timer",
  "futures-util",
@@ -2823,7 +2834,7 @@ checksum = "c55e02e35260070b6f716a2423c2ff1c3bb1642ddca6f99e1f26d06268a0e2d2"
 dependencies = [
  "bytes",
  "heck",
- "itertools 0.11.0",
+ "itertools 0.10.5",
  "log",
  "multimap",
  "once_cell",
@@ -2844,7 +2855,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "efb6c9a1dd1def8e2124d17e83a20af56f1570d6c2d2bd9e266ccb768df3840e"
 dependencies = [
  "anyhow",
- "itertools 0.11.0",
+ "itertools 0.10.5",
  "proc-macro2",
  "quote",
  "syn 2.0.48",
@@ -3099,8 +3110,21 @@ checksum = "9d263c6370d7714d2a634b6d88deb3871d0fad1f9486a9da6d48139c1ac85b26"
 dependencies = [
  "anyhow",
  "elf",
- "risc0-zkp",
- "risc0-zkvm-platform",
+ "risc0-zkp 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkvm-platform 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "tracing",
+]
+
+[[package]]
+name = "risc0-binfmt"
+version = "0.20.1"
+source = "git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20#74c59219f487f6963cff883d69c344088358891f"
+dependencies = [
+ "anyhow",
+ "elf",
+ "risc0-zkp 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
+ "risc0-zkvm-platform 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
  "serde",
  "tracing",
 ]
@@ -3108,16 +3132,15 @@ dependencies = [
 [[package]]
 name = "risc0-build"
 version = "0.20.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a636849a58335ebece68161006a53d5590a6698092c3ca8e8a40a7c0aa8a20fb"
+source = "git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20#74c59219f487f6963cff883d69c344088358891f"
 dependencies = [
  "anyhow",
  "cargo-platform",
  "cargo_metadata 0.17.0",
  "docker-generate",
- "risc0-binfmt",
- "risc0-zkp",
- "risc0-zkvm-platform",
+ "risc0-binfmt 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
+ "risc0-zkp 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
+ "risc0-zkvm-platform 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
  "serde",
  "serde_json",
  "tempfile",
@@ -3125,28 +3148,28 @@ dependencies = [
 
 [[package]]
 name = "risc0-circuit-recursion"
-version = "0.20.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "404ed28b36b5e5a346267870e675ec634678193c111376334d0e00edcecefece"
+checksum = "bc9835069929a0e7b6b4b34e6a83f08aaa9d34b30023b9ccaf96ddbe20404eba"
 dependencies = [
  "anyhow",
  "bytemuck",
  "hex",
- "risc0-core",
- "risc0-zkp",
+ "risc0-core 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkp 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracing",
 ]
 
 [[package]]
 name = "risc0-circuit-rv32im"
-version = "0.20.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc4890f3c85bfbefdc05f926778d92d1fa24b8d931a077170e07c3b6e14e4c29"
+checksum = "cb1caa759ab74d08779e062fcf98f5bd34397dfde572516a52369f0ec46db650"
 dependencies = [
  "anyhow",
- "risc0-core",
- "risc0-zkp",
- "risc0-zkvm-platform",
+ "risc0-core 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkp 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkvm-platform 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "tracing",
 ]
 
@@ -3161,24 +3184,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "risc0-ethereum-sdk"
-version = "0.1.0"
+name = "risc0-core"
+version = "0.20.1"
+source = "git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20#74c59219f487f6963cff883d69c344088358891f"
+dependencies = [
+ "bytemuck",
+ "rand_core",
+]
+
+[[package]]
+name = "risc0-ethereum-contracts"
+version = "0.7.0-alpha.1"
+source = "git+http://github.com/risc0/risc0-ethereum?rev=3be9ef901d723e8f3efd4536bcd742f33d6fb16d#3be9ef901d723e8f3efd4536bcd742f33d6fb16d"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "anyhow",
- "bincode",
  "bonsai-sdk",
- "bytemuck",
- "clap",
- "env_logger",
  "ethers",
- "hex",
- "log",
- "risc0-build",
- "risc0-zkvm",
- "serde",
- "tokio",
 ]
 
 [[package]]
@@ -3194,8 +3217,27 @@ dependencies = [
  "hex",
  "paste",
  "rand_core",
- "risc0-core",
- "risc0-zkvm-platform",
+ "risc0-core 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkvm-platform 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "sha2",
+ "tracing",
+]
+
+[[package]]
+name = "risc0-zkp"
+version = "0.20.1"
+source = "git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20#74c59219f487f6963cff883d69c344088358891f"
+dependencies = [
+ "anyhow",
+ "blake2",
+ "bytemuck",
+ "digest 0.10.7",
+ "hex",
+ "paste",
+ "rand_core",
+ "risc0-core 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
+ "risc0-zkvm-platform 0.20.1 (git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20)",
  "serde",
  "sha2",
  "tracing",
@@ -3203,9 +3245,9 @@ dependencies = [
 
 [[package]]
 name = "risc0-zkvm"
-version = "0.20.0"
+version = "0.20.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2ae29a3b7badc3592b750c87e7a07fae8998dac0a1b113abf485b39d39fdf72"
+checksum = "922588cb4b884b3951316a65581ccdfd1174af93c54093190878366812073329"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -3224,12 +3266,12 @@ dependencies = [
  "prost",
  "prost-build",
  "protobuf-src",
- "risc0-binfmt",
+ "risc0-binfmt 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "risc0-circuit-recursion",
  "risc0-circuit-rv32im",
- "risc0-core",
- "risc0-zkp",
- "risc0-zkvm-platform",
+ "risc0-core 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkp 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "risc0-zkvm-platform 0.20.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rrs-lib",
  "semver 1.0.21",
  "serde",
@@ -3247,6 +3289,11 @@ dependencies = [
  "getrandom",
  "libm",
 ]
+
+[[package]]
+name = "risc0-zkvm-platform"
+version = "0.20.1"
+source = "git+http://github.com/risc0/risc0?branch=capossele/foundry-template-0.20#74c59219f487f6963cff883d69c344088358891f"
 
 [[package]]
 name = "rlp"
