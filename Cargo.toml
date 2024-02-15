@@ -17,9 +17,9 @@ ethers = { version = "2.0" }
 hex = { version = "0.4" }
 log = { version = "0.4" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
-risc0-build = { git = "http://github.com/risc0/risc0", rev = "74c59219f487f6963cff883d69c344088358891f", features = ["guest-list", "docker"] }
+risc0-build = { git = "http://github.com/risc0/risc0", branch = "capossele/foundry-template-0.20", features = ["guest-list", "docker"] }
 risc0-ethereum-contracts = { git = "http://github.com/risc0/risc0-ethereum", rev = "3be9ef901d723e8f3efd4536bcd742f33d6fb16d" }
-risc0-zkvm = { git = "http://github.com/risc0/risc0", rev = "74c59219f487f6963cff883d69c344088358891f", default-features = false }
+risc0-zkvm = { version = "0.20", default-features = false }
 serde = { version = "1.0", features = ["derive", "std"] }
 
 [profile.release]
