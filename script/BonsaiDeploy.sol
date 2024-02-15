@@ -81,10 +81,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
-                verifier = new RiscZeroGroth16Verifier(
-                    ControlID.CONTROL_ID_0,
-                    ControlID.CONTROL_ID_1
-                );
+                verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
                 console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
             }
 
@@ -107,12 +104,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
             // Use a long and unweildy environment variable name for overriding
             // the expected chain ID for the test relay so that it is hard to
             // trigger without thinking about it.
-            bonsaiRelay = new BonsaiTestRelay(
-                vm.envOr(
-                    "DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID",
-                    uint256(31337)
-                )
-            );
+            bonsaiRelay = new BonsaiTestRelay(vm.envOr("DEPLOY_BONSAI_TEST_RELAY_EXPECTED_CHAIN_ID", uint256(31337)));
             console2.log("Deployed BonsaiTestRelay to ", address(bonsaiRelay));
         }
         return bonsaiRelay;
