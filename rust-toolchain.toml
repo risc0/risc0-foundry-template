@@ -1,4 +1,4 @@
 [toolchain]
-channel = "1.73"
+channel = "stable"
 components = ["rustfmt", "rust-src"]
 profile = "minimal"
