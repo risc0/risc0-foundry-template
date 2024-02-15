@@ -109,7 +109,7 @@ Set `DEPLOY_UPLOAD_IMAGES=true` if you modified your guest and need to upload a 
 RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=true forge script script/Deploy.s.sol --rpc-url http://localhost:8545 --broadcast
 ```
 
-This will deploy only your application address and upload any updated images. 
+This will deploy only your application address and upload any updated images.
 By setting `DEPLOY_RELAY_ADDRESS`, the existing running relay contract will continue to be used.
 
 **Use the fully verifying relay:**
