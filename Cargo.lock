@@ -183,7 +183,7 @@ dependencies = [
  "alloy-sol-types",
  "anyhow",
  "bincode",
- "bonsai-sdk 0.6.0",
+ "bonsai-sdk",
  "bonsai-starter-methods",
  "bytemuck",
  "clap",
@@ -191,7 +191,7 @@ dependencies = [
  "ethers",
  "hex",
  "log",
- "risc0-ethereum-sdk",
+ "risc0-ethereum-contracts",
  "risc0-zkvm",
  "serde",
  "tokio",
@@ -363,7 +363,6 @@ dependencies = [
  "ark-ff 0.4.2",
  "ark-std 0.4.0",
  "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -487,15 +486,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "autotools"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aef8da1805e028a172334c3b680f93e71126f2327622faef2ec3d893c0a4ad77"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -608,19 +598,9 @@ dependencies = [
 
 [[package]]
 name = "bonsai-sdk"
-version = "0.6.0-rc.1"
-source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
-dependencies = [
- "reqwest",
- "serde",
- "thiserror",
-]
-
-[[package]]
-name = "bonsai-sdk"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6770f5e7d1a2f16d1f4910769157aac468ba4e81facaaae31adf3d085285352b"
+checksum = "d5f0a6b186dce8b2f945bd3ecc5d35a36280400200ed57878c7c3f2aeb01632e"
 dependencies = [
  "reqwest",
  "serde",
@@ -1511,6 +1491,7 @@ dependencies = [
  "const-hex",
  "enr",
  "ethers-core",
+ "futures-channel",
  "futures-core",
  "futures-timer",
  "futures-util",
@@ -2333,12 +2314,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "multimap"
-version = "0.8.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5ce46fe64a9d73be07dcbe690a38ce1b293be448fd8ce1e6c1b8062c9f72c6a"
-
-[[package]]
 name = "new_debug_unreachable"
 version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2826,69 +2801,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prost"
-version = "0.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "146c289cda302b98a28d40c8b3b90498d6e526dd24ac2ecea73e4e491685b94a"
-dependencies = [
- "bytes",
- "prost-derive",
-]
-
-[[package]]
-name = "prost-build"
-version = "0.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c55e02e35260070b6f716a2423c2ff1c3bb1642ddca6f99e1f26d06268a0e2d2"
-dependencies = [
- "bytes",
- "heck",
- "itertools 0.11.0",
- "log",
- "multimap",
- "once_cell",
- "petgraph",
- "prettyplease",
- "prost",
- "prost-types",
- "regex",
- "syn 2.0.48",
- "tempfile",
- "which",
-]
-
-[[package]]
-name = "prost-derive"
-version = "0.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efb6c9a1dd1def8e2124d17e83a20af56f1570d6c2d2bd9e266ccb768df3840e"
-dependencies = [
- "anyhow",
- "itertools 0.11.0",
- "proc-macro2",
- "quote",
- "syn 2.0.48",
-]
-
-[[package]]
-name = "prost-types"
-version = "0.12.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "193898f59edcf43c26227dcd4c8427f00d99d61e95dcde58dabd49fa291d470e"
-dependencies = [
- "prost",
-]
-
-[[package]]
-name = "protobuf-src"
-version = "1.1.0+21.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7ac8852baeb3cc6fb83b93646fb93c0ffe5d14bf138c945ceb4b9948ee0e3c1"
-dependencies = [
- "autotools",
-]
-
-[[package]]
 name = "quick-error"
 version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3176,23 +3088,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "risc0-ethereum-sdk"
-version = "0.1.0"
+name = "risc0-ethereum-contracts"
+version = "0.7.0-alpha.1"
+source = "git+http://github.com/risc0/risc0-ethereum?rev=d0b9dacf3a6e5c0309d7fef8c45405cff6c3d8ea#d0b9dacf3a6e5c0309d7fef8c45405cff6c3d8ea"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
  "anyhow",
- "bincode",
- "bonsai-sdk 0.6.0",
- "bytemuck",
- "clap",
- "env_logger",
+ "bonsai-sdk",
  "ethers",
- "hex",
- "log",
- "risc0-build",
- "risc0-zkvm",
- "serde",
 ]
 
 [[package]]
@@ -3207,7 +3111,6 @@ dependencies = [
  "hex",
  "num-bigint",
  "num-derive",
- "num-traits",
  "risc0-zkp",
  "serde",
 ]
@@ -3237,18 +3140,11 @@ version = "0.20.1"
 source = "git+http://github.com/risc0/risc0?rev=be6509cc033dec1554786774936557f0ed4ad3d4#be6509cc033dec1554786774936557f0ed4ad3d4"
 dependencies = [
  "anyhow",
- "bincode",
- "bonsai-sdk 0.6.0-rc.1",
  "bytemuck",
- "bytes",
  "cfg-if",
  "getrandom",
  "hex",
  "num-derive",
- "num-traits",
- "prost",
- "prost-build",
- "protobuf-src",
  "risc0-binfmt",
  "risc0-circuit-recursion",
  "risc0-circuit-rv32im",
@@ -3260,7 +3156,6 @@ dependencies = [
  "semver 1.0.21",
  "serde",
  "sha2",
- "tempfile",
  "tracing",
 ]
 
@@ -4126,7 +4021,6 @@ version = "0.1.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3523ab5a71916ccf420eebdf5521fcef02141234bbc0b8a49f2fdc4544364ef"
 dependencies = [
- "log",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",
@@ -4150,7 +4044,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c06d3da6113f116aaee68e4d601191614c9053067f9ab7f6edbcb161237daa54"
 dependencies = [
  "once_cell",
- "valuable",
 ]
 
 [[package]]
@@ -4161,15 +4054,6 @@ checksum = "97d095ae15e245a057c8e8451bab9b3ee1e1f68e9ba2b4fbc18d0ac5237835f2"
 dependencies = [
  "pin-project",
  "tracing",
-]
-
-[[package]]
-name = "tracing-subscriber"
-version = "0.2.25"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e0d2eaa99c3c2e41547cfa109e910a68ea03823cccad4a0525dcbc9b01e8c71"
-dependencies = [
- "tracing-core",
 ]
 
 [[package]]
@@ -4427,18 +4311,6 @@ name = "webpki-roots"
 version = "0.25.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1778a42e8b3b90bff8d0f5032bf22250792889a5cdc752aa0020c84abe3aaf10"
-
-[[package]]
-name = "which"
-version = "4.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87ba24419a2078cd2b0f2ede2691b6c66d8e47836da3b6db8265ebad47afbfc7"
-dependencies = [
- "either",
- "home",
- "once_cell",
- "rustix",
-]
 
 [[package]]
 name = "winapi"

@@ -18,7 +18,7 @@ use alloy_primitives::FixedBytes;
 use anyhow::{Context, Result};
 use bonsai_sdk::alpha as bonsai_sdk;
 use ethers::prelude::*;
-use risc0_ethereum_sdk::snark::Seal;
+use risc0_ethereum_contracts::seal::Seal;
 use risc0_zkvm::{compute_image_id, Receipt};
 
 pub struct TxSender {

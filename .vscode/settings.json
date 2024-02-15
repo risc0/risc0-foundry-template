@@ -3,6 +3,5 @@
         "./apps/Cargo.toml",
         "./methods/Cargo.toml",
         "./methods/guest/Cargo.toml",
-        "./sdk/Cargo.toml"
     ]
 }
