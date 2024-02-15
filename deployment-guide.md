@@ -34,8 +34,8 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
 
-    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID]. For more details, see [reproducible build].
-    > ***Note:*** *This requires having Docker installed. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
+    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID].
+    > ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
 
 3. Build your project:
 
@@ -111,8 +111,8 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
      export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
 
-    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID]. For more details, see [reproducible build].
-    > ***Note:*** *This requires having Docker installed. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
+    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID].
+    > ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
 
 2. Build your project:
 
@@ -179,4 +179,3 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 [Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [Deploy to a testnet]: #deploy-your-project-on-a-testnet
 [image ID]: https://dev.risczero.com/terminology#image-id
-[reproducible build]: TODO
