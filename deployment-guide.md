@@ -31,7 +31,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
-    export RISC0_USE_DOCKER=1 # enable reproducible build via Docker
+    export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
 
     By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID]. For more details, see [reproducible build].
@@ -108,7 +108,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
     export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
-     export RISC0_USE_DOCKER=1 # enable reproducible build via Docker
+     export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
 
     By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID]. For more details, see [reproducible build].

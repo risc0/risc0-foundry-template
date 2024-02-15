@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// The following library provides utility functions to help with sending
+// off-chain proof requests to the Bonsai proving service and publish the
+// received proofs directly to a deployed app contract on Ethereum.
+//
+// Please note that both `risc0_zkvm` and `bonsai_sdk` crates are still
+// under active development. As such, this library might change to adapt to
+// the upstream changes.
+
 use std::time::Duration;
 
 use alloy_primitives::FixedBytes;
@@ -21,6 +29,8 @@ use ethers::prelude::*;
 use risc0_ethereum_contracts::groth16::Seal;
 use risc0_zkvm::{compute_image_id, Receipt};
 
+/// Wrapper of a `SignerMiddleware` client to send transactions to the given
+/// contract's `Address`.
 pub struct TxSender {
     chain_id: u64,
     client: SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>,
@@ -28,6 +38,7 @@ pub struct TxSender {
 }
 
 impl TxSender {
+    /// Creates a new `TxSender`.
     pub fn new(chain_id: u64, rpc_url: &str, private_key: &str, contract: &str) -> Result<Self> {
         let provider = Provider::<Http>::try_from(rpc_url)?;
         let wallet: LocalWallet = private_key.parse::<LocalWallet>()?.with_chain_id(chain_id);
@@ -41,6 +52,7 @@ impl TxSender {
         })
     }
 
+    /// Send a transaction with the given calldata.
     pub async fn send(&self, calldata: Vec<u8>) -> Result<Option<TransactionReceipt>> {
         let tx = TransactionRequest::new()
             .chain_id(self.chain_id)
@@ -58,6 +70,7 @@ impl TxSender {
     }
 }
 
+/// An implementation of a Prover that runs on Bonsai.
 pub struct BonsaiProver {}
 impl BonsaiProver {
     /// Generates a snark proof as a triplet (`Vec<u8>`, `FixedBytes<32>`,

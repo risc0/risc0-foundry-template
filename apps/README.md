@@ -1,6 +1,5 @@
 # Apps
 
-
 ## Publisher
 This template provides an application example, [publisher], that lets you send an off-chain proof request to the [Bonsai] proving service and publish the received proofs directly to your deployed app contract.
 
@@ -26,5 +25,14 @@ Options:
           Print version
 ```
 
-[publisher]: (./src/bin/publisher.rs)
+
+## Library
+We provide a small rust [library] containing utility functions to help with sending off-chain proof requests to the Bonsai proving service and publish the received proofs directly to a deployed app contract on Ethereum.
+
+Please note that both [risc0_zkvm] and [bonsai_sdk] crates are still under active development. As such, this library might change to adapt to the upstream changes.
+
+[publisher]: ./src/bin/publisher.rs
 [Bonsai]: https://dev.bonsai.xyz/
+[library]: ./src/lib.rs
+[risc0_zkvm]: https://docs.rs/risc0-zkvm/latest/risc0_zkvm/
+[bonsai_sdk]: https://docs.rs/bonsai-sdk/latest/bonsai_sdk/
