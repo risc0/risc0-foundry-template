@@ -23,7 +23,7 @@ import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16
 import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
 import {ImageID} from "../contracts/ImageID.sol";
-import {Elf} from "./elf.sol";
+import {Elf} from "./elf.sol"; // auto-generated contract after running `cargo build`.
 
 contract EvenNumberTest is BonsaiTest {
     EvenNumber public evenNumber;
