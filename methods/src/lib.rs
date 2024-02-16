@@ -19,7 +19,7 @@ include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 mod tests {
     use alloy_primitives::U256;
     use alloy_sol_types::SolValue;
-    use risc0_zkvm::{default_prover, ExecutorEnv};
+    use risc0_zkvm::{default_executor, ExecutorEnv};
 
     #[test]
     fn proves_even_number() {
@@ -30,9 +30,10 @@ mod tests {
             .build()
             .unwrap();
 
-        let receipt = default_prover().prove(env, super::IS_EVEN_ELF).unwrap();
+        // NOTE: Use the executor to run tests without proving.
+        let session_info = default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
 
-        let x = U256::abi_decode(&receipt.journal.bytes, true).unwrap();
+        let x = U256::abi_decode(&session_info.journal.bytes, true).unwrap();
         assert_eq!(x, even_number);
     }
 
@@ -46,6 +47,7 @@ mod tests {
             .build()
             .unwrap();
 
-        default_prover().prove(env, super::IS_EVEN_ELF).unwrap();
+        // NOTE: Use the executor to run tests without proving.
+        default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
     }
 }
