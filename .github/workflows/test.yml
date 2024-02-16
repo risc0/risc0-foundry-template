@@ -15,6 +15,9 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  RISC0_VERSION: 0.20.1
+  RISC0_TOOLCHAIN_VERSION: test-release-2
 
 jobs:
   integration:
@@ -40,13 +43,12 @@ jobs:
         uses: risc0/cargo-install@v1
         with:
           crate: cargo-binstall
-          version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0
+        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_VERSION }}
 
       - name: risczero toolchain install
-        run: cargo risczero install
+        run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
 
       - name: build solidity contracts
         run: forge build
@@ -82,13 +84,12 @@ jobs:
         uses: risc0/cargo-install@v1
         with:
           crate: cargo-binstall
-          version: "1.4"
 
       - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@0.20.0
+        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_VERSION }}
 
       - name: risczero toolchain install
-        run: cargo risczero install
+        run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
 
       - name: build solidity contracts
         run: forge build
