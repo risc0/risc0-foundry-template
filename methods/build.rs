@@ -15,6 +15,7 @@
 use std::{collections::HashMap, env, fs, process::Command};
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
+use risc0_zkp::core::digest::Digest;
 
 const SOL_HEADER: &str = r#"// Copyright 2024 RISC Zero, Inc.
 //
@@ -66,12 +67,12 @@ fn main() {
         .iter()
         .map(|method| {
             let name = method.name.to_uppercase().replace('-', "_");
-            let image_id = hex::encode(method.make_image_id());
+            let image_id = hex::encode(Digest::from(method.image_id));
             let image_id_declaration =
                 format!("bytes32 public constant {name}_ID = bytes32(0x{image_id});");
 
-            let elf = method.elf_path.to_string_lossy().to_string();
-            let elf_declaration = format!("string public constant {name}_PATH = \"{elf}\";");
+            let elf_path = method.path.to_string();
+            let elf_declaration = format!("string public constant {name}_PATH = \"{elf_path}\";");
 
             (image_id_declaration, elf_declaration)
         })
@@ -82,7 +83,7 @@ fn main() {
 
     // Building the final image_ID file content.
     let file_content = format!("{SOL_HEADER}{IMAGE_ID_LIB_HEADER}\n{image_ids}\n}}");
-    fs::write(SOLIDITY_IMAGE_ID_PATH, &file_content).unwrap_or_else(|err| {
+    fs::write(SOLIDITY_IMAGE_ID_PATH, file_content).unwrap_or_else(|err| {
         panic!(
             "failed to save changes to {}: {}",
             SOLIDITY_IMAGE_ID_PATH, err
