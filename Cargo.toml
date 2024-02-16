@@ -20,8 +20,7 @@ log = { version = "0.4" }
 methods = { path = "./methods", package = "bonsai-starter-methods" }
 # DO NOT MERGE: Figure out what reference to use for this. Cherry pick to the release branch?
 risc0-build = { git = "https://github.com/risc0/risc0", rev = "7f73166", features = ["docker"] }
-# NOTE: Forge requires risc0-ethereum as a submodule, so we reuse it here as a path dependency.
-risc0-ethereum-contracts = { path = "lib/risc0-ethereum/contracts" }
+risc0-ethereum-contracts = { git = "https://github.com/risc0/risc0-ethereum" }
 risc0-zkvm = { version = "0.20", default-features = false }
 risc0-zkp = { version = "0.20", default-features = false }
 serde = { version = "1.0", features = ["derive", "std"] }

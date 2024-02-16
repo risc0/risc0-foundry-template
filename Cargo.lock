@@ -3196,6 +3196,7 @@ dependencies = [
 [[package]]
 name = "risc0-ethereum-contracts"
 version = "0.7.0-alpha.1"
+source = "git+https://github.com/risc0/risc0-ethereum#22e1d5345f15c7bf7e235f35d8a33edceaa48480"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
