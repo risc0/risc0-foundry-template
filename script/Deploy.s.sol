@@ -16,7 +16,7 @@ import {BonsaiStarter} from "../contracts/BonsaiStarter.sol";
 ///         Must be unlocked on the RPC provider node.
 ///     * DEPLOYER_PRIVATE_KEY private key of the wallet to be used for deployment.
 ///         Alternative to using DEPLOYER_ADDRESS.
-///     * DEPLOY_VERFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
+///     * DEPLOY_VERIFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
 ///         If not specified and also DEPLOY_RELAY_ADDRESS is not specified,
 ///         a new RiscZeroGroth16Verifier will be deployed.
 ///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
