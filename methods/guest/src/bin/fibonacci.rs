@@ -22,7 +22,11 @@ use risc0_zkvm::guest::env;
 risc0_zkvm::guest::entry!(main);
 
 fn fibonacci(n: U256) -> U256 {
-    let (mut prev, mut curr) = (U256::one(), U256::one());
+    if n == U256::zero() {
+        return U256::zero();
+    }
+
+    let (mut prev, mut curr) = (U256::zero(), U256::one());
     for _ in 2..=n.as_u32() {
         (prev, curr) = (curr, prev + curr);
     }
