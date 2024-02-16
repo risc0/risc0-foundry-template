@@ -21,6 +21,7 @@ env:
 jobs:
   test:
     name: tests
+    runs-on: ubuntu-latest
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
@@ -53,6 +54,7 @@ jobs:
 
   integration:
     name: local mock integration tests
+    runs-on: ubuntu-latest
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
@@ -93,6 +95,7 @@ jobs:
 
   e2e:
     name: end 2 end tests
+    runs-on: ubuntu-latest
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
