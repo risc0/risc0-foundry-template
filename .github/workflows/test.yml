@@ -51,11 +51,11 @@ jobs:
       - name: risczero toolchain install
         run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
 
-      - name: build solidity contracts
-        run: forge build
-
       - name: build rust guest
         run: cargo build
+
+      - name: build solidity contracts
+        run: forge build
 
       - name: run tests
         run: cargo test
@@ -96,11 +96,11 @@ jobs:
       - name: risczero toolchain install
         run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
 
-      - name: build solidity contracts
-        run: forge build
-
       - name: build rust guest
         run: cargo build
+
+      - name: build solidity contracts
+        run: forge build
 
       - name: run foundry tests with bonsai alpha proving
         env:
