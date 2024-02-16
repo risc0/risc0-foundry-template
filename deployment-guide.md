@@ -184,3 +184,4 @@ You now have a deployment on a testnet that you can interact with sending either
 [methods]: https://github.com/risc0/bonsai-foundry-template/tree/main/methods
 [tested]: https://github.com/risc0/bonsai-foundry-template/tree/main#test-your-project
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
+[risc0/risc0]: https://github.com/risc0/risc0
