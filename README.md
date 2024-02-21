@@ -85,7 +85,7 @@ To build your application, you'll need to make changes in three folders:
 
 ### Configuring Bonsai
 
-***Note:*** *The Bonsai proving service is still in early Alpha. To request an API key [complete the form here](https://bonsai.xyz/apply).*
+***Note:*** *To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
 With the Bonsai proving service, you can produce a [Groth16 SNARK proof] that is verifiable on-chain.
 You can get started by setting the following environment variables with your API key and associated URL.
