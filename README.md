@@ -14,9 +14,9 @@ Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai]
 
 ![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
 
-1. Run your application logic in the [RISC Zero zkVM]. The provided [Publisher] App sends an off-chain proof request to the [Bonsai] proving service.
+1. Run your application logic in the [RISC Zero zkVM]. The provided [publisher] app sends an off-chain proof request to the [Bonsai] proving service.
 2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
-3. The [Publisher] App submits this proof and journal on-chain to your app contract for validation.
+3. The [publisher] app submits this proof and journal on-chain to your app contract for validation.
 4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
 ## Dependencies
@@ -148,4 +148,4 @@ Below are the primary files in the project directory
 [deployment guide]: /deployment-guide.md
 [Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
-[Publisher]: ./apps/README.md
+[publisher]: ./apps/README.md
