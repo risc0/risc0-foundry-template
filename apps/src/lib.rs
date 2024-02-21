@@ -111,13 +111,13 @@ impl BonsaiProver {
                 let receipt: Receipt = bincode::deserialize(&receipt_buf)?;
 
                 break receipt;
-            } else {
-                panic!(
-                    "Workflow exited: {} - | err: {}",
-                    res.status,
-                    res.error_msg.unwrap_or_default()
-                );
             }
+
+            panic!(
+                "Workflow exited: {} - | err: {}",
+                res.status,
+                res.error_msg.unwrap_or_default()
+            );
         };
 
         // Fetch the snark.

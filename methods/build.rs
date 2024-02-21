@@ -92,7 +92,7 @@ fn main() {
 
     // Building the final elf file content.
     let file_content = format!("{SOL_HEADER}{ELF_LIB_HEADER}\n{elfs}\n}}");
-    fs::write(SOLIDITY_ELF_PATH, &file_content).unwrap_or_else(|err| {
+    fs::write(SOLIDITY_ELF_PATH, file_content).unwrap_or_else(|err| {
         panic!("failed to save changes to {}: {}", SOLIDITY_ELF_PATH, err);
     });
 
@@ -102,7 +102,7 @@ fn main() {
         .arg(SOLIDITY_IMAGE_ID_PATH)
         .arg(SOLIDITY_ELF_PATH)
         .status()
-        .expect(&format!(
-            "failed to format {SOLIDITY_IMAGE_ID_PATH}, {SOLIDITY_ELF_PATH}"
-        ));
+        .unwrap_or_else(|e| {
+            panic!("failed to format {SOLIDITY_IMAGE_ID_PATH}, {SOLIDITY_ELF_PATH}: {e}")
+        });
 }
