@@ -61,7 +61,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    > You can also use the following command to set the contract address if you have `jq` installed:
+    > You can also use the following command to set the contract address if you have [`jq`][jq] installed:
     >
     > ```bash
     > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
@@ -102,7 +102,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
-    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
+    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private hex-encoded key of your Sepolia testnet wallet
     ```
 
 2. Build your project:
@@ -133,7 +133,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    > You can also use the following command to set the contract address if you have `jq` installed:
+    > You can also use the following command to set the contract address if you have [`jq`][jq] installed:
     >
     > ```bash
     > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
@@ -167,5 +167,6 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 [Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [RISC Zero]: https://www.risczero.com/
 [contracts]: ./contracts/
+[jq]: https://jqlang.github.io/jq/
 [methods]: ./methods/
 [tested]: ./README.md#run-the-tests
