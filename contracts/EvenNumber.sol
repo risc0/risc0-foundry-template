@@ -19,7 +19,7 @@ pragma solidity ^0.8.20;
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
 
-/// @title A starter application using Bonsai.
+/// @title A starter application using RISC Zero.
 /// @notice This basic application holds a number, guaranteed to be even.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
 ///      or difficult to implement function to a RISC Zero guest running on Bonsai.
