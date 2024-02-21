@@ -95,7 +95,6 @@ export BONSAI_API_KEY="YOUR_API_KEY" # see form linked above
 export BONSAI_API_URL="BONSAI_URL" # provided with your api key
 ```
 
-<!-- DO NOT MERGE: Is this true? -->
 Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `MockRiscZeroVerifier` and will request a SNARK receipt from Bonsai.
 
 ```bash
