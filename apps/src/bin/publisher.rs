@@ -50,9 +50,9 @@ struct Args {
     #[clap(long)]
     contract: String,
 
-    /// The hex-encoded input to provide to the guest binary
+    /// The input to provide to the guest binary
     #[clap(short, long)]
-    input: String,
+    input: U256,
 }
 
 fn main() -> Result<()> {
@@ -67,8 +67,9 @@ fn main() -> Result<()> {
         &args.contract,
     )?;
 
-    // Parse the hex encoded input for the guest binary.
-    let input = hex::decode(args.input.strip_prefix("0x").unwrap_or(&args.input))?;
+    // ABI encode the input for the guest binary, to match what the `is_even` guest
+    // code expects.
+    let input = args.input.abi_encode();
 
     // Send an off-chain proof request to the Bonsai proving service.
     let (journal, post_state_digest, seal) = BonsaiProver::prove(IS_EVEN_ELF, &input)?;

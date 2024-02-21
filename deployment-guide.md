@@ -77,8 +77,6 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 2. Publish a new state
 
-    <!-- DO NOT MERGE This example is broken -->
-
     ```bash
     cargo run --bin publisher -- \
         --chain-id=31337 \
@@ -151,11 +149,10 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
 2. Publish a new state
 
-    <!-- DO NOT MERGE This example is broken -->
     ```bash
     cargo run --bin publisher -- \
         --chain-id=11155111 \
-        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} \
+        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
         --input=12345678
     ```
