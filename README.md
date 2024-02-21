@@ -61,6 +61,22 @@ Your new project consists of:
 - a [publisher] which makes proving requests to [Bonsai] and posts the proof to Ethereum.
   We provide an example implementation, but your dApp interface or application servers could act as the publisher.
 
+### Build the Code
+
+- Builds for zkVM program, the publisher app, and any other Rust code.
+
+  ```sh
+  cargo build
+  ```
+
+- Build your Solidity smart contracts
+
+  > NOTE: `cargo build` needs to run first to generate the `ImageID.sol` contract.
+
+  ```sh
+  forge build
+  ```
+
 ### Run the Tests
 
 - Tests your zkVM program.
@@ -120,7 +136,8 @@ Below are the primary files in the project directory
 │       └── bin                     
 │           └── publisher.rs        // Example app to publish program results into your app contract 
 ├── contracts
-│   └── EvenNumber.sol              // Basic example contract for you to modify
+│   ├── EvenNumber.sol              // Basic example contract for you to modify
+│   └── ImageID.sol                 // Generated contract with the image ID for your zkVM program
 ├── methods
 │   ├── Cargo.toml
 │   ├── guest
