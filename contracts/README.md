@@ -21,7 +21,7 @@ By setting the env variable `RISC0_USE_DOCKER` a containerized build process via
 
 Specifically:
 - `ImageID.sol`: contains the ImageIDs for the guests implemented in the [methods] directory.
-- `elf.sol`: contains the path of the guest binaries implemented in the [methods] directory. This contract is saved in the `tests` directory in the root of this template.
+- `Elf.sol`: contains the path of the guest binaries implemented in the [methods] directory. This contract is saved in the `tests` directory in the root of this template.
 
 The Solidity libraries for Bonsai can be found at [github.com/risc0/risc0-ethereum].
 

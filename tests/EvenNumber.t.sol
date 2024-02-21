@@ -23,13 +23,13 @@ import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16
 import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
 import {ImageID} from "../contracts/ImageID.sol";
-import {Elf} from "./elf.sol"; // auto-generated contract after running `cargo build`.
+import {Elf} from "./Elf.sol"; // auto-generated contract after running `cargo build`.
 
 contract EvenNumberTest is BonsaiTest {
     EvenNumber public evenNumber;
 
     function setUp() public {
-        IRiscZeroVerifier verifier = deployRiscZeroGroth16Verifier();
+        IRiscZeroVerifier verifier = deployRiscZeroVerifier();
         evenNumber = new EvenNumber(verifier);
         assertEq(evenNumber.get(), 0);
     }
@@ -59,7 +59,7 @@ contract EvenNumberTest is BonsaiTest {
     }
 
     /// @notice Deploy either a test or fully verifying `RiscZeroGroth16Verifier` depending on RISC0_DEV_MODE.
-    function deployRiscZeroGroth16Verifier() internal returns (IRiscZeroVerifier) {
+    function deployRiscZeroVerifier() internal returns (IRiscZeroVerifier) {
         if (vm.envOr("RISC0_DEV_MODE", false) == false) {
             IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
             console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));

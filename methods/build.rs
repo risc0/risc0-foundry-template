@@ -48,7 +48,7 @@ library Elf {
 "#;
 
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
-const SOLIDITY_ELF_PATH: &str = "../tests/elf.sol";
+const SOLIDITY_ELF_PATH: &str = "../tests/Elf.sol";
 
 fn main() {
     let use_docker = env::var("RISC0_USE_DOCKER").ok().map(|_| DockerOptions {

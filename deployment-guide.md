@@ -1,4 +1,4 @@
-# Bonsai Deployment Guide
+# RISC Zero Ethereum Deployment Guide
 
 > **Note: This software is not production ready. Do not use in production.**
 
@@ -31,11 +31,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export ETH_WALLET_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
-    export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
-
-    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID].
-    > ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
 
 3. Build your project:
 
@@ -65,11 +61,11 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    You can also use the following command to set the contract address if you have `jq` installed:
-
-    ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
-    ```
+    > You can also use the following command to set the contract address if you have `jq` installed:
+    >
+    > ```bash
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
+    > ```
 
 ### Interact with your local deployment
 
@@ -81,12 +77,13 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 2. Publish a new state
 
+    <!-- DO NOT MERGE This example is broken -->
+
     ```bash
-    cargo run --release -- publish \
+    cargo run --bin publisher -- \
         --chain-id=31337 \
         --rpc-url=http://localhost:8545 \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
-        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 
@@ -108,11 +105,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
     export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private key of your Ethereum testnet wallet e.g., Sepolia
-     export RISC0_USE_DOCKER=1 # enable a deterministic environment via Docker
     ```
-
-    By setting *RISC0_USE_DOCKER=1* the build process will build your guest binary within a deterministic environment, resulting in a reproducible build. This is helpful because it allows third-parties to independently build the guest binary and generate the same [image ID].
-    > ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker](https://docs.docker.com/get-docker/).*
 
 2. Build your project:
 
@@ -142,11 +135,11 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    You can also use the following command to set the contract address if you have `jq` installed:
-
-    ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
-    ```
+    > You can also use the following command to set the contract address if you have `jq` installed:
+    >
+    > ```bash
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
+    > ```
 
 ### Interact with your testnet deployment
 
@@ -158,12 +151,12 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
 2. Publish a new state
 
+    <!-- DO NOT MERGE This example is broken -->
     ```bash
-    cargo run --release -- publish \
+    cargo run --bin publisher -- \
         --chain-id=11155111 \
-        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} \
+        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
-        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 
@@ -173,9 +166,9 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
 
-[methods]: ./methods/
-[contracts]: ./contracts/
-[tested]: ./README.md#run-the-tests
-[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [Deploy to a testnet]: #deploy-your-project-on-a-testnet
-[image ID]: https://dev.risczero.com/terminology#image-id
+[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
+[RISC Zero]: https://www.risczero.com/
+[contracts]: ./contracts/
+[methods]: ./methods/
+[tested]: ./README.md#run-the-tests
