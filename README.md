@@ -44,7 +44,7 @@ Now you have all the tools you need to develop and deploy an application with [R
 
 ## Quick Start
 
-First, install the RISC Zero toolchain using the [instructions above].
+First, install the RISC Zero toolchain using the [instructions above](#dependencies).
 
 Now, you can initialize a new Bonsai project at a location of your choosing:
 
@@ -57,8 +57,9 @@ Congratulations! You've just started your first RISC Zero project.
 Your new project consists of:
 
 - a [zkVM program] (written in Rust), which specifies a computation that will be proven;
-- a [app contract] (written in Solidity), which receives the response;
-- a [guest interface] (written in Rust), which lets you define how to parse and serialize the guest input and calldata so that the [RISC Zero zkVM] can integrate with your contract.
+- a [app contract] (written in Solidity), which uses the proven results;
+- a [publisher] which makes proving requests to [Bonsai] and posts the proof to Ethereum.
+  We provide an example implementation, but your dApp interface or application servers could act as the publisher.
 
 ### Run the Tests
 
@@ -69,9 +70,9 @@ Your new project consists of:
 
 To build your application, you'll need to make changes in three folders:
 
-- write the code you want proven in the [methods] folder
-- write the on-chain part of your project in the [contracts] folder
-- write the guest interface in the [cli] folder
+- write the code you want proven in the [methods/guest](./methods/guest/) folder.
+- write the on-chain part of your project in the [contracts](./contracts/) folder.
+- adjust the publisher example in the [apps](./apps/) folder.
 
 ### Configuring Bonsai
 
@@ -85,6 +86,7 @@ export BONSAI_API_KEY="YOUR_API_KEY" # see form linked above
 export BONSAI_API_URL="BONSAI_URL" # provided with your api key
 ```
 
+<!-- DO NOT MERGE: Is this true? -->
 Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as before, but will additionally use the fully verifying `RiscZeroGroth16Verifier` contract instead of `MockRiscZeroVerifier` and will request a SNARK receipt from Bonsai.
 
 ```bash
@@ -134,13 +136,8 @@ Below are the primary files in the project directory
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-[instructions above]: #dependencies
-[zkVM program]: ./methods/guest/src/bin
-[app contract]: ./contracts
-[guest interface]: ./cli
-[methods]: ./methods/
-[cli]: ./cli/
-[contracts]: ./contracts/
+[zkVM program]: ./methods/guest/
+[app contract]: ./contracts/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
 [deployment guide]: /deployment-guide.md
 [Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
