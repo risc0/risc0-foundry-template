@@ -31,16 +31,12 @@ curl -L https://foundry.paradigm.xyz | bash
 ```
 
 Next, you will need to install the `cargo risczero` tool.
-We'll use [`cargo binstall`][cargo-binstall] to get `cargo-risczero` installed. See [RISC Zero installation] for more details.
+We'll use [`cargo binstall`][cargo-binstall] to get `cargo-risczero` installed, and then install the `risc0` toolchain.
+See [RISC Zero installation] for more details.
 
 ```sh
 cargo install cargo-binstall
 cargo binstall cargo-risczero
-```
-
-Next we'll need to install the `risc0` toolchain with:
-
-```sh
 cargo risczero install
 ```
 
