@@ -30,7 +30,7 @@ curl https://sh.rustup.rs -sSf | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-We'll use `cargo binstall` to get `cargo-risczero` installed. See [RISC Zero installation] for more details.
+We'll use [`cargo binstall`][cargo-binstall] to get `cargo-risczero` installed. See [RISC Zero installation] for more details.
 
 ```sh
 cargo install cargo-binstall
