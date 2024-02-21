@@ -61,11 +61,11 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    You can also use the following command to set the contract address if you have `jq` installed:
-
-    ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
-    ```
+    > You can also use the following command to set the contract address if you have `jq` installed:
+    >
+    > ```bash
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/31337/run-latest.json)
+    > ```
 
 ### Interact with your local deployment
 
@@ -77,12 +77,13 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 2. Publish a new state
 
+    <!-- DO NOT MERGE This example is broken -->
+
     ```bash
-    cargo run --release -- publish \
+    cargo run --bin publisher -- \
         --chain-id=31337 \
         --rpc-url=http://localhost:8545 \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
-        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 
@@ -134,11 +135,11 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
     ```
 
-    You can also use the following command to set the contract address if you have `jq` installed:
-
-    ```bash
-    export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
-    ```
+    > You can also use the following command to set the contract address if you have `jq` installed:
+    >
+    > ```bash
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
+    > ```
 
 ### Interact with your testnet deployment
 
@@ -150,12 +151,12 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
 2. Publish a new state
 
+    <!-- DO NOT MERGE This example is broken -->
     ```bash
-    cargo run --release -- publish \
+    cargo run --bin publisher -- \
         --chain-id=11155111 \
-        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} \
+        --rpc-url=https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} \
         --contract=${EVEN_NUMBER_ADDRESS:?} \
-        --guest-binary="IS_EVEN" \
         --input=12345678
     ```
 
