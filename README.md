@@ -63,8 +63,17 @@ Your new project consists of:
 
 ### Run the Tests
 
-- Use `cargo test` to run the tests in your zkVM program.
-- Use `RISC0_DEV_MODE=true forge test -vvv` to test your Solidity contracts and their interaction with your zkVM program.
+- Tests your zkVM program.
+
+  ```sh
+  cargo test
+  ```
+
+- Test your Solidity contracts, integrated with with your zkVM program.
+
+  ```sh
+  RISC0_DEV_MODE=true forge test -vvv 
+  ```
 
 ## Develop Your Application
 
