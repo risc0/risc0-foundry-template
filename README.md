@@ -136,19 +136,19 @@ Below are the primary files in the project directory
     └── MockRiscZeroVerifier.sol    // RISC Zero Verifier mock contract
 ```
 
-[RISC Zero]: https://www.risczero.com/
 [Bonsai]: https://dev.bonsai.xyz/
-[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
-[RISC Zero zkVM]: https://dev.risczero.com/zkvm
-[journal]: https://dev.risczero.com/terminology#journal
-[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
-[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [Foundry]: https://getfoundry.sh/
-[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-[zkVM program]: ./methods/guest/
-[app contract]: ./contracts/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
-[deployment guide]: /deployment-guide.md
-[Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
+[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
+[RISC Zero zkVM]: https://dev.risczero.com/zkvm
+[RISC Zero]: https://www.risczero.com/
+[Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
+[app contract]: ./contracts/
+[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
+[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
+[deployment guide]: /deployment-guide.md
+[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
+[journal]: https://dev.risczero.com/terminology#journal
 [publisher]: ./apps/README.md
+[zkVM program]: ./methods/guest/

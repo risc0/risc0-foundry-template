@@ -1,4 +1,4 @@
-# Bonsai Deployment Guide
+# RISC Zero Ethereum Deployment Guide
 
 > **Note: This software is not production ready. Do not use in production.**
 
@@ -173,9 +173,10 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
 
-[methods]: ./methods/
-[contracts]: ./contracts/
-[tested]: ./README.md#run-the-tests
-[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [Deploy to a testnet]: #deploy-your-project-on-a-testnet
+[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
+[RISC Zero]: https://www.risczero.com/
+[contracts]: ./contracts/
+[methods]: ./methods/
+[tested]: ./README.md#run-the-tests
 [image ID]: https://dev.risczero.com/terminology#image-id
