@@ -21,7 +21,7 @@ Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai]
 
 ## Dependencies
 
-First, [install Rust] and [Foundry], and then restart your terminal. Next, you will need to install the `cargo risczero` tool.
+First, [install Rust] and [Foundry], and then restart your terminal.
 
 ```sh
 # Install Rust
@@ -30,6 +30,7 @@ curl https://sh.rustup.rs -sSf | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
+Next, you will need to install the `cargo risczero` tool.
 We'll use [`cargo binstall`][cargo-binstall] to get `cargo-risczero` installed. See [RISC Zero installation] for more details.
 
 ```sh
