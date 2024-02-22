@@ -27,7 +27,7 @@ import {
     ReceiptClaim,
     ReceiptClaimLib,
     SystemExitCode
-} from "bonsai/IRiscZeroVerifier.sol";
+} from "risc0/IRiscZeroVerifier.sol";
 
 /// @notice Mock verifier contract for RISC Zero receipts of execution.
 contract MockRiscZeroVerifier is IRiscZeroVerifier {

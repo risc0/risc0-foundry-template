@@ -16,15 +16,15 @@
 
 pragma solidity ^0.8.20;
 
-import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
+import {BonsaiCheats} from "risc0/BonsaiCheats.sol";
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
-import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
-import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
+import {ControlID, RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
 
 import {EvenNumber} from "../contracts/EvenNumber.sol";
 
-/// @notice Deployment script for the BonsaiStarter project.
+/// @notice Deployment script for the RISC Zero starter project.
 /// @dev Use the following environment variable to control the deployment:
 ///     * ETH_WALLET_PRIVATE_KEY private key of the wallet to be used for deployment.
 ///

@@ -1,4 +1,4 @@
-# Bonsai Foundry Template
+# RISC Zero Foundry Template
 
 > **Note: This software is not production ready. Do not use in production.**
 
@@ -12,7 +12,7 @@ Prove computation with the [RISC Zero zkVM] and verify the results in your Ether
 
 Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai] proving, into their Ethereum smart contracts:
 
-![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
+![RISC Zero Foundry Template Diagram](images/risc0-foundry-template.png)
 
 1. Run your application logic in the [RISC Zero zkVM]. The provided [publisher] app sends an off-chain proof request to the [Bonsai] proving service.
 2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
@@ -46,7 +46,7 @@ Now you have all the tools you need to develop and deploy an application with [R
 
 First, install the RISC Zero toolchain using the [instructions above](#dependencies).
 
-Now, you can initialize a new Bonsai project at a location of your choosing:
+Now, you can initialize a new RISC Zero project at a location of your choosing:
 
 ```sh
 forge init -t risc0/bonsai-foundry-template ./my-project

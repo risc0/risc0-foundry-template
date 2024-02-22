@@ -1,5 +1,5 @@
 [package]
-name = "bonsai-starter-methods"
+name = "methods"
 version = { workspace = true }
 edition = { workspace = true }
 

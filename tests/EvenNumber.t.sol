@@ -16,10 +16,10 @@
 
 pragma solidity ^0.8.20;
 
-import {BonsaiTest} from "bonsai/BonsaiTest.sol";
+import {BonsaiTest} from "risc0/BonsaiTest.sol";
 import {console2} from "forge-std/console2.sol";
-import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
-import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
+import {ControlID, RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
 import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
 import {ImageID} from "../contracts/ImageID.sol";

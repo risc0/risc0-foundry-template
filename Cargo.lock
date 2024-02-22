@@ -184,13 +184,13 @@ dependencies = [
  "anyhow",
  "bincode",
  "bonsai-sdk",
- "bonsai-starter-methods",
  "bytemuck",
  "clap",
  "env_logger",
  "ethers",
  "hex",
  "log",
+ "methods",
  "risc0-ethereum-contracts",
  "risc0-zkvm",
  "serde",
@@ -614,19 +614,6 @@ dependencies = [
  "reqwest",
  "serde",
  "thiserror",
-]
-
-[[package]]
-name = "bonsai-starter-methods"
-version = "0.1.0"
-dependencies = [
- "alloy-primitives",
- "alloy-sol-types",
- "hex",
- "risc0-build",
- "risc0-build-ethereum",
- "risc0-zkp 0.20.1",
- "risc0-zkvm",
 ]
 
 [[package]]
@@ -2297,6 +2284,19 @@ name = "memchr"
 version = "2.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "523dc4f511e55ab87b694dc30d0f820d60906ef06413f93d4d7a1385599cc149"
+
+[[package]]
+name = "methods"
+version = "0.1.0"
+dependencies = [
+ "alloy-primitives",
+ "alloy-sol-types",
+ "hex",
+ "risc0-build",
+ "risc0-build-ethereum",
+ "risc0-zkp 0.20.1",
+ "risc0-zkvm",
+]
 
 [[package]]
 name = "mime"
