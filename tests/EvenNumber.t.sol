@@ -20,10 +20,7 @@ import {RiscZeroCheats} from "risc0/RiscZeroCheats.sol";
 import {console2} from "forge-std/console2.sol";
 import {Test} from "forge-std/Test.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
-import {ControlID, RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
-import {MockRiscZeroVerifier} from "./MockRiscZeroVerifier.sol";
 import {EvenNumber} from "../contracts/EvenNumber.sol";
-import {ImageID} from "../contracts/ImageID.sol";
 import {Elf} from "./Elf.sol"; // auto-generated contract after running `cargo build`.
 
 contract EvenNumberTest is RiscZeroCheats, Test {
@@ -51,18 +48,5 @@ contract EvenNumberTest is RiscZeroCheats, Test {
 
         evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
         assertEq(evenNumber.get(), number);
-    }
-
-    /// @notice Deploy either a test or fully verifying `RiscZeroGroth16Verifier` depending on RISC0_DEV_MODE.
-    function deployRiscZeroVerifier() internal returns (IRiscZeroVerifier) {
-        if (devMode()) {
-            IRiscZeroVerifier verifier = new MockRiscZeroVerifier();
-            console2.log("Deployed RiscZeroGroth16VerifierTest to", address(verifier));
-            return verifier;
-        } else {
-            IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
-            console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
-            return verifier;
-        }
     }
 }
