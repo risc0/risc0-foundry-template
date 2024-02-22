@@ -16,7 +16,6 @@
 
 pragma solidity ^0.8.20;
 
-import {BonsaiCheats} from "risc0/BonsaiCheats.sol";
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
@@ -30,7 +29,7 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 ///
 /// See the Foundry documentation for more information about Solidity scripts.
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
-contract EvenNumberDeploy is Script, BonsaiCheats {
+contract EvenNumberDeploy is Script {
     function run() external {
         uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
 
