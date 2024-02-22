@@ -16,26 +16,26 @@
 
 pragma solidity ^0.8.20;
 
-import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
 
-/// @title A starter application using Bonsai.
+/// @title A starter application using RISC Zero.
 /// @notice This basic application holds a number, guaranteed to be even.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
 ///      or difficult to implement function to a RISC Zero guest running on Bonsai.
 contract EvenNumber {
     /// @notice RISC Zero verifier contract address.
-    IRiscZeroVerifier immutable verifier;
+    IRiscZeroVerifier public immutable verifier;
     /// @notice Image ID of the only zkVM binary to accept verification from.
-    bytes32 immutable imageId;
+    bytes32 public constant imageId = ImageID.IS_EVEN_ID;
+
     /// @notice A number that is guaranteed, by the RISC Zero zkVM, to be even.
     ///         It can be set by calling the `set` function.
-    uint256 number;
+    uint256 public number;
 
-    /// @notice Initialize the contract, binding it to a specified RISC Zero verifier and guest image.
+    /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
     constructor(IRiscZeroVerifier _verifier) {
         verifier = _verifier;
-        imageId = ImageID.IS_EVEN_ID;
         number = 0;
     }
 

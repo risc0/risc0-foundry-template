@@ -18,8 +18,8 @@ use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
 
-pub fn main() {
-    // Read data sent from the application contract.
+fn main() {
+    // Read the input data for this application.
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
     // Decode and parse the input
@@ -30,6 +30,6 @@ pub fn main() {
     assert!(number.bit(0) == false, "number is not even");
 
     // Commit the journal that will be received by the application contract.
-    // Encoded types should match the args expected by the application.
+    // Journal is encoded using Solidity ABI for easy decoding in the app contract.
     env::commit_slice(number.abi_encode().as_slice());
 }

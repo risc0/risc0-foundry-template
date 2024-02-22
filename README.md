@@ -1,4 +1,4 @@
-# Bonsai Foundry Template
+# RISC Zero Foundry Template
 
 > **Note: This software is not production ready. Do not use in production.**
 
@@ -12,7 +12,7 @@ Prove computation with the [RISC Zero zkVM] and verify the results in your Ether
 
 Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai] proving, into their Ethereum smart contracts:
 
-![Bonsai Foundry Template Diagram](images/bonsai-foundry-template.png)
+![RISC Zero Foundry Template Diagram](images/risc0-foundry-template.png)
 
 1. Run your application logic in the [RISC Zero zkVM]. The provided [publisher] app sends an off-chain proof request to the [Bonsai] proving service.
 2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
@@ -46,7 +46,7 @@ Now you have all the tools you need to develop and deploy an application with [R
 
 First, install the RISC Zero toolchain using the [instructions above](#dependencies).
 
-Now, you can initialize a new Bonsai project at a location of your choosing:
+Now, you can initialize a new RISC Zero project at a location of your choosing:
 
 ```sh
 forge init -t risc0/bonsai-foundry-template ./my-project
@@ -60,6 +60,22 @@ Your new project consists of:
 - a [app contract] (written in Solidity), which uses the proven results;
 - a [publisher] which makes proving requests to [Bonsai] and posts the proof to Ethereum.
   We provide an example implementation, but your dApp interface or application servers could act as the publisher.
+
+### Build the Code
+
+- Builds for zkVM program, the publisher app, and any other Rust code.
+
+  ```sh
+  cargo build
+  ```
+
+- Build your Solidity smart contracts
+
+  > NOTE: `cargo build` needs to run first to generate the `ImageID.sol` contract.
+
+  ```sh
+  forge build
+  ```
 
 ### Run the Tests
 
@@ -120,7 +136,8 @@ Below are the primary files in the project directory
 │       └── bin                     
 │           └── publisher.rs        // Example app to publish program results into your app contract 
 ├── contracts
-│   └── EvenNumber.sol              // Basic example contract for you to modify
+│   ├── EvenNumber.sol              // Basic example contract for you to modify
+│   └── ImageID.sol                 // Generated contract with the image ID for your zkVM program
 ├── methods
 │   ├── Cargo.toml
 │   ├── guest
@@ -132,7 +149,7 @@ Below are the primary files in the project directory
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
 └── tests
     ├── EvenNumber.t.sol            // Tests for the basic example contract
-    └── MockRiscZeroVerifier.sol    // RISC Zero Verifier mock contract
+│   └── Elf.sol                     // Generated contract with paths the guest program ELF files.
 ```
 
 [Bonsai]: https://dev.bonsai.xyz/

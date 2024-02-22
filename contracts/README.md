@@ -23,7 +23,7 @@ Specifically:
 - `ImageID.sol`: contains the ImageIDs for the guests implemented in the [methods] directory.
 - `Elf.sol`: contains the path of the guest binaries implemented in the [methods] directory. This contract is saved in the `tests` directory in the root of this template.
 
-The Solidity libraries for Bonsai can be found at [github.com/risc0/risc0-ethereum].
+The Solidity libraries for RISC Zero can be found at [github.com/risc0/risc0-ethereum].
 
 Contracts are built and tested with [forge], which is part of the [Foundry] toolkit.
 Tests are defined in the `tests` directory in the root of this template.
