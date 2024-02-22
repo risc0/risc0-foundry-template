@@ -149,7 +149,7 @@ Below are the primary files in the project directory
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
 └── tests
     ├── EvenNumber.t.sol            // Tests for the basic example contract
-    └── MockRiscZeroVerifier.sol    // RISC Zero Verifier mock contract
+│   └── Elf.sol                     // Generated contract with paths the guest program ELF files.
 ```
 
 [Bonsai]: https://dev.bonsai.xyz/
