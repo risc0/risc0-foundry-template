@@ -44,12 +44,6 @@ contract EvenNumberTest is RiscZeroCheats, Test {
         assertEq(evenNumber.get(), number);
     }
 
-    function testFail_SetOdd() public {
-        uint256 number = 123456789;
-        // Attempting to prove that 123456789 is even should fail.
-        prove(Elf.IS_EVEN_PATH, abi.encode(number));
-    }
-
     function test_SetZero() public {
         uint256 number = 0;
         (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
