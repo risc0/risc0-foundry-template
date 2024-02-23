@@ -77,6 +77,17 @@ Your new project consists of:
   forge build
   ```
 
+#### Deterministic Builds
+
+By setting the environment variable `RISC0_USE_DOCKER` a containerized build process via Docker will ensure that all builds of your guest code, regardless of the machine or local environment, will produce the same [image ID][image-id].
+The [image ID][image-id], and its importance to security, is explained in more detail in our [developer FAQ].
+
+```bash
+RISC0_USE_DOCKER=1 cargo build
+```
+
+> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker].*
+
 ### Run the Tests
 
 - Tests your zkVM program.
@@ -154,6 +165,7 @@ Below are the primary files in the project directory
 
 [Bonsai]: https://dev.bonsai.xyz/
 [Foundry]: https://getfoundry.sh/
+[Get Docker]: https://docs.docker.com/get-docker/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
 [RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
@@ -164,6 +176,8 @@ Below are the primary files in the project directory
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
 [coprocessor]: https://www.risczero.com/news/a-guide-to-zk-coprocessors-for-scalability
 [deployment guide]: /deployment-guide.md
+[developer FAQ]: https://dev.risczero.com/faq#zkvm-application-design
+[image-id]: https://dev.risczero.com/terminology#image-id
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [journal]: https://dev.risczero.com/terminology#journal
 [publisher]: ./apps/README.md
