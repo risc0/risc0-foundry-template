@@ -162,7 +162,7 @@ Below are the primary files in the project directory
 [Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
 [app contract]: ./contracts/
 [cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-[coprocessor]: https://twitter.com/RiscZero/status/1677316664772132864
+[coprocessor]: https://www.risczero.com/news/a-guide-to-zk-coprocessors-for-scalability
 [deployment guide]: /deployment-guide.md
 [install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [journal]: https://dev.risczero.com/terminology#journal
