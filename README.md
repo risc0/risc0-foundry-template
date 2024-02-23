@@ -77,17 +77,6 @@ Your new project consists of:
   forge build
   ```
 
-#### Deterministic Builds
-
-By setting the environment variable `RISC0_USE_DOCKER` a containerized build process via Docker will ensure that all builds of your guest code, regardless of the machine or local environment, will produce the same [image ID][image-id].
-The [image ID][image-id], and its importance to security, is explained in more detail in our [developer FAQ].
-
-```bash
-RISC0_USE_DOCKER=1 cargo build
-```
-
-> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker].*
-
 ### Run the Tests
 
 - Tests your zkVM program.
@@ -128,6 +117,17 @@ Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as be
 RISC0_DEV_MODE=false forge test -vvv
 ```
 
+### Deterministic Builds
+
+By setting the environment variable `RISC0_USE_DOCKER` a containerized build process via Docker will ensure that all builds of your guest code, regardless of the machine or local environment, will produce the same [image ID][image-id].
+The [image ID][image-id], and its importance to security, is explained in more detail in our [developer FAQ].
+
+```bash
+RISC0_USE_DOCKER=1 cargo build
+```
+
+> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker].*
+
 ## Deploy Your Application
 
 When you're ready, follow the [deployment guide] to get your application running on [Sepolia].
@@ -160,7 +160,7 @@ Below are the primary files in the project directory
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
 └── tests
     ├── EvenNumber.t.sol            // Tests for the basic example contract
-│   └── Elf.sol                     // Generated contract with paths the guest program ELF files.
+    └── Elf.sol                     // Generated contract with paths the guest program ELF files.
 ```
 
 [Bonsai]: https://dev.bonsai.xyz/
