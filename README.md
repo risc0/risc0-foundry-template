@@ -6,6 +6,7 @@ Starter template for writing an application using [RISC Zero] and Ethereum.
 
 This repository implements an application on Ethereum utilizing RISC Zero as a [coprocessor] to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive (i.e. gas expensive), or would be difficult to implement Solidity (e.g. ed25519 signature verification, or HTML parsing).
+
 Prove computation with the [RISC Zero zkVM] and verify the results in your Ethereum contract.
 
 ## Overview
