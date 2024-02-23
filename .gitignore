@@ -12,9 +12,6 @@ out/
 contracts/ImageID.sol
 tests/Elf.sol
 
-# Docs
-docs/
-
 # Dotenv file
 .env
 
