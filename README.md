@@ -2,6 +2,9 @@
 
 > **Note: This software is not production ready. Do not use in production.**
 
+> Note: This template was recently updated to work without the relay.
+> If you'd like the relay version, head over to the [relay branch](https://github.com/risc0/bonsai-foundry-template/tree/relay)
+
 Starter template for writing an application using [RISC Zero] and Ethereum.
 
 This repository implements an application on Ethereum utilizing RISC Zero as a [coprocessor] to the smart contract application.
