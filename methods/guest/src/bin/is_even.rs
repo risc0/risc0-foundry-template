@@ -12,36 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![no_main]
-
 use std::io::Read;
 
-use ethabi::{ethereum_types::U256, ParamType, Token};
+use alloy_primitives::U256;
+use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
 
-risc0_zkvm::guest::entry!(main);
-
-fn fibonacci(n: U256) -> U256 {
-    let (mut prev, mut curr) = (U256::one(), U256::one());
-    for _ in 2..=n.as_u32() {
-        (prev, curr) = (curr, prev + curr);
-    }
-    curr
-}
-
 fn main() {
-    // Read data sent from the application contract.
+    // Read the input data for this application.
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
-    // Type array passed to `ethabi::decode_whole` should match the types encoded in
-    // the application contract.
-    let input = ethabi::decode_whole(&[ParamType::Uint(256)], &input_bytes).unwrap();
-    let n: U256 = input[0].clone().into_uint().unwrap();
+    // Decode and parse the input
+    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
 
     // Run the computation.
-    let result = fibonacci(n);
+    // In this case, asserting that the provided number is even.
+    assert!(number.bit(0) == false, "number is not even");
 
     // Commit the journal that will be received by the application contract.
-    // Encoded types should match the args expected by the application callback.
-    env::commit_slice(&ethabi::encode(&[Token::Uint(n), Token::Uint(result)]));
+    // Journal is encoded using Solidity ABI for easy decoding in the app contract.
+    env::commit_slice(number.abi_encode().as_slice());
 }
