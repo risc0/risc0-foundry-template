@@ -18,10 +18,11 @@ pragma solidity ^0.8.17;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
-import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
-import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
+import {IBonsaiRelay} from "bonsai/relay/IBonsaiRelay.sol";
+import {BonsaiRelay} from "bonsai/relay/BonsaiRelay.sol";
 import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
-import {BonsaiTestRelay} from "bonsai/BonsaiTestRelay.sol";
+import {BonsaiTestRelay} from "bonsai/relay/BonsaiTestRelay.sol";
+import {ControlID} from "bonsai/groth16/ControlID.sol";
 import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 
@@ -80,7 +81,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
             } else {
-                verifier = new RiscZeroGroth16Verifier();
+                verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ID_0, ControlID.CONTROL_ID_1);
                 console2.log("Deployed RiscZeroGroth16Verifier to ", address(verifier));
             }
 

@@ -1,4 +1,4 @@
-// Copyright 2023 RISC Zero, Inc.
+// Copyright 2024 RISC Zero, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,72 +15,54 @@
 use std::time::Duration;
 
 use anyhow::{anyhow, bail, Context, Result};
-use bonsai_sdk::alpha::{responses::SnarkProof, Client, SdkErr};
+use bonsai_sdk::alpha::{responses::SnarkReceipt, Client};
 use risc0_build::GuestListEntry;
-use risc0_zkvm::{
-    Executor, ExecutorEnv, MemoryImage, Program, Receipt, ReceiptMetadata, MEM_SIZE, PAGE_SIZE,
-};
-
-/// Result of executing a guest image, possibly containing a proof.
-pub enum Output {
-    Execution {
-        journal: Vec<u8>,
-    },
-    Bonsai {
-        journal: Vec<u8>,
-        receipt_metadata: ReceiptMetadata,
-        snark_proof: SnarkProof,
-    },
-}
-
-/// Execute and prove the guest locally, on this machine, as opposed to sending
-/// the proof request to the Bonsai service.
-pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
-    // Execute the guest program, generating the session trace needed to prove the
-    // computation.
-    let env = ExecutorEnv::builder()
-        .add_input(&input)
-        .build()
-        .context("Failed to build exec env")?;
-    let mut exec = Executor::from_elf(env, elf).context("Failed to instantiate executor")?;
-    let session = exec
-        .run()
-        .context(format!("Failed to run executor {:?}", &input))?;
-
-    Ok(Output::Execution {
-        journal: session.journal,
-    })
-}
+use risc0_zkvm::{compute_image_id, default_executor, ExecutorEnv, Receipt};
 
 pub const POLL_INTERVAL_SEC: u64 = 4;
 
+/// Result of executing a guest image, possibly containing a proof.
+pub enum Output {
+    Execution { journal: Vec<u8> },
+    Bonsai { snark_receipt: SnarkReceipt },
+}
+
+/// Execute the guest locally, as opposed to sending the proof request to the
+/// Bonsai service.
+pub fn execute_locally(elf: &[u8], input: Vec<u8>) -> Result<Output> {
+    let env = ExecutorEnv::builder()
+        .write_slice(&input)
+        .build()
+        .context("Failed to build ExecutorEnv")?;
+    let exec = default_executor();
+    let session_info = exec.execute(env, elf).context("Execution failed")?;
+    Ok(Output::Execution {
+        journal: session_info.journal.bytes,
+    })
+}
+
 fn get_digest(elf: &[u8]) -> Result<String> {
-    let program = Program::load_elf(elf, MEM_SIZE as u32)?;
-    let image = MemoryImage::new(&program, PAGE_SIZE as u32)?;
-    Ok(hex::encode(image.compute_id()))
+    Ok(hex::encode(compute_image_id(elf)?))
 }
 
 pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
-    let client = Client::from_env().context("Failed to create client from env var")?;
+    let client =
+        Client::from_env(risc0_zkvm::VERSION).context("Failed to create client from env var")?;
 
     let img_id = get_digest(elf).context("Failed to generate elf memory image")?;
 
-    match client.upload_img(&img_id, elf.to_vec()) {
-        Ok(()) => (),
-        Err(SdkErr::ImageIdExists) => (),
-        Err(err) => return Err(err.into()),
-    }
+    client.upload_img(&img_id, elf.to_vec())?;
 
     let input_id = client
         .upload_input(input)
         .context("Failed to upload input data")?;
 
     let session = client
-        .create_session(img_id, input_id)
+        .create_session(img_id, input_id, vec![])
         .context("Failed to create remote proving session")?;
 
     // Poll and await the result of the STARK rollup proving session.
-    let receipt: Receipt = (|| {
+    let _receipt: Receipt = (|| {
         loop {
             let res = match session.status(&client) {
                 Ok(res) => res,
@@ -102,7 +84,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
                         )
                         .context("Failed to download receipt")?;
                     let receipt: Receipt = bincode::deserialize(&receipt_buf)
-                        .context("Failed to deserialize SessionReceipt")?;
+                        .context("Failed to deserialize Receipt")?;
                     // eprintln!("Completed STARK proof on bonsai alpha backend!");
                     return Ok(receipt);
                 }
@@ -115,10 +97,9 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
             }
         }
     })()?;
-    let metadata = receipt.get_metadata()?;
 
     let snark_session = client.create_snark(session.uuid)?;
-    let snark_proof: SnarkProof = (|| loop {
+    let snark_receipt: SnarkReceipt = (|| loop {
         let res = snark_session.status(&client)?;
         match res.status.as_str() {
             "RUNNING" => {
@@ -139,11 +120,7 @@ pub fn prove_alpha(elf: &[u8], input: Vec<u8>) -> Result<Output> {
         }
     })()?;
 
-    Ok(Output::Bonsai {
-        journal: receipt.journal,
-        receipt_metadata: metadata,
-        snark_proof,
-    })
+    Ok(Output::Bonsai { snark_receipt })
 }
 
 pub fn resolve_guest_entry<'a>(
