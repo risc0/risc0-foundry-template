@@ -15,7 +15,7 @@ The picture below shows a simplified overview of how users can integrate Bonsai 
 
 ![Bonsai Relay Diagram](images/BonsaiRelay.png)
 
-1. Users can delegate their smart contract's logic to Bonsai. The [Bonsai Relay Contract](lib/risc0/bonsai/ethereum/contracts/BonsaiRelay.sol) provides a `Request Callback` interface. This interface, accessible both *off-chain* (through HTTP REST API) and *on-chain*, emits an event detected by the `Ethereum Bonsai Relayer`.
+1. Users can delegate their smart contract's logic to Bonsai. The [Bonsai Relay Contract](lib/risc0/bonsai/ethereum/contracts/relay/BonsaiRelay.sol) provides a `Request Callback` interface. This interface, accessible both *off-chain* (through HTTP REST API) and *on-chain*, emits an event detected by the `Ethereum Bonsai Relayer`.
 2. The `Ethereum Bonsai Relayer` sends the proof request to Bonsai.
 3. Bonsai generates a Snark proof and its result, encapsulated in a journal.
 4. The `Ethereum Bonsai Relayer` submits this proof and journal on-chain to the `Bonsai Relay Contract` for validation.

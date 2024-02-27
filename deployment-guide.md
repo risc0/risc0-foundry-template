@@ -55,7 +55,7 @@ It also provides an SDK in Rust that can be used to interact with it. You can ch
 1. Send a callback request directly to the Relay by running:
 
     ```bash
-    cargo run --example offchain_request "$APP_ADDRESS" 10
+    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
     ```
 
 2. Check the relayed result:
@@ -93,7 +93,7 @@ RISC0_DEV_MODE=true DEPLOY_RELAY_ADDRESS="$APP_ADDRESS" DEPLOY_UPLOAD_IMAGES=tru
 ```
 
 This will deploy only your application address and upload any updated images.
-The existing relay contract and, by setting `DEPLOY_RELAY_ADDRESS`, the running relay will continue to be used.
+By setting `DEPLOY_RELAY_ADDRESS`, the existing running relay contract and the already running relay will continue to be used.
 
 ## Use the fully verifying relay:
 
@@ -156,7 +156,7 @@ You now have a deployment on a testnet that you can interact with sending either
 1. Send a callback request directly to the Relay by running:
 
     ```bash
-    cargo run --example offchain_request "$APP_ADDRESS" 10
+    BONSAI_API_KEY="YOUR_API_KEY_OR_EMPTY_IF_DEV_MODE" cargo run --example offchain_request "$APP_ADDRESS" 10
     ```
 
 2. Check the relayed result:

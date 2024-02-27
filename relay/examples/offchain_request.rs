@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::env;
+
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
 use anyhow::Context;
@@ -21,13 +23,13 @@ use ethers::{types::Address, utils::id};
 use methods::FIBONACCI_ID;
 use risc0_zkvm::sha::Digest;
 
-/// Exmaple code for sending a REST API request to the Bonsai relay service to
+/// Example code for sending a REST API request to the Bonsai relay service to
 /// requests, execution, proving, and on-chain callback for a zkVM guest
 /// application.
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]
 struct Args {
-    /// Adress for the BonsaiStarter application contract.
+    /// Address for the BonsaiStarter application contract.
     address: Address,
 
     /// Input N for calculating the Nth Fibonacci number.
@@ -38,18 +40,27 @@ struct Args {
     bonsai_relay_api_url: String,
 
     /// Bonsai API key. Used by the relay to send requests to the Bonsai proving
-    /// service. Defaults to empty, providing no authentication.
-    #[arg(long, env, default_value = "")]
-    bonsai_api_key: String,
+    /// service. Can be set to an empty string when DEV_MODE is enabled.
+    #[arg(long, env)]
+    bonsai_api_key: Option<String>,
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
+    // check for bonsai_api_key
+    if args.bonsai_api_key.is_none() && env::var("BONSAI_API_KEY").is_err() {
+        eprintln!(
+            "Error: the following required arguments were not provided: \
+            \n'BONSAI_API_KEY' must be set either as an argument or as an environment variable. \
+            \nIf `DEV_MODE` is enabled, you can use an empty string."
+        );
+        std::process::exit(1);
+    }
     // initialize a relay client
     let relay_client = Client::from_parts(
-        args.bonsai_relay_api_url.clone(), // Set BONSAI_API_URL or replace this line.
-        args.bonsai_api_key.clone(),       // Set BONSAI_API_KEY or replace this line.
+        args.bonsai_relay_api_url.clone(),
+        args.bonsai_api_key.unwrap(),
     )
     .context("Failed to initialize the relay client")?;
 
