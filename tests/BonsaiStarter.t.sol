@@ -17,21 +17,39 @@
 pragma solidity ^0.8.17;
 
 import {BonsaiTest} from "bonsai/BonsaiTest.sol";
-import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
+import {IBonsaiRelay} from "bonsai/relay/IBonsaiRelay.sol";
 import {BonsaiStarter} from "contracts/BonsaiStarter.sol";
 
 contract BonsaiStarterTest is BonsaiTest {
     function setUp() public withRelay {}
 
-    function testMockCall() public {
+    // Test the BonsaiStarter contract by mocking an off-chain callback request
+    function testOffChainMock() public {
+        bytes32 imageId = queryImageId("FIBONACCI");
         // Deploy a new starter instance
-        BonsaiStarter starter = new BonsaiStarter(
-            IBonsaiRelay(bonsaiRelay),
-            queryImageId('FIBONACCI'));
+        BonsaiStarter starter = new BonsaiStarter(IBonsaiRelay(bonsaiRelay), imageId);
 
-        // Anticipate a callback request to the relay
+        // Anticipate a callback invocation on the starter contract
+        vm.expectCall(address(starter), abi.encodeWithSelector(BonsaiStarter.storeResult.selector));
+        // Relay the solution as a callback
+        uint64 BONSAI_CALLBACK_GAS_LIMIT = 100000;
+        runCallbackRequest(
+            imageId, abi.encode(128), address(starter), starter.storeResult.selector, BONSAI_CALLBACK_GAS_LIMIT
+        );
+
+        // Validate the Fibonacci solution value
+        uint256 result = starter.fibonacci(128);
+        assertEq(result, uint256(407305795904080553832073954));
+    }
+
+    // Test the BonsaiStarter contract by mocking an on-chain callback request
+    function testOnChainMock() public {
+        // Deploy a new starter instance
+        BonsaiStarter starter = new BonsaiStarter(IBonsaiRelay(bonsaiRelay), queryImageId("FIBONACCI"));
+
+        // Anticipate an on-chain callback request to the relay
         vm.expectCall(address(bonsaiRelay), abi.encodeWithSelector(IBonsaiRelay.requestCallback.selector));
-        // Request the callback
+        // Request the on-chain callback
         starter.calculateFibonacci(128);
 
         // Anticipate a callback invocation on the starter contract
