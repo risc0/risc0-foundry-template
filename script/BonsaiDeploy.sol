@@ -32,7 +32,7 @@ import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 ///         Must be unlocked on the RPC provider node.
 ///     * DEPLOYER_PRIVATE_KEY private key of the wallet to be used for deployment.
 ///         Alternative to using DEPLOYER_ADDRESS.
-///     * DEPLOY_VERFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
+///     * DEPLOY_VERIFIER_ADDRESS address of a predeployed IRiscZeroVerifier contract.
 ///         If not specified and also DEPLOY_RELAY_ADDRESS is not specified,
 ///         a new RiscZeroGroth16Verifier will be deployed.
 ///     * DEPLOY_RELAY_ADDRESS address of a predeployed BonsaiRelay contract.
@@ -76,7 +76,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
         } else {
             // Deploy an IRiscZeroVerifier contract instance. Relay is stateless and owner-less.
             IRiscZeroVerifier verifier;
-            address verifierAddr = vm.envOr("DEPLOY_VERFIER_ADDRESS", address(0));
+            address verifierAddr = vm.envOr("DEPLOY_VERIFIER_ADDRESS", address(0));
             if (verifierAddr != address(0)) {
                 console2.log("Using IRiscZeroVerifier at ", address(verifierAddr));
                 verifier = IRiscZeroVerifier(verifierAddr);
@@ -121,7 +121,7 @@ contract BonsaiDeploy is Script, BonsaiCheats {
     }
 
     /// @notice If DEPLOY_UPLOAD_IMAGES is true, upload all guests defined in the methods directory to Bonsai.
-    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to true.
+    /// @dev If DEPLOY_UPLOAD_IMAGES is not set, defaults to false.
     function uploadImages() internal {
         if (vm.envOr("DEPLOY_UPLOAD_IMAGES", false)) {
             bytes32[] memory imageIds = uploadAllImages();
