@@ -18,11 +18,12 @@ pragma solidity ^0.8.17;
 
 import {Script} from "forge-std/Script.sol";
 import {console2} from "forge-std/console2.sol";
-import {IBonsaiRelay} from "bonsai/IBonsaiRelay.sol";
-import {BonsaiRelay} from "bonsai/BonsaiRelay.sol";
+import {IBonsaiRelay} from "bonsai/relay/IBonsaiRelay.sol";
+import {BonsaiRelay} from "bonsai/relay/BonsaiRelay.sol";
 import {BonsaiCheats} from "bonsai/BonsaiCheats.sol";
-import {BonsaiTestRelay} from "bonsai/BonsaiTestRelay.sol";
-import {ControlID, RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
+import {BonsaiTestRelay} from "bonsai/relay/BonsaiTestRelay.sol";
+import {ControlID} from "bonsai/groth16/ControlID.sol";
+import {RiscZeroGroth16Verifier} from "bonsai/groth16/RiscZeroGroth16Verifier.sol";
 import {IRiscZeroVerifier} from "bonsai/IRiscZeroVerifier.sol";
 
 /// @notice Base deployment script for Bonsai projects with Foundry and it's dependencies.
