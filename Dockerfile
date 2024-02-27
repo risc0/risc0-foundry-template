@@ -2,7 +2,7 @@
 FROM rust
 
 # Install Foundry
-RUN cargo install --git https://github.com/foundry-rs/foundry --profile local --force foundry-cli anvil chisel
+RUN cargo install --git https://github.com/foundry-rs/foundry --profile local --force forge cast chisel anvil
 
 # Install rust toolchain
 COPY rust-toolchain.toml .
