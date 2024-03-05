@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::HashMap, env};
+use std::{collections::HashMap, env, process::Command};
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 use risc0_build_ethereum::generate_solidity_files;
@@ -43,4 +43,20 @@ fn main() {
         .with_elf_sol_path(SOLIDITY_ELF_PATH);
 
     generate_solidity_files(guests.as_slice(), &solidity_opts).unwrap();
+
+    // build risc0-ethereum forge ffi.
+    let status = Command::new("cargo")
+        .arg("build")
+        .arg("--manifest-path")
+        .arg("../lib/risc0-ethereum/ffi/Cargo.toml")
+        .arg("--bin")
+        .arg("risc0-forge-ffi")
+        .status()
+        .unwrap();
+    if !status.success() {
+        panic!(
+            "risc0-ethereum forge ffi build failed with exit code: {:?}",
+            status.code()
+        );
+    }
 }
