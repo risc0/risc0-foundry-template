@@ -15,7 +15,7 @@
 use std::{collections::HashMap, env};
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
-use risc0_build_ethereum::generate_solidity_files;
+use risc0_ethereum_build::generate_solidity_files;
 
 // Paths where the generated Solidity files will be written.
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
@@ -38,7 +38,7 @@ fn main() {
     )]));
 
     // Generate Solidity source files for use with Forge.
-    let solidity_opts = risc0_build_ethereum::Options::default()
+    let solidity_opts = risc0_ethereum_build::Options::default()
         .with_image_id_sol_path(SOLIDITY_IMAGE_ID_PATH)
         .with_elf_sol_path(SOLIDITY_ELF_PATH);
 
