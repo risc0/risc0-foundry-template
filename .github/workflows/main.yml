@@ -35,10 +35,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      
-      - uses: risc0/risc0/.github/actions/sccache@release-0.21
-        with:
-          key: Linux-default
 
       - name: Install rust
         uses: risc0/risc0/.github/actions/rustup@release-0.21
@@ -46,8 +42,13 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: Cargo install cargo-risczero
-        run: cargo install --force --locked cargo-risczero@$RISC0_CRATE_VERSION
+      - name: Install cargo-install
+        uses: risc0/cargo-install@v1
+        with:
+          crate: cargo-binstall
+
+      - name: Cargo binstall cargo-risczero
+        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_CRATE_VERSION }}
 
       - name: risczero toolchain install
         run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
@@ -66,8 +67,6 @@ jobs:
             RISC0_DEV_MODE: true
         run: forge test -vvv
 
-      - run: sccache --show-stats
-
   bonsai-integration:
     name: test bonsai integration
     runs-on: ubuntu-latest
@@ -80,10 +79,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - uses: risc0/risc0/.github/actions/sccache@release-0.21
-        with:
-          key: Linux-default
 
       - name: Install rust
         uses: risc0/risc0/.github/actions/rustup@release-0.21
@@ -109,8 +104,6 @@ jobs:
           BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
           RISC0_DEV_MODE: false
         run: forge test -vvv
-      
-      - run: sccache --show-stats
 
   lint:
     runs-on: ubuntu-latest
