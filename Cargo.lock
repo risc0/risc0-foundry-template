@@ -3141,8 +3141,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-build-ethereum"
-version = "0.8.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=main#ce4c3bef5810e5a5edd383d3b9890bbcf437d06d"
+version = "0.8.0"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=release-0.8#667482a6fffef6b952c735842b4b555fb56865f8"
 dependencies = [
  "anyhow",
  "hex",
@@ -3189,8 +3189,8 @@ dependencies = [
 
 [[package]]
 name = "risc0-ethereum-contracts"
-version = "0.8.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=main#ce4c3bef5810e5a5edd383d3b9890bbcf437d06d"
+version = "0.8.0"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=release-0.8#667482a6fffef6b952c735842b4b555fb56865f8"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-types",
