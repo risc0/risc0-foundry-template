@@ -81,8 +81,13 @@ jobs:
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: Cargo install cargo-risczero
-        run: cargo install --force --locked cargo-risczero@$RISC0_CRATE_VERSION
+      - name: Install cargo-install
+        uses: risc0/cargo-install@v1
+        with:
+          crate: cargo-binstall
+
+      - name: Cargo binstall cargo-risczero
+        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_CRATE_VERSION }}
 
       - name: risczero toolchain install
         run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
