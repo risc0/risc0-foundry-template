@@ -89,7 +89,7 @@ Your new project consists of:
   cargo test
   ```
 
-- Test your Solidity contracts, integrated with with your zkVM program.
+- Test your Solidity contracts, integrated with your zkVM program.
 
   ```sh
   RISC0_DEV_MODE=true forge test -vvv 
@@ -171,7 +171,7 @@ Below are the primary files in the project directory
 [Foundry]: https://getfoundry.sh/
 [Get Docker]: https://docs.docker.com/get-docker/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
-[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
+[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.21/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
 [RISC Zero zkVM]: https://dev.risczero.com/zkvm
 [RISC Zero]: https://www.risczero.com/
