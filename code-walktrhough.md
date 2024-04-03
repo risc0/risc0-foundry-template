@@ -1,10 +1,12 @@
 # Walkthrough of the RISC Zero Foundry Template.
 
-This walkthrough covers the Even Number example provided with the RISC Zero Foundry Template. It is built with [Foundry](https://github.com/foundry-rs/foundry), a powerful set of tools for Ethereum smart contract development, including testing and deployment. The template leverages the RISC Zero zkVM to ensure the integrity of computations on the Ethereum blockchain. It includes a smart contract, guest code for off-chain computations, a publisher (CLI) application for interacting with Ethereum, and tests to ensure everything works as expected.
+This walkthrough covers the Even Number example provided with the RISC Zero Foundry Template.
+
+It is built with [Foundry](https://github.com/foundry-rs/foundry), a powerful set of tools for Ethereum smart contract development, including testing and deployment. The template leverages the RISC Zero zkVM to ensure the integrity of computations on the Ethereum blockchain. It includes a smart contract, guest code for off-chain computations, a publisher (CLI) application for interacting with Ethereum, and tests to ensure everything works as expected.
 
 ## Guest code overview
 
-The guest code runs off-chain within the RISC Zero zkVM. It performs the actual computation to check if a given number is even, generating a proof of this computation. This code forms the basis for the off-chain computation part of the Ethereum zk-coProcessor.
+The guest code runs off-chain within the RISC Zero zkVM. It performs the actual computation to check if a given number is even, generating a proof of this computation. This code forms the basis for the off-chain computation part of the Ethereum ZK-Coprocessor.
 
 ### Guest code walkthrough:
 
@@ -15,10 +17,18 @@ use alloy_sol_types::SolValue;
 use risc0_zkvm::guest::env;
 
 fn main() {
+    // Read the input data for this application.
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
+    // Decode and parse the input
     let number = <U256>::abi_decode(&input_bytes, true).unwrap();
-    assert!(number.bit(0) == false, "number is not even");
+
+    // Run the computation.
+    // In this case, asserting that the provided number is even.
+    assert!(!number.bit(0), "number is not even");
+
+    // Commit the journal that will be received by the application contract.
+    // Journal is encoded using Solidity ABI for easy decoding in the app contract.
     env::commit_slice(number.abi_encode().as_slice());
 }
 ```
@@ -30,16 +40,14 @@ fn main() {
 
 ## Smart Contract overview
 
-While the RISC Zero zkVM enables developers to write off-chain logic as guest code, zkVM proofs (specifically a Groth16 SNARKs) get verified and incorporated into smart contract logic on chain. The end result is that the guest logic which checks if a number is even, is performed off chain but enforced on chain. This model extends to any program, however complex, which can be written as a guest program of the RISC Zero zkVM via Rust.
+RISC Zero enables developers to write off-chain logic as guest code, and verify zkVM proofs (specifically a Groth16 SNARK) in their smart contract logic on chain. Guest logic, which checks if a number is even, is run off-chain and enforced on-chain. This model extends to any program, however complex, which can be written as a guest program of the RISC Zero zkVM via Rust.
+
 The EvenNumber smart contract verifies a RISC Zero zkVM proof that a number is even.
 In this simple example, if a proof of an even number is verified, we will set that even number in the smart contract's state.
 
 ### Key Components:
-- **RISC Zero Verifier**: An interface to the RISC Zero verifier contract, which checks the validity of a zero-knowledge proof. The actual verifier contract would be deployed independently, and its address is passed to the `EvenNumber` contract upon initialization.
+- **RISC Zero Verifier**: An interface to the RISC Zero verifier contract, which checks the validity of a zero-knowledge proof.
 - **Image ID**: Identifier for a specific zkVM guest binary (ELF) that the contract accepts proofs from. The image ID is similar to the address of a smart contract. It uniquely represents the logic of that guest program, ensuring that only proofs generated from a pre-defined guest program (in this case, checking if a number is even) are considered valid.
-- **Initialization**: Sets up the contract with a RISC Zero verifier address.
-- **Set Function**: Updates the stored number after successful proof verification.
-- **Get Function**: Returns the currently stored even number.
 
 ### Contract walkthrough:
 
@@ -89,6 +97,7 @@ If verification succeeds (i.e., the proof is valid, and the journal matches), th
 #### Getting the Stored Number
 
 The **get** function allows anyone to retrieve the current even number stored in the contract. It simply returns the value of the number state variable.
+The number will always be even by the guarantees of the zkVM.
 
 ## Publisher Application overview
 
