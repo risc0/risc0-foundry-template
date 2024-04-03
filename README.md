@@ -23,6 +23,8 @@ Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai]
 3. The [publisher] app submits this proof and journal on-chain to your app contract for validation.
 4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
 
+> You can find a [walkthrough] of the entire code.
+
 ## Dependencies
 
 First, [install Rust] and [Foundry], and then restart your terminal.
@@ -186,3 +188,4 @@ Below are the primary files in the project directory
 [journal]: https://dev.risczero.com/terminology#journal
 [publisher]: ./apps/README.md
 [zkVM program]: ./methods/guest/
+[walkthrough]: ./code-walktrhough.md
