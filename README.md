@@ -158,8 +158,8 @@ Below are the primary files in the project directory
 │   ├── guest
 │   │   ├── Cargo.toml
 │   │   └── src
-│   │       └── bin                 // You can add additionally guest prgrams to this folder
-│   │           └── is_even.rs      // Example guest program for cheking if a number is even
+│   │       └── bin                 // You can add additional guest prgrams to this folder
+│   │           └── is_even.rs      // Example guest program for checking if a number is even
 │   └── src
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
 └── tests
