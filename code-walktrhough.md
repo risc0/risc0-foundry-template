@@ -141,25 +141,40 @@ struct Args {
 }
 
 fn main() -> Result<()> {
+    // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
+    
+    // Create a new transaction sender using the parsed arguments.
     let tx_sender = TxSender::new(args.chain_id, &args.rpc_url, &args.eth_wallet_private_key, &args.contract)?;
+
+    // ABI encode input: Before sending the proof request to the Bonsai proving service, 
+    // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
     let input = args.input.abi_encode();
+
+    // Request proof from the Bonsai proving service: The application sends the encoded input to the 
+    // Bonsai proving service, requesting it to execute the is_even computation off-chain and generate the necessary proof.
     let (journal, post_state_digest, seal) = BonsaiProver::prove(IS_EVEN_ELF, &input)?;
+
+    // Decode Journal: Upon receiving the proof, the application decodes the journal to extract 
+    // the verified number. This ensures that the number being submitted to the blockchain matches 
+    // the number that was verified off-chain.
     let x = U256::abi_decode(&journal, true)?;
+
+    // Construct function call: Using the IEvenNumber interface, the application constructs 
+    // the ABI-encoded function call for the set function of the EvenNumber contract. 
+    // This call includes the verified number, the post-state digest, and the seal (proof).
     let calldata = IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall { x, post_state_digest, seal }).abi_encode();
+
+    // Initialize the async runtime environment to handle the transaction sending.
     let runtime = tokio::runtime::Runtime::new()?;
+
+    // Send transaction: Finally, the TxSender component sends the transaction to the Ethereum blockchain, 
+    // effectively calling the set function of the EvenNumber contract with the verified number and proof.
     runtime.block_on(tx_sender.send(calldata))?;
+
     Ok(())
 }
 ```
-
-- **Parse CLI Arguments**: The application starts by parsing command-line arguments provided by the user. These arguments include the *Ethereum chain ID*, *Ethereum wallet private key*, *RPC URL* to the Ethereum node, the contract *address* of the deployed EvenNumber contract, and the input *number* to be verified.
-- **ABI encode input**: Before sending the proof request to the Bonsai proving service, the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
-- **Request proof from the Bonsai proving service**: The application sends the encoded input to the Bonsai proving service, requesting it to execute the *is_even* computation off-chain and generate the necessary proof.
-- **Decode Journal**: Upon receiving the proof, the application decodes the journal to extract the verified number. This ensures that the number being submitted to the blockchain matches the number that was verified off-chain.
-- **Construct function call**: Using the *IEvenNumber* interface, the application constructs the ABI-encoded function call for the **set** function of the *EvenNumber* contract. This call includes the verified **number**, the **post-state digest**, and the **seal** (proof).
-- **Send transaction**: Finally, the *TxSender* component sends the transaction to the Ethereum blockchain, effectively calling the *set* function of the *EvenNumber* contract with the verified number and proof.
-
 
 
 ## Testing overview
