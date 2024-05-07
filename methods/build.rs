@@ -37,6 +37,11 @@ fn main() {
         },
     )]));
 
+    // Skip Solidity source files generation if RISC0_SKIP_BUILD is enabled.
+    if env::var("RISC0_SKIP_BUILD").is_ok() {
+        return;
+    }
+
     // Generate Solidity source files for use with Forge.
     let solidity_opts = risc0_build_ethereum::Options::default()
         .with_image_id_sol_path(SOLIDITY_IMAGE_ID_PATH)
