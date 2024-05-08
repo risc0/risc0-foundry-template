@@ -11,7 +11,7 @@ This repository implements an application on Ethereum utilizing RISC Zero as a [
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive (i.e. gas expensive), or would be difficult to implement Solidity (e.g. ed25519 signature verification, or HTML parsing).
 
 <!-- TODO(#100) Integrate support for Steel more directly into this repo -->
-Integrate with [Steel][steel-repo] to execute view call and simulate transactions on Ethereum. Check out the [ERC-20 counter][erc20-counter] demo to see an example.
+Integrate with [Steel][steel-repo] to execute view calls and simulate transactions on Ethereum. Check out the [ERC-20 counter][erc20-counter] demo to see an example.
 
 Prove computation with the [RISC Zero zkVM] and verify the results in your Ethereum contract.
 
