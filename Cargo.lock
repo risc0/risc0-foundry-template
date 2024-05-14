@@ -673,7 +673,7 @@ dependencies = [
 [[package]]
 name = "bonsai-sdk"
 version = "0.8.0-rc.1"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "reqwest 0.12.4",
  "risc0-groth16",
@@ -3230,7 +3230,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "elf",
@@ -3273,7 +3273,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-ethereum"
 version = "0.11.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#18e9843ee990d1ebf15adedbed6693f739fd24ee"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#71244692141945a929384a3fe48b45fc8fcd9dab"
 dependencies = [
  "anyhow",
  "hex",
@@ -3284,7 +3284,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-recursion"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -3297,7 +3297,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "risc0-binfmt 1.0.0-rc.4 (git+https://github.com/risc0/risc0?branch=capossele/compact_pb)",
@@ -3311,7 +3311,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -3329,7 +3329,7 @@ dependencies = [
 [[package]]
 name = "risc0-ethereum-contracts"
 version = "0.11.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#18e9843ee990d1ebf15adedbed6693f739fd24ee"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#71244692141945a929384a3fe48b45fc8fcd9dab"
 dependencies = [
  "alloy-primitives 0.7.2",
  "alloy-sol-types 0.7.2",
@@ -3342,7 +3342,7 @@ dependencies = [
 [[package]]
 name = "risc0-groth16"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -3361,7 +3361,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "blake2",
@@ -3401,7 +3401,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "anyhow",
  "bincode",
@@ -3430,7 +3430,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#1a5bc6e39e8741715fd99ef0fe7cc6c3a579b039"
 dependencies = [
  "bytemuck",
  "getrandom",
