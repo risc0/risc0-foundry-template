@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::HashMap, env};
+use std::collections::HashMap;
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 use risc0_build_ethereum::generate_solidity_files;
@@ -36,11 +36,6 @@ fn main() {
             use_docker,
         },
     )]));
-
-    // Skip Solidity source files generation if RISC0_SKIP_BUILD is enabled.
-    if env::var("RISC0_SKIP_BUILD").is_ok() {
-        return;
-    }
 
     // Generate Solidity source files for use with Forge.
     let solidity_opts = risc0_build_ethereum::Options::default()
