@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, env};
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 use risc0_build_ethereum::generate_solidity_files;
