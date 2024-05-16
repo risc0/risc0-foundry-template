@@ -1145,7 +1145,7 @@ dependencies = [
 [[package]]
 name = "risc0-binfmt"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "elf",
@@ -1158,7 +1158,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-recursion"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -1171,7 +1171,7 @@ dependencies = [
 [[package]]
 name = "risc0-circuit-rv32im"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "risc0-binfmt",
@@ -1185,7 +1185,7 @@ dependencies = [
 [[package]]
 name = "risc0-core"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "bytemuck",
  "rand_core",
@@ -1194,7 +1194,7 @@ dependencies = [
 [[package]]
 name = "risc0-groth16"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "ark-bn254",
@@ -1213,7 +1213,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkp"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "blake2",
@@ -1233,7 +1233,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -1257,7 +1257,7 @@ dependencies = [
 [[package]]
 name = "risc0-zkvm-platform"
 version = "1.0.0-rc.4"
-source = "git+https://github.com/risc0/risc0?branch=capossele/compact_pb#663d9630efc3f5c6f435f36b715462dbc979b4db"
+source = "git+https://github.com/risc0/risc0?branch=main#8cde15dc6a9cf02a0d208eb9aff1acf91590d79e"
 dependencies = [
  "bytemuck",
  "getrandom",

@@ -19,14 +19,16 @@
 use alloy_primitives::U256;
 use alloy_sol_types::{sol, SolInterface, SolValue};
 use anyhow::{Context, Result};
-use apps::{BonsaiProver, TxSender};
+use apps::TxSender;
 use clap::Parser;
 use methods::IS_EVEN_ELF;
+use risc0_ethereum_contracts::groth16::Seal;
+use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 
 // `IEvenNumber` interface automatically generated via the alloy `sol!` macro.
 sol! {
     interface IEvenNumber {
-        function set(uint256 x, bytes32 post_state_digest, bytes calldata seal);
+        function set(uint256 x, bytes calldata seal);
     }
 }
 
@@ -71,8 +73,22 @@ fn main() -> Result<()> {
     // code expects.
     let input = args.input.abi_encode();
 
-    // Send an off-chain proof request to the Bonsai proving service.
-    let (journal, post_state_digest, seal) = BonsaiProver::prove(IS_EVEN_ELF, &input)?;
+    let env = ExecutorEnv::builder().write_slice(&input).build()?;
+
+    let receipt = default_prover()
+        .prove_with_ctx(
+            env,
+            &VerifierContext::default(),
+            IS_EVEN_ELF,
+            &ProverOpts::compact(),
+        )?
+        .receipt;
+
+    // Encode the seal with the selector.
+    let seal = Seal::encode(receipt.inner.compact()?.seal.clone())?;
+
+    // Extract the journal from the receipt.
+    let journal = receipt.journal.bytes.clone();
 
     // Decode the journal. Must match what was written in the guest with
     // `env::commit_slice`.
@@ -81,8 +97,7 @@ fn main() -> Result<()> {
     // Encode the function call for `IEvenNumber.set(x)`.
     let calldata = IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {
         x,
-        post_state_digest,
-        seal,
+        seal: seal.into(),
     })
     .abi_encode();
 

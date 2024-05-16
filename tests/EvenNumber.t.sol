@@ -34,10 +34,7 @@ contract EvenNumberTest is RiscZeroCheats, Test {
 
     function test_SetEven() public {
         uint256 number = 12345678;
-        (bytes memory journal, bytes memory seal) = prove(
-            Elf.IS_EVEN_PATH,
-            abi.encode(number)
-        );
+        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), seal);
         assertEq(evenNumber.get(), number);
@@ -45,10 +42,7 @@ contract EvenNumberTest is RiscZeroCheats, Test {
 
     function test_SetZero() public {
         uint256 number = 0;
-        (bytes memory journal, bytes memory seal) = prove(
-            Elf.IS_EVEN_PATH,
-            abi.encode(number)
-        );
+        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
 
         evenNumber.set(abi.decode(journal, (uint256)), seal);
         assertEq(evenNumber.get(), number);
