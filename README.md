@@ -100,11 +100,11 @@ Your new project consists of:
 
 ## Develop Your Application
 
-To build your application, you'll need to make changes in three folders:
+To build your application using the RISC Zero Foundry Template, you’ll need to make changes in three main areas:
 
-- write the code you want proven in the [methods/guest](./methods/guest/) folder.
-- write the on-chain part of your project in the [contracts](./contracts/) folder.
-- adjust the publisher example in the [apps](./apps/) folder.
+-	***Guest Code***: Write the code you want proven in the [methods/guest](./methods/guest/) folder. This code runs off-chain within the RISC Zero zkVM and performs the actual computations. For example, the provided template includes a computation to check if a given number is even and generate a proof of this computation.
+-	***Smart Contracts***: Write the on-chain part of your project in the [contracts](./contracts/) folder. The smart contract verifies zkVM proofs and updates the blockchain state based on the results of off-chain computations. For instance, in the [EvenNumber](./contracts/EvenNumber.sol) example, the smart contract verifies a proof that a number is even and stores that number on-chain if the proof is valid.
+-	***Publisher Application***: Adjust the publisher example in the [apps](./apps/) folder. The publisher application bridges off-chain computation with on-chain verification by submitting proof requests, receiving proofs, and publishing them to the smart contract on Ethereum.
 
 ### Configuring Bonsai
 

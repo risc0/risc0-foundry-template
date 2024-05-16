@@ -27,6 +27,10 @@ contract EvenNumber {
     /// @notice RISC Zero verifier contract address.
     IRiscZeroVerifier public immutable verifier;
     /// @notice Image ID of the only zkVM binary to accept verification from.
+    ///         The image ID is similar to the address of a smart contract.
+    ///         It uniquely represents the logic of that guest program,
+    ///         ensuring that only proofs generated from a pre-defined guest program
+    ///         (in this case, checking if a number is even) are considered valid.
     bytes32 public constant imageId = ImageID.IS_EVEN_ID;
 
     /// @notice A number that is guaranteed, by the RISC Zero zkVM, to be even.
