@@ -3274,7 +3274,7 @@ dependencies = [
 [[package]]
 name = "risc0-build-ethereum"
 version = "0.11.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#7cd8f88ccfab0abfb004deb52d0d0cdb11f9cb6c"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#0fd475cd744b8020d4d26da20c1328533d2b02e4"
 dependencies = [
  "anyhow",
  "hex",
@@ -3321,7 +3321,7 @@ dependencies = [
 [[package]]
 name = "risc0-ethereum-contracts"
 version = "0.11.0-alpha.1"
-source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#7cd8f88ccfab0abfb004deb52d0d0cdb11f9cb6c"
+source = "git+https://github.com/risc0/risc0-ethereum?branch=capossele/refactor-zkvm-usage#0fd475cd744b8020d4d26da20c1328533d2b02e4"
 dependencies = [
  "alloy-primitives 0.7.4",
  "alloy-sol-types 0.7.4",
