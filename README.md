@@ -124,6 +124,8 @@ Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as be
 RISC0_DEV_MODE=false forge test -vvv
 ```
 
+> You can also generate a[Groth16 SNARK proof] locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
+
 ### Deterministic Builds
 
 By setting the environment variable `RISC0_USE_DOCKER` a containerized build process via Docker will ensure that all builds of your guest code, regardless of the machine or local environment, will produce the same [image ID][image-id].
