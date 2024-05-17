@@ -10,6 +10,9 @@ Starter template for writing an application using [RISC Zero] and Ethereum.
 This repository implements an application on Ethereum utilizing RISC Zero as a [coprocessor] to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload computationally intensive (i.e. gas expensive), or would be difficult to implement Solidity (e.g. ed25519 signature verification, or HTML parsing).
 
+<!-- TODO(#100) Integrate support for Steel more directly into this repo -->
+Integrate with [Steel][steel-repo] to execute view calls and simulate transactions on Ethereum. Check out the [ERC-20 counter][erc20-counter] demo to see an example.
+
 Prove computation with the [RISC Zero zkVM] and verify the results in your Ethereum contract.
 
 ## Overview
@@ -89,7 +92,7 @@ Your new project consists of:
   cargo test
   ```
 
-- Test your Solidity contracts, integrated with with your zkVM program.
+- Test your Solidity contracts, integrated with your zkVM program.
 
   ```sh
   RISC0_DEV_MODE=true forge test -vvv 
@@ -97,11 +100,11 @@ Your new project consists of:
 
 ## Develop Your Application
 
-To build your application, you'll need to make changes in three folders:
+To build your application using the RISC Zero Foundry Template, you’ll need to make changes in three main areas:
 
-- write the code you want proven in the [methods/guest](./methods/guest/) folder.
-- write the on-chain part of your project in the [contracts](./contracts/) folder.
-- adjust the publisher example in the [apps](./apps/) folder.
+-	***Guest Code***: Write the code you want proven in the [methods/guest](./methods/guest/) folder. This code runs off-chain within the RISC Zero zkVM and performs the actual computations. For example, the provided template includes a computation to check if a given number is even and generate a proof of this computation.
+-	***Smart Contracts***: Write the on-chain part of your project in the [contracts](./contracts/) folder. The smart contract verifies zkVM proofs and updates the blockchain state based on the results of off-chain computations. For instance, in the [EvenNumber](./contracts/EvenNumber.sol) example, the smart contract verifies a proof that a number is even and stores that number on-chain if the proof is valid.
+-	***Publisher Application***: Adjust the publisher example in the [apps](./apps/) folder. The publisher application bridges off-chain computation with on-chain verification by submitting proof requests, receiving proofs, and publishing them to the smart contract on Ethereum.
 
 ### Configuring Bonsai
 
@@ -158,8 +161,8 @@ Below are the primary files in the project directory
 │   ├── guest
 │   │   ├── Cargo.toml
 │   │   └── src
-│   │       └── bin                 // You can add additionally guest prgrams to this folder
-│   │           └── is_even.rs      // Example guest program for cheking if a number is even
+│   │       └── bin                 // You can add additional guest programs to this folder
+│   │           └── is_even.rs      // Example guest program for checking if a number is even
 │   └── src
 │       └── lib.rs                  // Compiled image IDs and tests for your guest programs
 └── tests
@@ -171,7 +174,7 @@ Below are the primary files in the project directory
 [Foundry]: https://getfoundry.sh/
 [Get Docker]: https://docs.docker.com/get-docker/
 [Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
-[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.20/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
+[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.21/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
 [RISC Zero zkVM]: https://dev.risczero.com/zkvm
 [RISC Zero]: https://www.risczero.com/
@@ -186,3 +189,5 @@ Below are the primary files in the project directory
 [journal]: https://dev.risczero.com/terminology#journal
 [publisher]: ./apps/README.md
 [zkVM program]: ./methods/guest/
+[steel-repo]: https://github.com/risc0/risc0-ethereum/tree/main/steel
+[erc20-counter]: https://github.com/risc0/risc0-ethereum/tree/main/examples/erc20-counter
