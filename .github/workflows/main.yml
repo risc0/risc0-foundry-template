@@ -20,11 +20,13 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, prod, "${{ matrix.os }}", "${{ matrix.device }}"]
     strategy:
       fail-fast: false
       matrix:
+        os: [Linux]
         feature: [default]
+        device: [cpu]
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
@@ -40,6 +42,11 @@ jobs:
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
+
+      - name: sccache
+        uses: risc0/risc0/.github/actions/sccache@main
+        with:
+          key: ${{ matrix.os }}-${{ matrix.feature }}
 
       - name: risczero toolchain install
         uses: ./.github/actions/cargo-risczero-install
@@ -61,6 +68,8 @@ jobs:
         env:
             RISC0_DEV_MODE: true
         run: forge test -vvv
+
+      - run: sccache --show-stats
 
   integration-test:
     name: integration test
@@ -90,6 +99,11 @@ jobs:
       - name: Install rust
         uses: risc0/risc0/.github/actions/rustup@main
 
+      - name: sccache
+        uses: risc0/risc0/.github/actions/sccache@main
+        with:
+          key: ${{ matrix.os }}-${{ matrix.feature }}
+
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
@@ -110,6 +124,8 @@ jobs:
         env:
           RISC0_DEV_MODE: false
         run: forge test -vvv
+      
+      - run: sccache --show-stats
 
   lint:
     runs-on: ubuntu-latest
