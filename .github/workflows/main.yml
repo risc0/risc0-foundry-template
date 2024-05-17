@@ -15,7 +15,7 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
-  RISC0_MONOREPO_REF: "capossele/refactor-zkvm-usage"
+  RISC0_MONOREPO_REF: "main"
   RISC0_TOOLCHAIN_VERSION: v2024-04-22.0
 
 jobs:
