@@ -1,7 +1,5 @@
 # RISC Zero Ethereum Deployment Guide
 
-> **Note: This software is not production ready. Do not use in production.**
-
 Welcome to the [RISC Zero] Ethereum Deployment guide!
 
 Once you've written your [contracts] and your [methods], and [tested] your program, you're ready to deploy your contract.
