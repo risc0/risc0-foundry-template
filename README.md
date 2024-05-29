@@ -93,6 +93,14 @@ Your new project consists of:
   RISC0_DEV_MODE=true forge test -vvv 
   ```
 
+- Run the same tests, with the full zkVM prover rather than dev-mode, by setting `RISC0_DEV_MODE=false`.
+
+  ```sh
+  RISC0_DEV_MODE=false forge test -vvv
+  ```
+
+  Producing the [Groth16 SNARK proofs][Groth16] for this test requires running on an x86 machine with [Docker] installed, or using [Bonsai](#configuring-bonsai).
+
 ## Develop Your Application
 
 To build your application using the RISC Zero Foundry Template, you’ll need to make changes in three main areas:
@@ -105,7 +113,7 @@ To build your application using the RISC Zero Foundry Template, you’ll need to
 
 ***Note:*** *To request an API key [complete the form here](https://bonsai.xyz/apply).*
 
-With the Bonsai proving service, you can produce a [Groth16 SNARK proof] that is verifiable on-chain.
+With the Bonsai proving service, you can produce a [Groth16 SNARK proof][Groth16] that is verifiable on-chain.
 You can get started by setting the following environment variables with your API key and associated URL.
 
 ```bash
@@ -118,8 +126,6 @@ Now if you run `forge test` with `RISC0_DEV_MODE=false`, the test will run as be
 ```bash
 RISC0_DEV_MODE=false forge test -vvv
 ```
-
-> You can also generate a[Groth16 SNARK proof] locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
 
 ### Deterministic Builds
 
@@ -170,7 +176,7 @@ Below are the primary files in the project directory
 [Bonsai]: https://dev.bonsai.xyz/
 [Foundry]: https://getfoundry.sh/
 [Get Docker]: https://docs.docker.com/get-docker/
-[Groth16 SNARK proof]: https://www.risczero.com/news/on-chain-verification
+[Groth16]: https://www.risczero.com/news/on-chain-verification
 [RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.21/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
 [RISC Zero zkVM]: https://dev.risczero.com/zkvm
