@@ -37,7 +37,7 @@ jobs:
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@8174cb4c7bc282f15e71fab02d5ceb068b29ed3b
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@c876ba5cfcc2ae9db6ea64dccd9262297e426bc7
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
 
@@ -77,7 +77,7 @@ jobs:
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@8174cb4c7bc282f15e71fab02d5ceb068b29ed3b
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@c876ba5cfcc2ae9db6ea64dccd9262297e426bc7
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
 
