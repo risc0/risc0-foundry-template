@@ -15,16 +15,11 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
-  RISC0_MONOREPO_REF: "main"
-  RISC0_TOOLCHAIN_VERSION: v2024-04-22.0
+  RISC0_MONOREPO_REF: "v1.0.0-rc.6"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        feature: [default]
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
@@ -42,11 +37,10 @@ jobs:
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
       - name: risczero toolchain install
-        uses: ./.github/actions/cargo-risczero-install
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@main
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
           toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
-          features: ${{ matrix.feature }}
 
       - name: build rust guest
         run: cargo build
@@ -65,12 +59,7 @@ jobs:
   integration-test:
     name: integration test
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        feature: [default]
     env:
-      FEATURE: ${{ matrix.feature }}
       RUST_BACKTRACE: full
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
@@ -89,11 +78,10 @@ jobs:
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
       - name: risczero toolchain install
-        uses: ./.github/actions/cargo-risczero-install
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@main
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
           toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
-          features: ${{ matrix.feature }}
 
       - name: build rust guest
         run: cargo build

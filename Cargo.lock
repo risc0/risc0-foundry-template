@@ -264,17 +264,13 @@ dependencies = [
  "alloy-primitives 0.6.4",
  "alloy-sol-types 0.6.4",
  "anyhow",
- "bincode",
- "bytemuck",
  "clap",
  "env_logger",
  "ethers",
- "hex",
  "log",
  "methods",
  "risc0-ethereum-contracts",
  "risc0-zkvm",
- "serde",
  "tokio",
 ]
 
