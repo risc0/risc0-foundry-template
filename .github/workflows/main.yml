@@ -40,7 +40,7 @@ jobs:
         uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@main
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
-          toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
+          toolchain-version: latest
 
       - name: build rust guest
         run: cargo build
@@ -81,7 +81,7 @@ jobs:
         uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@main
         with:
           ref: ${{ env.RISC0_MONOREPO_REF }}
-          toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
+          toolchain-version: latest
 
       - name: build rust guest
         run: cargo build
