@@ -15,8 +15,7 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
-  RISC0_CRATE_VERSION: "^0.21"
-  RISC0_TOOLCHAIN_VERSION: v2024-02-08.1
+  RISC0_MONOREPO_REF: "v1.0.0-rc.6"
 
 jobs:
   test:
@@ -32,21 +31,15 @@ jobs:
           submodules: recursive
 
       - name: Install rust
-        uses: risc0/risc0/.github/actions/rustup@release-0.21
+        uses: risc0/risc0/.github/actions/rustup@main
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: Install cargo-install
-        uses: risc0/cargo-install@v1
-        with:
-          crate: cargo-binstall
-
-      - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_CRATE_VERSION }}
-
       - name: risczero toolchain install
-        run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@v1.0.0-rc.6
+        with:
+          ref: ${{ env.RISC0_MONOREPO_REF }}
 
       - name: build rust guest
         run: cargo build
@@ -62,9 +55,11 @@ jobs:
             RISC0_DEV_MODE: true
         run: forge test -vvv
 
-  bonsai-integration:
-    name: test bonsai integration
+  integration-test:
+    name: integration test
     runs-on: ubuntu-latest
+    env:
+      RUST_BACKTRACE: full
     steps:
       # This is a workaround from: https://github.com/actions/checkout/issues/590#issuecomment-970586842
       - name: checkout dummy commit (submodule bug workaround)
@@ -76,21 +71,15 @@ jobs:
           submodules: recursive
 
       - name: Install rust
-        uses: risc0/risc0/.github/actions/rustup@release-0.21
+        uses: risc0/risc0/.github/actions/rustup@main
 
       - name: Install Foundry
         uses: risc0/foundry-toolchain@2fe7e70b520f62368a0e3c464f997df07ede420f
 
-      - name: Install cargo-install
-        uses: risc0/cargo-install@v1
-        with:
-          crate: cargo-binstall
-
-      - name: Cargo binstall cargo-risczero
-        run: cargo binstall -y --force cargo-risczero@${{ env.RISC0_CRATE_VERSION }}
-
       - name: risczero toolchain install
-        run: cargo risczero install --version $RISC0_TOOLCHAIN_VERSION
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@v1.0.0-rc.6
+        with:
+          ref: ${{ env.RISC0_MONOREPO_REF }}
 
       - name: build rust guest
         run: cargo build
@@ -98,10 +87,8 @@ jobs:
       - name: build solidity contracts
         run: forge build
 
-      - name: run foundry tests with bonsai proving
+      - name: run foundry tests with local prover
         env:
-          BONSAI_API_URL: ${{ secrets.BONSAI_API_URL }}
-          BONSAI_API_KEY: ${{ secrets.BONSAI_API_KEY }}
           RISC0_DEV_MODE: false
         run: forge test -vvv
 
@@ -114,7 +101,7 @@ jobs:
           submodules: recursive
 
       - name: install rust
-        uses: risc0/risc0/.github/actions/rustup@release-0.21
+        uses: risc0/risc0/.github/actions/rustup@main
 
       - name: install cargo-sort
         uses: risc0/cargo-install@v1

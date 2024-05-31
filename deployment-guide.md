@@ -1,7 +1,5 @@
 # RISC Zero Ethereum Deployment Guide
 
-> **Note: This software is not production ready. Do not use in production.**
-
 Welcome to the [RISC Zero] Ethereum Deployment guide!
 
 Once you've written your [contracts] and your [methods], and [tested] your program, you're ready to deploy your contract.
@@ -25,6 +23,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
 
 2. Set your environment variables:
     > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
+    > Alternatively you can generate your proofs locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
 
     ```bash
     # Anvil sets up a number of default wallets, and this private key is one of them.
@@ -97,6 +96,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 
 1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia (in this example, we will be using [Alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
     > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
+    > Alternatively you can generate your proofs locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
 
     ```bash
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section

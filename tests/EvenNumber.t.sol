@@ -16,7 +16,7 @@
 
 pragma solidity ^0.8.20;
 
-import {RiscZeroCheats} from "risc0/RiscZeroCheats.sol";
+import {RiscZeroCheats} from "risc0/test/RiscZeroCheats.sol";
 import {console2} from "forge-std/console2.sol";
 import {Test} from "forge-std/Test.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
@@ -34,19 +34,17 @@ contract EvenNumberTest is RiscZeroCheats, Test {
 
     function test_SetEven() public {
         uint256 number = 12345678;
-        (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
-            prove(Elf.IS_EVEN_PATH, abi.encode(number));
+        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
 
-        evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
+        evenNumber.set(abi.decode(journal, (uint256)), seal);
         assertEq(evenNumber.get(), number);
     }
 
     function test_SetZero() public {
         uint256 number = 0;
-        (bytes memory journal, bytes32 post_state_digest, bytes memory seal) =
-            prove(Elf.IS_EVEN_PATH, abi.encode(number));
+        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
 
-        evenNumber.set(abi.decode(journal, (uint256)), post_state_digest, seal);
+        evenNumber.set(abi.decode(journal, (uint256)), seal);
         assertEq(evenNumber.get(), number);
     }
 }
