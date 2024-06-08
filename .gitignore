@@ -21,3 +21,6 @@ target/
 # Misc
 .DS_Store
 .idea
+
+# lib/risc0-ethereum is created by Cargo build
+lib/risc0-ethereum

@@ -1,0 +1,9 @@
+[package]
+name = "contracts"
+version = { workspace = true }
+edition = { workspace = true }
+
+[build-dependencies]
+cargo = "0.79"
+anyhow = "1.0"
+risc0-ethereum-contracts = { workspace = true }
