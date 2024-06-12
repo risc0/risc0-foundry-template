@@ -136,7 +136,7 @@ The [image ID][image-id], and its importance to security, is explained in more d
 RISC0_USE_DOCKER=1 cargo build
 ```
 
-> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker].*
+> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker][Docker].*
 
 ## Deploy Your Application
 
@@ -175,7 +175,7 @@ Below are the primary files in the project directory
 
 [Bonsai]: https://dev.bonsai.xyz/
 [Foundry]: https://getfoundry.sh/
-[Get Docker]: https://docs.docker.com/get-docker/
+[Docker]: https://docs.docker.com/get-docker/
 [Groth16]: https://www.risczero.com/news/on-chain-verification
 [RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.21/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
 [RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
