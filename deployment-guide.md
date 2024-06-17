@@ -8,6 +8,7 @@ You can either:
 
 - [Deploy your project to a local network]
 - [Deploy to a testnet]
+- [Deploy to Ethereum Mainnet]
 
 ## Deploy your project on a local network
 
@@ -163,6 +164,80 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     cast call --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
 
+## Deploy your project on Ethereum mainnet
+
+You can deploy your contract on Ethereum Mainnet as follows:
+
+1. Get access to Bonsai and an Ethereum node running on Mainnet (in this example, we will be using [Alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
+    > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
+    > Alternatively you can generate your proofs locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
+
+    ```bash
+    export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
+    export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
+    export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
+    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private hex-encoded key of your Sepolia testnet wallet
+    ```
+
+2. Build your project:
+
+    ```bash
+    cargo build
+    ```
+
+3. Deploy your contract by running:
+
+    ```bash
+    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
+    ```
+
+     This command should output something similar to:
+
+    ```bash
+    ...
+    == Logs ==
+    Using deployed RiscZeroGroth16Verifier contract at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
+    Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+    ...
+    ```
+
+    Save the `EvenNumber` contract address to an env variable:
+
+    ```bash
+    export EVEN_NUMBER_ADDRESS=#COPY EVEN NUMBER ADDRESS FROM DEPLOY LOGS
+    ```
+
+    > You can also use the following command to set the contract address if you have [`jq`][jq] installed:
+    >
+    > ```bash
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/MainnetDeploy.s.sol/1/run-latest.json)
+    > ```
+
+### Interact with your Ethereum Mainnet deployment
+
+1. Query the state:
+
+    ```bash
+    cast call --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
+    ```
+
+2. Publish a new state
+
+    ```bash
+    cargo run --bin publisher -- \
+        --chain-id=1 \
+        --rpc-url=https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} \
+        --contract=${EVEN_NUMBER_ADDRESS:?} \
+        --input=12345678
+    ```
+
+3. Query the state again to see the change:
+
+    ```bash
+    cast call --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
+    ```
+
+[Deploy to Ethereum Mainnet]: #deploy-your-project-on-ethereum-mainnet
 [Deploy to a testnet]: #deploy-your-project-on-a-testnet
 [Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [RISC Zero]: https://www.risczero.com/
