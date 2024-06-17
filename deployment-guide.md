@@ -191,7 +191,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
     ```
 
-     This command should output something similar to:
+    This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code.output) and should output something similar to:
 
     ```bash
     ...

@@ -35,7 +35,7 @@ contract EvenNumberDeploy is Script {
 
         vm.startBroadcast(deployerKey);
 
-        // use the deployed RiscZeroVerifierRouter contract, 
+        // use the RISC Zero managed RiscZeroVerifierRouter contract, 
         // see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code
         IRiscZeroVerifier verifier = IRiscZeroVerifier(0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319);
         console2.log("Using RiscZeroVerifierRouter contract deployed at", address(verifier));
