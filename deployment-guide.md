@@ -196,7 +196,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     ```bash
     ...
     == Logs ==
-    Using deployed RiscZeroGroth16Verifier contract at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
+    Using RiscZeroVerifierRouter contract deployed at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
     ```

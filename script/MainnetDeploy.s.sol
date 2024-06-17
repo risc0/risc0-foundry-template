@@ -38,7 +38,7 @@ contract EvenNumberDeploy is Script {
         // use the deployed RiscZeroVerifierRouter contract, 
         // see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code
         IRiscZeroVerifier verifier = IRiscZeroVerifier(0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319);
-        console2.log("Using deployed RiscZeroVerifierRouter contract at", address(verifier));
+        console2.log("Using RiscZeroVerifierRouter contract deployed at", address(verifier));
 
         EvenNumber evenNumber = new EvenNumber(verifier);
         console2.log("Deployed EvenNumber to", address(evenNumber));
