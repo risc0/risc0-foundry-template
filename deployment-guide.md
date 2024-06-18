@@ -213,7 +213,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     > You can also use the following command to set the contract address if you have [`jq`][jq] installed:
     >
     > ```bash
-    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/MainnetDeploy.s.sol/1/run-latest.json)
+    > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/1/run-latest.json)
     > ```
 
 ### Interact with your Ethereum Mainnet deployment
