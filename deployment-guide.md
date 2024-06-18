@@ -116,7 +116,7 @@ You can deploy your contracts on the `Sepolia` testnet and run an end-to-end tes
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast -sig "run(string memory configFile)" -- "script/configs/sepolia/deploy_sepolia_config.json"
+    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast --sig "run(string memory configFile)" -- "script/configs/sepolia/deploy_sepolia_config.json"
     ```
 
     This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://sepolia.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187#code) and should output something similar to:
@@ -190,7 +190,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast -sig "run(string memory configFile)" -- "script/configs/mainnet/deploy_mainnet_config.json"
+    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast --sig "run(string memory configFile)" -- "script/configs/mainnet/deploy_mainnet_config.json"
     ```
 
     This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code.output) and should output something similar to:
