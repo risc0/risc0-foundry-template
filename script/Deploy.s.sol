@@ -17,7 +17,7 @@
 pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
-import {console2} from "forge-std/console2.sol";
+import "forge-std/Test.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import {RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
 import {ControlID} from "risc0/groth16/ControlID.sol";
@@ -32,12 +32,38 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
 contract EvenNumberDeploy is Script {
     function run() external {
+        // read and log the chainID
+        uint256 chainId = block.chainid;
+        console2.log("You are deploying on ChainID %d", chainId);
+
+        uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
+
+        vm.startBroadcast(deployerKey);
+            
+        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
+        console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
+
+        EvenNumber evenNumber = new EvenNumber(verifier);
+        console2.log("Deployed EvenNumber to", address(evenNumber));
+
+        vm.stopBroadcast();
+    }
+
+    function run(string memory deployConfigPath) external {
+        // read and log the chainID
+        uint256 chainId = block.chainid;
+        console2.log("You are deploying on ChainID %d", chainId);
+
         uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
 
         vm.startBroadcast(deployerKey);
 
-        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
-        console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
+        // READ JSON CONFIG DATA
+        string memory config_data = vm.readFile(deployConfigPath);
+        address verifier_address = stdJson.readAddress(config_data, ".risc_zero_verifier_address");
+        
+        IRiscZeroVerifier verifier = IRiscZeroVerifier(verifier_address);
+        console2.log("Using RiscZeroVerifierRouter contract deployed at", address(verifier));
 
         EvenNumber evenNumber = new EvenNumber(verifier);
         console2.log("Deployed EvenNumber to", address(evenNumber));

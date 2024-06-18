@@ -50,6 +50,7 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     ```bash
     ...
     == Logs ==
+    You are deploying on ChainID 31337
     Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
@@ -91,11 +92,11 @@ You can deploy your contracts and run an end-to-end test or demo as follows:
     cast call --rpc-url http://localhost:8545 ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
 
-## Deploy your project on a testnet
+## Deploy your project on Sepolia testnet
 
-You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-end test or demo as follows:
+You can deploy your contracts on the `Sepolia` testnet and run an end-to-end test or demo as follows:
 
-1. Get access to Bonsai and an Ethereum node running on a given testnet, e.g., Sepolia (in this example, we will be using [Alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
+1. Get access to Bonsai and an Ethereum node running on Sepolia testnet (in this example, we will be using [Alchemy](https://www.alchemy.com/) as our Ethereum node provider) and export the following environment variables:
     > ***Note:*** *This requires having access to a Bonsai API Key. To request an API key [complete the form here](https://bonsai.xyz/apply).*
     > Alternatively you can generate your proofs locally, assuming you have a machine with an x86 architecture and [Docker] installed. In this case do not export Bonsai related env variables.
 
@@ -115,15 +116,16 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
+    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast -sig "run(string memory configFile)" -- "script/configs/sepolia/deploy_sepolia_config.json"
     ```
 
-     This command should output something similar to:
+    This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://sepolia.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187#code) and should output something similar to:
 
     ```bash
     ...
     == Logs ==
-    Deployed RiscZeroGroth16Verifier to 0x5FbDB2315678afecb367f032d93F642f64180aa3
+    You are deploying on ChainID 11155111
+    Using RiscZeroVerifierRouter contract deployed at 0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
     ```
@@ -140,7 +142,7 @@ You can deploy your contracts on a testnet such as `Sepolia` and run an end-to-e
     > export EVEN_NUMBER_ADDRESS=$(jq -re '.transactions[] | select(.contractName == "EvenNumber") | .contractAddress' ./broadcast/Deploy.s.sol/11155111/run-latest.json)
     > ```
 
-### Interact with your testnet deployment
+### Interact with your Sepolia testnet deployment
 
 1. Query the state:
 
@@ -188,7 +190,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
+    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast -sig "run(string memory configFile)" -- "script/configs/mainnet/deploy_mainnet_config.json"
     ```
 
     This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code.output) and should output something similar to:
@@ -196,6 +198,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     ```bash
     ...
     == Logs ==
+    You are deploying on ChainID 1
     Using RiscZeroVerifierRouter contract deployed at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
