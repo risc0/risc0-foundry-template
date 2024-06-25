@@ -116,7 +116,7 @@ You can deploy your contracts on the `Sepolia` testnet and run an end-to-end tes
 3. Deploy your contract by running:
 
     ```bash
-    CONFIG_PROFILE=sepolia forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
+    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
     ```
 
     This command uses the `sepolia` profile defined in the [config][config] file, and should output something similar to:
@@ -179,7 +179,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
-    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private hex-encoded key of your Mainnet wallet
+    export ETH_WALLET_ADDRESS="YOUR_WALLET_ADDRESS" # the account address you want to use for deployment
     ```
 
 2. Build your project:
@@ -190,8 +190,11 @@ You can deploy your contract on Ethereum Mainnet as follows:
 
 3. Deploy your contract by running:
 
+    You'll need to pass options to forge script to connect to your deployer wallet. See the [Foundry documentation][forge-script-wallet-docs].
+    The example command below configures Forge to use a Ledger hardware wallet.
+
     ```bash
-    CONFIG_PROFILE=mainnet forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
+    forge script script/Deploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast --ledger
     ```
 
     This command uses the `mainnet` profile defined in the [config][config] file, and should output something similar to:
@@ -228,6 +231,10 @@ You can deploy your contract on Ethereum Mainnet as follows:
 
 2. Publish a new state
 
+    > [!WARNING]
+    > Currently only a local wallet, provided by the `ETH_WALLET_PRIVATE_KEY` env var is implemented in the example publisher app.
+    > Please see https://github.com/risc0/risc0-foundry-template/issues/121 for more details.
+
     ```bash
     cargo run --bin publisher -- \
         --chain-id=1 \
@@ -243,11 +250,12 @@ You can deploy your contract on Ethereum Mainnet as follows:
     ```
 
 [Deploy to Ethereum Mainnet]: #deploy-your-project-on-ethereum-mainnet
-[Deploy to a testnet]: #deploy-your-project-on-a-testnet
 [Deploy your project to a local network]: #deploy-your-project-on-a-local-network
 [RISC Zero]: https://www.risczero.com/
+[Docker]: https://docs.docker.com/engine/install/
 [contracts]: ./contracts/
 [jq]: https://jqlang.github.io/jq/
 [methods]: ./methods/
 [tested]: ./README.md#run-the-tests
 [config]: ./script/config.toml
+[forge-script-wallet-docs]: https://book.getfoundry.sh/reference/forge/forge-script#wallet-options---raw

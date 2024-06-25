@@ -26,39 +26,75 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 
 /// @notice Deployment script for the RISC Zero starter project.
 /// @dev Use the following environment variable to control the deployment:
-///     * ETH_WALLET_PRIVATE_KEY private key of the wallet to be used for deployment.
+///     * Set one of these two environment variables to control the deployment wallet:
+///         * ETH_WALLET_PRIVATE_KEY private key of the wallet account.
+///         * ETH_WALLET_ADDRESS address of the wallet account.
 ///
-/// See the Foundry documentation for more information about Solidity scripts.
+/// See the Foundry documentation for more information about Solidity scripts,
+/// including information about wallet options.
+///
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
+/// https://book.getfoundry.sh/reference/forge/forge-script
 contract EvenNumberDeploy is Script {
-    using stdToml for string;
-
+    // Path to deployment config file, relative to the project root.
     string constant CONFIG_FILE = "script/config.toml";
-    string constant DEFAULT_PROFILE = "DEFAULT_PROFILE";
+
     IRiscZeroVerifier verifier;
 
     function run() external {
-        // read and log the chainID
+        // Read and log the chainID
         uint256 chainId = block.chainid;
         console2.log("You are deploying on ChainID %d", chainId);
 
-        uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
-
-        vm.startBroadcast(deployerKey);
-
-        string memory configProfile = vm.envOr("CONFIG_PROFILE", DEFAULT_PROFILE);
-        if (keccak256(abi.encodePacked(configProfile)) != keccak256(abi.encodePacked(DEFAULT_PROFILE))) {
-            string memory config = vm.readFile(CONFIG_FILE);
-            string memory profile = string.concat(".profile.", configProfile);
-            console2.log("Deploying using config profile:", configProfile);
-            address riscZeroVerifierAddress = config.readAddress(string.concat(profile, ".riscZeroVerifierAddress"));
-            verifier = IRiscZeroVerifier(riscZeroVerifierAddress);
-            console2.log("Using IRiscZeroVerifier contract deployed at", riscZeroVerifierAddress);
-        } else {
-            verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
-            console2.log("Deployed IRiscZeroVerifier to", address(verifier));
+        // Read the config profile from the environment variable, or use the default for the chainId.
+        // Default is the first profile with a matching chainId field.
+        string memory config = vm.readFile(string.concat(vm.projectRoot(), "/", CONFIG_FILE));
+        string memory configProfile = vm.envOr("CONFIG_PROFILE", string(""));
+        if (bytes(configProfile).length == 0) {
+            string[] memory profileKeys = vm.parseTomlKeys(config, ".profile");
+            for (uint256 i = 0; i < profileKeys.length; i++) {
+                if (stdToml.readUint(config, string.concat(".profile.", profileKeys[i], ".chainId")) == chainId) {
+                    configProfile = profileKeys[i];
+                    break;
+                }
+            }
         }
 
+        if (bytes(configProfile).length != 0) {
+            console2.log("Deploying using config profile:", configProfile);
+            string memory configProfileKey = string.concat(".profile.", configProfile);
+            address riscZeroVerifierAddress =
+                stdToml.readAddress(config, string.concat(configProfileKey, ".riscZeroVerifierAddress"));
+            // If set, use the predeployed verifier address found in the config.
+            verifier = IRiscZeroVerifier(riscZeroVerifierAddress);
+        }
+
+        // Determine the wallet to send transactions from.
+        uint256 deployerKey = uint256(vm.envOr("ETH_WALLET_PRIVATE_KEY", bytes32(0)));
+        address deployerAddr = address(0);
+        if (deployerKey != 0) {
+            // Check for conflicts in how the two environment variables are set.
+            address envAddr = vm.envOr("ETH_WALLET_ADDRESS", address(0));
+            require(
+                envAddr == address(0) || envAddr == vm.addr(deployerKey),
+                "conflicting settings from ETH_WALLET_PRIVATE_KEY and ETH_WALLET_ADDRESS"
+            );
+
+            vm.startBroadcast(deployerKey);
+        } else {
+            deployerAddr = vm.envAddress("ETH_WALLET_ADDRESS");
+            vm.startBroadcast(deployerAddr);
+        }
+
+        // Deploy the verifier, if not already deployed.
+        if (address(verifier) == address(0)) {
+            verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
+            console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
+        } else {
+            console2.log("Using IRiscZeroVerifier contract deployed at", address(verifier));
+        }
+
+        // Deploy the application contract.
         EvenNumber evenNumber = new EvenNumber(verifier);
         console2.log("Deployed EvenNumber to", address(evenNumber));
 
