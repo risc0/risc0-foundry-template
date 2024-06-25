@@ -57,7 +57,7 @@ contract EvenNumberDeploy is Script {
             verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
             console2.log("Deployed IRiscZeroVerifier to", address(verifier));
         }
-        
+
         EvenNumber evenNumber = new EvenNumber(verifier);
         console2.log("Deployed EvenNumber to", address(evenNumber));
 
