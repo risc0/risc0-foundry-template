@@ -116,16 +116,17 @@ You can deploy your contracts on the `Sepolia` testnet and run an end-to-end tes
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast --sig "run(string memory configFile)" -- "script/configs/sepolia/deploy_sepolia_config.json"
+    CONFIG_PROFILE=sepolia forge script script/Deploy.s.sol --rpc-url https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
     ```
 
-    This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://sepolia.etherscan.io/address/0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187#code) and should output something similar to:
+    This command uses the `sepolia` profile defined in the [config][config] file, and should output something similar to:
 
     ```bash
     ...
     == Logs ==
     You are deploying on ChainID 11155111
-    Using RiscZeroVerifierRouter contract deployed at 0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187
+    Deploying using config profile: sepolia
+    Using IRiscZeroVerifier contract deployed at 0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
     ```
@@ -178,7 +179,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
     export BONSAI_API_KEY="YOUR_API_KEY" # see form linked in the previous section
     export BONSAI_API_URL="BONSAI_API_URL" # provided with your api key
     export ALCHEMY_API_KEY="YOUR_ALCHEMY_API_KEY" # the API_KEY provided with an alchemy account
-    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private hex-encoded key of your Sepolia testnet wallet
+    export ETH_WALLET_PRIVATE_KEY="YOUR_WALLET_PRIVATE_KEY" # the private hex-encoded key of your Mainnet testnet wallet
     ```
 
 2. Build your project:
@@ -190,16 +191,17 @@ You can deploy your contract on Ethereum Mainnet as follows:
 3. Deploy your contract by running:
 
     ```bash
-    forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast --sig "run(string memory configFile)" -- "script/configs/mainnet/deploy_mainnet_config.json"
+    CONFIG_PROFILE=mainnet forge script script/MainnetDeploy.s.sol --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} --broadcast
     ```
 
-    This command uses the RISC Zero managed RiscZeroVerifierRouter contract (see https://etherscan.io/address/0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319#code.output) and should output something similar to:
+    This command uses the `mainnet` profile defined in the [config][config] file, and should output something similar to:
 
     ```bash
     ...
     == Logs ==
     You are deploying on ChainID 1
-    Using RiscZeroVerifierRouter contract deployed at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
+    Deploying using config profile: mainnet
+    Using IRiscZeroVerifier contract deployed at 0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319
     Deployed EvenNumber to 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
     ...
     ```
@@ -248,3 +250,4 @@ You can deploy your contract on Ethereum Mainnet as follows:
 [jq]: https://jqlang.github.io/jq/
 [methods]: ./methods/
 [tested]: ./README.md#run-the-tests
+[config]: ./script/config.toml

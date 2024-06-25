@@ -31,6 +31,11 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 /// See the Foundry documentation for more information about Solidity scripts.
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
 contract EvenNumberDeploy is Script {
+    using stdToml for string;
+
+    string constant DEFAULT_PROFILE = "DEFAULT_PROFILE";
+    IRiscZeroVerifier verifier;
+
     function run() external {
         // read and log the chainID
         uint256 chainId = block.chainid;
@@ -40,31 +45,19 @@ contract EvenNumberDeploy is Script {
 
         vm.startBroadcast(deployerKey);
 
-        IRiscZeroVerifier verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
-        console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
-
-        EvenNumber evenNumber = new EvenNumber(verifier);
-        console2.log("Deployed EvenNumber to", address(evenNumber));
-
-        vm.stopBroadcast();
-    }
-
-    function run(string memory deployConfigPath) external {
-        // read and log the chainID
-        uint256 chainId = block.chainid;
-        console2.log("You are deploying on ChainID %d", chainId);
-
-        uint256 deployerKey = uint256(vm.envBytes32("ETH_WALLET_PRIVATE_KEY"));
-
-        vm.startBroadcast(deployerKey);
-
-        // READ JSON CONFIG DATA
-        string memory config_data = vm.readFile(deployConfigPath);
-        address verifier_address = stdJson.readAddress(config_data, ".risc_zero_verifier_address");
-
-        IRiscZeroVerifier verifier = IRiscZeroVerifier(verifier_address);
-        console2.log("Using RiscZeroVerifierRouter contract deployed at", address(verifier));
-
+        string memory configProfile = vm.envOr("CONFIG_PROFILE", DEFAULT_PROFILE);
+        if (keccak256(abi.encodePacked(configProfile)) != keccak256(abi.encodePacked(DEFAULT_PROFILE))) {
+            string memory configData = vm.readFile("script/config.toml");
+            string memory profile = string.concat(".profile.", configProfile);
+            console2.log("Deploying using config profile:", configProfile);
+            address verifierAddress = configData.readAddress(string.concat(profile, ".verifierAddress"));
+            verifier = IRiscZeroVerifier(verifierAddress);
+            console2.log("Using IRiscZeroVerifier contract deployed at", verifierAddress);
+        } else {
+            verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
+            console2.log("Deployed IRiscZeroVerifier to", address(verifier));
+        }
+        
         EvenNumber evenNumber = new EvenNumber(verifier);
         console2.log("Deployed EvenNumber to", address(evenNumber));
 
