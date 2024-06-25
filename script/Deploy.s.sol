@@ -50,9 +50,9 @@ contract EvenNumberDeploy is Script {
             string memory configData = vm.readFile("script/config.toml");
             string memory profile = string.concat(".profile.", configProfile);
             console2.log("Deploying using config profile:", configProfile);
-            address verifierAddress = configData.readAddress(string.concat(profile, ".verifierAddress"));
-            verifier = IRiscZeroVerifier(verifierAddress);
-            console2.log("Using IRiscZeroVerifier contract deployed at", verifierAddress);
+            address riscZeroVerifierAddress = configData.readAddress(string.concat(profile, ".riscZeroVerifierAddress"));
+            verifier = IRiscZeroVerifier(riscZeroVerifierAddress);
+            console2.log("Using IRiscZeroVerifier contract deployed at", riscZeroVerifierAddress);
         } else {
             verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
             console2.log("Deployed IRiscZeroVerifier to", address(verifier));
