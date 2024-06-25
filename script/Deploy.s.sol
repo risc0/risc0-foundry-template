@@ -63,7 +63,8 @@ contract EvenNumberDeploy is Script {
         if (bytes(configProfile).length != 0) {
             console2.log("Deploying using config profile:", configProfile);
             string memory configProfileKey = string.concat(".profile.", configProfile);
-            address riscZeroVerifierAddress = stdToml.readAddress(config, string.concat(configProfileKey, ".riscZeroVerifierAddress"));
+            address riscZeroVerifierAddress =
+                stdToml.readAddress(config, string.concat(configProfileKey, ".riscZeroVerifierAddress"));
             // If set, use the predeployed verifier address found in the config.
             verifier = IRiscZeroVerifier(riscZeroVerifierAddress);
         }
@@ -74,14 +75,16 @@ contract EvenNumberDeploy is Script {
         if (deployerKey != 0) {
             // Check for conflicts in how the two environment variables are set.
             address envAddr = vm.envOr("ETH_WALLET_ADDRESS", address(0));
-            require(envAddr == address(0) || envAddr == vm.addr(deployerKey), "conflicting settings from ETH_WALLET_PRIVATE_KEY and ETH_WALLET_ADDRESS");
+            require(
+                envAddr == address(0) || envAddr == vm.addr(deployerKey),
+                "conflicting settings from ETH_WALLET_PRIVATE_KEY and ETH_WALLET_ADDRESS"
+            );
 
             vm.startBroadcast(deployerKey);
         } else {
             deployerAddr = vm.envAddress("ETH_WALLET_ADDRESS");
             vm.startBroadcast(deployerAddr);
         }
-
 
         // Deploy the verifier, if not already deployed.
         if (address(verifier) == address(0)) {
