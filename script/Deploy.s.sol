@@ -33,6 +33,7 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 contract EvenNumberDeploy is Script {
     using stdToml for string;
 
+    string constant CONFIG_FILE = "script/config.toml";
     string constant DEFAULT_PROFILE = "DEFAULT_PROFILE";
     IRiscZeroVerifier verifier;
 
@@ -47,10 +48,10 @@ contract EvenNumberDeploy is Script {
 
         string memory configProfile = vm.envOr("CONFIG_PROFILE", DEFAULT_PROFILE);
         if (keccak256(abi.encodePacked(configProfile)) != keccak256(abi.encodePacked(DEFAULT_PROFILE))) {
-            string memory configData = vm.readFile("script/config.toml");
+            string memory config = vm.readFile(CONFIG_FILE);
             string memory profile = string.concat(".profile.", configProfile);
             console2.log("Deploying using config profile:", configProfile);
-            address riscZeroVerifierAddress = configData.readAddress(string.concat(profile, ".riscZeroVerifierAddress"));
+            address riscZeroVerifierAddress = config.readAddress(string.concat(profile, ".riscZeroVerifierAddress"));
             verifier = IRiscZeroVerifier(riscZeroVerifierAddress);
             console2.log("Using IRiscZeroVerifier contract deployed at", riscZeroVerifierAddress);
         } else {
