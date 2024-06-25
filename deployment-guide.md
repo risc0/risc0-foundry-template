@@ -231,8 +231,7 @@ You can deploy your contract on Ethereum Mainnet as follows:
 
 2. Publish a new state
 
-    > [!WARNING]
-    > Currently only a local wallet, provided by the `ETH_WALLET_PRIVATE_KEY` env var is implemented in the example publisher app.
+    > NOTE: Currently only a local wallet, provided by the `ETH_WALLET_PRIVATE_KEY` env var is implemented in the example publisher app.
     > Please see https://github.com/risc0/risc0-foundry-template/issues/121 for more details.
 
     ```bash
