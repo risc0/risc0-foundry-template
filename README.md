@@ -138,7 +138,7 @@ RISC0_USE_DOCKER=1 cargo build
 
 ## Deploy Your Application
 
-When you're ready, follow the [deployment guide] to get your application running on [Sepolia].
+When you're ready, follow the [deployment guide] to get your application running on [Sepolia] or Ethereum Mainnet.
 
 ## Project Structure
 
