@@ -66,7 +66,7 @@ Your new project consists of:
 - Builds for zkVM program, the publisher app, and any other Rust code.
 
   ```sh
-  cargo build
+  cargo build --release
   ```
 
 - Build your Solidity smart contracts
