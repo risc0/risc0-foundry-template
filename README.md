@@ -30,14 +30,24 @@ curl https://sh.rustup.rs -sSf | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-Next, you will need to install the `cargo risczero` tool.
-We'll use [`cargo binstall`][cargo-binstall] to get `cargo-risczero` installed, and then install the `risc0` toolchain.
-See [RISC Zero installation] for more details.
+Next, you will use `rzup` to install `cargo-risczero`.
+
+To install `rzup`, run the following command and follow the instructions:
 
 ```sh
-cargo install cargo-binstall
-cargo binstall cargo-risczero
-cargo risczero install
+curl -L https://risczero.com/install | bash
+```
+
+Next we can install the RISC Zero toolchain by running `rzup`:
+
+```sh
+rzup
+```
+
+You can verify the installation was successful by running:
+
+```sh
+cargo risczero --version
 ```
 
 Now you have all the tools you need to develop and deploy an application with [RISC Zero].
