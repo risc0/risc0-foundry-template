@@ -22,7 +22,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use ethers::prelude::*;
 use methods::IS_EVEN_ELF;
-use risc0_ethereum_contracts::groth16;
+use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 
 // `IEvenNumber` interface automatically generated via the alloy `sol!` macro.
@@ -127,7 +127,7 @@ fn main() -> Result<()> {
         .receipt;
 
     // Encode the seal with the selector.
-    let seal = groth16::encode(receipt.inner.groth16()?.seal.clone())?;
+    let seal = encode_seal(&receipt)?;
 
     // Extract the journal from the receipt.
     let journal = receipt.journal.bytes.clone();
