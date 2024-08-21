@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+# Run this script from repo root
+
+# Run the prover to generate a proof
+cargo build
+RISC0_PROOF=`pwd`/proof.json
+if ! [ -e ${RISC0_PROOF} ] ; then
+    RISC0_PROVER=local cargo run --bin publisher -- --input 4
+fi
+
+# Build upa dependency
+pushd lib/upa/upa
+  # Build
+  yarn
+  yarn build
+  # binplace
+  yarn
+  yarn pack
+  
+  # Allow aliases to be expanded in this shell, so that `shell_setup.sh` can
+  # create the `upa` command.
+  shopt -s expand_aliases
+  . scripts/shell_setup.sh
+  
+  # Include the util functions.
+  . scripts/utils.sh
+popd
+
+# Build even number app
+yarn
+yarn build
+
+# Verify in groups of this size
+BATCH_SIZE=1
+# Dev aggregator submits batches every $LATENCY seconds
+LATENCY=5
+
+
+
+export UPA_LOG_LEVEL=debug
+
+# 1 - address to fund
+function fund() {
+    bal=`upa dev balance $1`
+    if (( $(echo "${bal} < 100" | bc -l) )) ; then
+        upa dev fund $1 --amount 1.5
+    fi
+}
+
+mkdir -p _test_r0_upa
+pushd _test_r0_upa
+    start_hardhat_node 10545
+    export RPC_ENDPOINT="http://127.0.0.1:10545/"
+    export KEYFILE_PASSWORD=""
+
+    KEYFILE="deployer.key"
+
+    # Create and fund a deployer address
+    if ! [ -e ${KEYFILE} ] ; then
+        upa dev ethkeygen --keyfile ${KEYFILE}
+    fi
+    deployer_addr=0x`jq -r .address ${KEYFILE}`
+    fund ${deployer_addr}
+
+    # Create and fund user address
+    USER_KEYFILE="user.key"
+    if ! [ -e ${USER_KEYFILE} ] ; then
+        upa dev ethkeygen --keyfile ${USER_KEYFILE}
+    fi
+    user_addr=0x`cat ${USER_KEYFILE} | jq -r .address`
+    fund ${user_addr}
+
+    # Deploy using this key.
+    # Uses dummy outer verifier that accepts any aggregated proof.
+    upa owner deploy \
+            --keyfile ${KEYFILE} \
+            --verifier ${UPA_DIR}/upa/test/data/test.bin \
+            --use-test-config \
+            --retries 3
+
+    # TODO: binplace so we can do `even-number` commands
+    # Deploy the EvenNumber contract, which is connected to the UPA contract.
+    node ../dist/src/index.js deploy --keyfile ${KEYFILE}
+    
+    RISC0_VK="risc0_verifying_key.json"
+    jq -r .vk "${RISC0_PROOF}" > ${RISC0_VK}
+    
+    upa registervk ${RISC0_VK} \
+            --keyfile ${KEYFILE} \
+            
+    # Submit generated proof
+    PROOF_IDS_FILE="proof.pid.json"
+    upa submit-proofs \
+           --keyfile ${USER_KEYFILE} \
+           --proofs-file ${RISC0_PROOF} \
+           --proof-ids-file ${PROOF_IDS_FILE} \
+           > submit.tx.hash
+           
+    # Extract the submission
+    upa get-submission `cat submit.tx.hash` > submission.json
+    
+    # User queries to check proof was not verified
+    (! upa query is-verified \
+            --proof-file ${RISC0_PROOF})
+            
+    # Aggregator aggregates the proof into a batch. (Uses a dummy aggregated proof)
+    # This test script runs on a local network, so it runs the below steps to
+    # mark the proof as verified in the UPA contract.
+    # For proofs submitted to NEBRA's testnet and mainnet deployments, NEBRA's
+    # aggregator will do this step instead, using a real aggregated proof.
+    
+    # Compute dummy calldata using `compute-final-digest`
+    CALLDATA_FILE="proof.calldata"
+    upa aggregator compute-final-digest \
+           --proof-ids-file ${PROOF_IDS_FILE} \
+           --calldata-file ${CALLDATA_FILE}
+
+    # Submit the dummy aggregated proof
+    upa aggregator submit-aggregated-proof \
+           --keyfile ${KEYFILE} \
+           --calldata-file ${CALLDATA_FILE} \
+           --submission submission.json
+           
+    # User can check that the proof is verified as expected
+    upa query is-verified --proof-file ${RISC0_PROOF}
+    
+    # User can now set a new number in the EvenNumber contract, whose even-ness
+    # is attested to by the UPA contract.
+    node ../dist/src/index.js submit 4 --keyfile ${KEYFILE}
+
+    stop_hardhat_node
+
+popd # _test_r0_upa
+
+set +e
+set +x
+
+echo "========================================"
+echo "====             PASSED             ===="
+echo "========================================"

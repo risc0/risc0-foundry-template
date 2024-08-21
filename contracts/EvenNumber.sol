@@ -16,16 +16,16 @@
 
 pragma solidity ^0.8.20;
 
-import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
+import {RiscZeroGroth16Verifier} from "../lib/upa-risc0-ethereum/contracts/src/groth16/RiscZeroGroth16Verifier.sol";
 import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
+//import "forge-std/console.sol";
+import "@nebrazkp/upa/contracts/IUpaVerifier.sol";
 
 /// @title A starter application using RISC Zero.
 /// @notice This basic application holds a number, guaranteed to be even.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
 ///      or difficult to implement function to a RISC Zero guest running on Bonsai.
-contract EvenNumber {
-    /// @notice RISC Zero verifier contract address.
-    IRiscZeroVerifier public immutable verifier;
+contract EvenNumber is RiscZeroGroth16Verifier {
     /// @notice Image ID of the only zkVM binary to accept verification from.
     ///         The image ID is similar to the address of a smart contract.
     ///         It uniquely represents the logic of that guest program,
@@ -38,16 +38,15 @@ contract EvenNumber {
     uint256 public number;
 
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
-    constructor(IRiscZeroVerifier _verifier) {
-        verifier = _verifier;
+    constructor(IUpaVerifier _upaVerifier) RiscZeroGroth16Verifier(_upaVerifier) {
         number = 0;
     }
 
     /// @notice Set the even number stored on the contract. Requires a RISC Zero proof that the number is even.
-    function set(uint256 x, bytes calldata seal) public {
+    function set(uint256 x) public {
         // Construct the expected journal data. Verify will fail if journal does not match.
         bytes memory journal = abi.encode(x);
-        verifier.verify(seal, imageId, sha256(journal));
+        this.verify(imageId, sha256(journal));
         number = x;
     }
 

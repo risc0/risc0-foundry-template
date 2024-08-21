@@ -13,5 +13,9 @@ ethers = { workspace = true }
 log = { workspace = true }
 methods = { workspace = true }
 risc0-ethereum-contracts = { workspace = true }
-risc0-zkvm = { workspace = true, features = ["client"] }
+risc0-zkvm = { workspace = true, features = ["client", "prove"] }
+risc0-zkp = { workspace = true }
+risc0-groth16 = { workspace = true }
 tokio = { version = "1.35", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
