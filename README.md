@@ -41,7 +41,7 @@ curl -L https://risczero.com/install | bash
 Next we can install the RISC Zero toolchain by running `rzup`:
 
 ```sh
-rzup
+rzup install
 ```
 
 You can verify the installation was successful by running:
