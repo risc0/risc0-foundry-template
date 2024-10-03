@@ -22,7 +22,7 @@ import {ImageID} from "./ImageID.sol"; // auto-generated contract after running 
 /// @title A starter application using RISC Zero.
 /// @notice This basic application holds a number, guaranteed to be even.
 /// @dev This contract demonstrates one pattern for offloading the computation of an expensive
-///      or difficult to implement function to a RISC Zero guest running on Bonsai.
+///      or difficult to implement function to a RISC Zero guest running on the zkVM.
 contract EvenNumber {
     /// @notice RISC Zero verifier contract address.
     IRiscZeroVerifier public immutable verifier;
