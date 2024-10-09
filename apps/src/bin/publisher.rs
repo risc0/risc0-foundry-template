@@ -16,62 +16,23 @@
 // to the Bonsai proving service and publish the received proofs directly
 // to your deployed app contract.
 
-use alloy_primitives::U256;
-use alloy_sol_types::{sol, SolInterface, SolValue};
+use alloy::{
+    network::EthereumWallet, providers::ProviderBuilder, signers::local::PrivateKeySigner,
+    sol_types::SolValue,
+};
+use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::Parser;
-use ethers::prelude::*;
 use methods::IS_EVEN_ELF;
-use risc0_ethereum_contracts::groth16;
+use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
+use url::Url;
 
 // `IEvenNumber` interface automatically generated via the alloy `sol!` macro.
-sol! {
-    interface IEvenNumber {
-        function set(uint256 x, bytes calldata seal);
-    }
-}
-
-/// Wrapper of a `SignerMiddleware` client to send transactions to the given
-/// contract's `Address`.
-pub struct TxSender {
-    chain_id: u64,
-    client: SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>,
-    contract: Address,
-}
-
-impl TxSender {
-    /// Creates a new `TxSender`.
-    pub fn new(chain_id: u64, rpc_url: &str, private_key: &str, contract: &str) -> Result<Self> {
-        let provider = Provider::<Http>::try_from(rpc_url)?;
-        let wallet: LocalWallet = private_key.parse::<LocalWallet>()?.with_chain_id(chain_id);
-        let client = SignerMiddleware::new(provider.clone(), wallet.clone());
-        let contract = contract.parse::<Address>()?;
-
-        Ok(TxSender {
-            chain_id,
-            client,
-            contract,
-        })
-    }
-
-    /// Send a transaction with the given calldata.
-    pub async fn send(&self, calldata: Vec<u8>) -> Result<Option<TransactionReceipt>> {
-        let tx = TransactionRequest::new()
-            .chain_id(self.chain_id)
-            .to(self.contract)
-            .from(self.client.address())
-            .data(calldata);
-
-        log::info!("Transaction request: {:?}", &tx);
-
-        let tx = self.client.send_transaction(tx, None).await?.await?;
-
-        log::info!("Transaction receipt: {:?}", &tx);
-
-        Ok(tx)
-    }
-}
+alloy::sol!(
+    #[sol(rpc, all_derives)]
+    "../contracts/IEvenNumber.sol"
+);
 
 /// Arguments of the publisher CLI.
 #[derive(Parser, Debug)]
@@ -83,15 +44,15 @@ struct Args {
 
     /// Ethereum Node endpoint.
     #[clap(long, env)]
-    eth_wallet_private_key: String,
+    eth_wallet_private_key: PrivateKeySigner,
 
     /// Ethereum Node endpoint.
     #[clap(long)]
-    rpc_url: String,
+    rpc_url: Url,
 
     /// Application's contract address on Ethereum
     #[clap(long)]
-    contract: String,
+    contract: Address,
 
     /// The input to provide to the guest binary
     #[clap(short, long)]
@@ -103,13 +64,12 @@ fn main() -> Result<()> {
     // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
 
-    // Create a new transaction sender using the parsed arguments.
-    let tx_sender = TxSender::new(
-        args.chain_id,
-        &args.rpc_url,
-        &args.eth_wallet_private_key,
-        &args.contract,
-    )?;
+    // Create an alloy provider for that private key and URL.
+    let wallet = EthereumWallet::from(args.eth_wallet_private_key);
+    let provider = ProviderBuilder::new()
+        .with_recommended_fillers()
+        .wallet(wallet)
+        .on_http(args.rpc_url);
 
     // ABI encode input: Before sending the proof request to the Bonsai proving service,
     // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
@@ -127,7 +87,7 @@ fn main() -> Result<()> {
         .receipt;
 
     // Encode the seal with the selector.
-    let seal = groth16::encode(receipt.inner.groth16()?.seal.clone())?;
+    let seal = encode_seal(&receipt)?;
 
     // Extract the journal from the receipt.
     let journal = receipt.journal.bytes.clone();
@@ -140,18 +100,16 @@ fn main() -> Result<()> {
     // Construct function call: Using the IEvenNumber interface, the application constructs
     // the ABI-encoded function call for the set function of the EvenNumber contract.
     // This call includes the verified number, the post-state digest, and the seal (proof).
-    let calldata = IEvenNumber::IEvenNumberCalls::set(IEvenNumber::setCall {
-        x,
-        seal: seal.into(),
-    })
-    .abi_encode();
+    let contract = IEvenNumber::new(args.contract, provider);
+    let call_builder = contract.set(x, seal.into());
 
     // Initialize the async runtime environment to handle the transaction sending.
     let runtime = tokio::runtime::Runtime::new()?;
 
-    // Send transaction: Finally, the TxSender component sends the transaction to the Ethereum blockchain,
+    // Send transaction: Finally, send the transaction to the Ethereum blockchain,
     // effectively calling the set function of the EvenNumber contract with the verified number and proof.
-    runtime.block_on(tx_sender.send(calldata))?;
+    let pending_tx = runtime.block_on(call_builder.send())?;
+    runtime.block_on(pending_tx.get_receipt())?;
 
     Ok(())
 }
