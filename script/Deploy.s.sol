@@ -18,6 +18,7 @@ pragma solidity ^0.8.20;
 
 import {Script} from "forge-std/Script.sol";
 import "forge-std/Test.sol";
+import {RiscZeroCheats} from "risc0/test/RiscZeroCheats.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import {RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
 import {ControlID} from "risc0/groth16/ControlID.sol";
@@ -35,7 +36,7 @@ import {EvenNumber} from "../contracts/EvenNumber.sol";
 ///
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
 /// https://book.getfoundry.sh/reference/forge/forge-script
-contract EvenNumberDeploy is Script {
+contract EvenNumberDeploy is Script, RiscZeroCheats {
     // Path to deployment config file, relative to the project root.
     string constant CONFIG_FILE = "script/config.toml";
 
@@ -88,7 +89,7 @@ contract EvenNumberDeploy is Script {
 
         // Deploy the verifier, if not already deployed.
         if (address(verifier) == address(0)) {
-            verifier = new RiscZeroGroth16Verifier(ControlID.CONTROL_ROOT, ControlID.BN254_CONTROL_ID);
+            verifier = deployRiscZeroVerifier();
             console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
         } else {
             console2.log("Using IRiscZeroVerifier contract deployed at", address(verifier));
