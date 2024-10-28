@@ -6,9 +6,9 @@ Once you've written your [contracts] and your [methods], and [tested] your progr
 
 You can either:
 
-- [Deploy your project to a local network]
-- [Deploy to a testnet]
-- [Deploy to Ethereum Mainnet]
+- [Deploy your project to a local network][section-local]
+- [Deploy to a testnet][section-testnet]
+- [Deploy to Ethereum Mainnet][section-mainnet]
 
 ## Deploy your project on a local network
 
@@ -248,8 +248,9 @@ You can deploy your contract on Ethereum Mainnet as follows:
     cast call --rpc-url https://eth-mainnet.g.alchemy.com/v2/${ALCHEMY_API_KEY:?} ${EVEN_NUMBER_ADDRESS:?} 'get()(uint256)'
     ```
 
-[Deploy to Ethereum Mainnet]: #deploy-your-project-on-ethereum-mainnet
-[Deploy your project to a local network]: #deploy-your-project-on-a-local-network
+[section-mainnet]: #deploy-your-project-on-ethereum-mainnet
+[section-local]: #deploy-your-project-on-a-local-network
+[section-testnet]: #deploy-your-project-on-sepolia-testnet
 [RISC Zero]: https://www.risczero.com/
 [Docker]: https://docs.docker.com/engine/install/
 [contracts]: ./contracts/
