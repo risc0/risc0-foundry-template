@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::HashMap, env};
+use std::{collections::HashMap, env, process::Command};
 
 use risc0_build::{embed_methods_with_options, DockerOptions, GuestOptions};
 use risc0_build_ethereum::generate_solidity_files;
@@ -21,7 +21,24 @@ use risc0_build_ethereum::generate_solidity_files;
 const SOLIDITY_IMAGE_ID_PATH: &str = "../contracts/ImageID.sol";
 const SOLIDITY_ELF_PATH: &str = "../tests/Elf.sol";
 
+fn run_git_submodule_update() {
+    let output = Command::new("git")
+        .args(["submodule", "update", "--init"])
+        .output()
+        .expect("failed to run git submodule update in methods/build.rs");
+
+    if !output.status.success() {
+        panic!(
+            "git submodule update failed (methods/build.rs): {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+}
+
 fn main() {
+    run_git_submodule_update();
+    println!("cargo:rerun-if-changed=.gitmodules");
+
     // Builds can be made deterministic, and thereby reproducible, by using Docker to build the
     // guest. Check the RISC0_USE_DOCKER variable and use Docker to build the guest if set.
     println!("cargo:rerun-if-env-changed=RISC0_USE_DOCKER");
