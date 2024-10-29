@@ -90,7 +90,6 @@ contract EvenNumberDeploy is Script, RiscZeroCheats {
         // Deploy the verifier, if not already deployed.
         if (address(verifier) == address(0)) {
             verifier = deployRiscZeroVerifier();
-            console2.log("Deployed RiscZeroGroth16Verifier to", address(verifier));
         } else {
             console2.log("Using IRiscZeroVerifier contract deployed at", address(verifier));
         }
