@@ -73,13 +73,19 @@ Your new project consists of:
 
 ### Build the Code
 
+- Update git submodules.
+
+  ```sh
+  git submodule update --init
+  ```
+
 - Builds for zkVM program, the publisher app, and any other Rust code.
 
   ```sh
   cargo build
   ```
 
-- Build your Solidity smart contracts
+- Build your Solidity smart contracts.
 
   > NOTE: `cargo build` needs to run first to generate the `ImageID.sol` contract.
 
