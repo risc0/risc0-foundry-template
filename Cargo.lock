@@ -686,8 +686,10 @@ dependencies = [
  "env_logger",
  "log",
  "methods",
+ "rand",
  "risc0-ethereum-contracts",
  "risc0-zkvm",
+ "sha2",
  "tokio",
  "url",
 ]
