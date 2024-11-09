@@ -16,20 +16,34 @@ use std::io::Read;
 
 use alloy_primitives::U256;
 use alloy_sol_types::SolValue;
+use mvm_core::ProofInput;
 use risc0_zkvm::guest::env;
+use sha2::{Digest, Sha256};
 
 fn main() {
     // Read the input data for this application.
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
+
     // Decode and parse the input
-    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
+    let input = ProofInput::try_from_bytes(&input_bytes).unwrap();
 
-    // Run the computation.
-    // In this case, asserting that the provided number is even.
-    assert!(!number.bit(0), "number is not even");
+    // hash the nullifier so we can include commit it to the journal enforcing the constraint (nullifier_hash = H(k))
+    let nullifier_hash = {
+        let mut hasher = Sha256::new();
+        hasher.update(&input.k);
+        hasher.finalize()
+    };
 
-    // Commit the journal that will be received by the application contract.
-    // Journal is encoded using Solidity ABI for easy decoding in the app contract.
-    env::commit_slice(number.abi_encode().as_slice());
+    // calculate the commitment and use this when checking the merjle proof
+    let commitment = {
+        let mut hasher = Sha256::new();
+        hasher.update(&input.k);
+        hasher.update(&input.r);
+        hasher.finalize()
+    };
+
+    // Commit the public values (tree root and nullifier hash) to the journal
+    env::commit_slice(input.root.abi_encode().as_slice());
+    env::commit_slice(nullifier_hash.abi_encode().as_slice());
 }

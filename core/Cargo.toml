@@ -1,0 +1,8 @@
+[package]
+name = "mvm-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+bincode.workspace = true
+serde.workspace = true

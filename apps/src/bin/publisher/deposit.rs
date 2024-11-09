@@ -1,11 +1,15 @@
 use crate::abi::ITornado::ITornadoInstance;
 
-use alloy::{network::Network, providers::Provider};
+use alloy::{network::Network, primitives::U256, providers::Provider};
 use anyhow::Result;
-use rand::{rngs::OsRng, RngCore};
+use num_bigint::RandBigInt;
+use rand::rngs::OsRng;
 use sha2::{Digest, Sha256};
 
-pub(crate) async fn deposit<T, P, N>(contract: &ITornadoInstance<T, P, N>) -> Result<()>
+pub(crate) async fn deposit<T, P, N>(
+    contract: &ITornadoInstance<T, P, N>,
+    note_size: U256,
+) -> Result<()>
 where
     T: alloy::transports::Transport + Clone,
     P: Provider<T, N>,
@@ -13,23 +17,27 @@ where
 {
     // generate the random values that make up the spending key
     let mut rng = OsRng;
-    let (k, r) = (rng.next_u64(), rng.next_u64());
+    let note_spending_key = rng.gen_biguint(512).to_bytes_be(); // this is comprised of two 256 bit uints (k, r)
 
     // hash them to produce the public commitment
-    let mut hasher = Sha256::new();
-    hasher.update(&k.to_be_bytes());
-    hasher.update(&r.to_be_bytes());
-    let commitment = hasher.finalize();
+    let commitment = {
+        let mut hasher = Sha256::new();
+        hasher.update(&note_spending_key);
+        hasher.finalize()
+    };
 
     // submit this to the contract along with the Eth to deposit
-
-    let call_builder =
-        contract.deposit(alloy_primitives::FixedBytes::<32>::from_slice(&commitment));
-
-    // Send transaction: Finally, send the transaction to the Ethereum blockchain,
-    // effectively calling the set function of the EvenNumber contract with the verified number and proof.
+    // this will error if the caller has insufficient eth
+    let call_builder = contract
+        .deposit(alloy_primitives::FixedBytes::<32>::from_slice(&commitment))
+        .value(note_size);
     let pending_tx = call_builder.send().await?;
     pending_tx.get_receipt().await?;
+
+    println!(
+        "Deposit successful. Spending key:({})",
+        hex::encode(note_spending_key)
+    );
 
     Ok(())
 }

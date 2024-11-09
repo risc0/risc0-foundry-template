@@ -10,8 +10,10 @@ alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
 clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
+hex.workspace = true
 log = { workspace = true }
 methods = { workspace = true }
+num-bigint = { version = "0.4.6", features = ["rand"] }
 rand = "0.8.5"
 risc0-ethereum-contracts = { workspace = true }
 risc0-zkvm = { workspace = true, features = ["client"] }

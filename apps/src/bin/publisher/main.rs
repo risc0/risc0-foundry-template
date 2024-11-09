@@ -30,6 +30,7 @@ use url::Url;
 
 mod abi;
 mod deposit;
+mod withdraw;
 
 /// Arguments of the publisher CLI.
 #[derive(Parser, Debug)]
@@ -50,6 +51,11 @@ struct Args {
     /// Application's contract address on Ethereum
     #[clap(long)]
     contract: Address,
+
+    /// The note size used by this contract in wei
+    #[clap(long)]
+    #[clap(default_value = "1000000000000000")] // 1 eth
+    note_size: U256,
 
     #[command(subcommand)]
     command: SubCommand,
@@ -81,8 +87,8 @@ fn main() -> Result<()> {
     let runtime = tokio::runtime::Runtime::new()?;
 
     match args.command {
-        SubCommand::Deposit => runtime.block_on(deposit::deposit(&contract))?,
-        SubCommand::Withdraw {} => todo!(),
+        SubCommand::Deposit => runtime.block_on(deposit::deposit(&contract), args.note_size)?,
+        SubCommand::Withdraw {} => runtime.block_on(withdraw::withdraw(&contract))?,
     }
 
     Ok(())

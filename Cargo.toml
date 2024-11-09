@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["apps", "methods"]
+members = ["apps", "methods", "core"]
 exclude = ["lib"]
 
 [workspace.package]
@@ -9,7 +9,11 @@ edition = "2021"
 
 [workspace.dependencies]
 alloy = { version = "0.4", features = ["full"] }
-alloy-primitives = { version = "=0.8.5", default-features = false, features = ["rlp", "serde", "std"] }
+alloy-primitives = { version = "=0.8.5", default-features = false, features = [
+    "rlp",
+    "serde",
+    "std",
+] }
 alloy-sol-types = { version = "=0.8.5" }
 anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
