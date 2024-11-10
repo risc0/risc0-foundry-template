@@ -33,8 +33,7 @@ fn main() {
     // hash the nullifier so we can include commit it to the journal enforcing the constraint (nullifier_hash = H(k))
     let nullifier_hash = {
         let mut hasher = Sha256::new();
-        let preimage = [input.k.as_slice(), input.r.as_slice()].concat();
-        hasher.update(&preimage);
+        hasher.update(&input.k);
         hasher.finalize()
     };
 

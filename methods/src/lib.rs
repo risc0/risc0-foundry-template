@@ -22,7 +22,7 @@ mod tests {
     use mvm_core::ProofInput;
     use num_bigint::RandBigInt;
     use rand::Rng;
-    use risc0_zkvm::{default_executor, ExecutorEnv};
+    use risc0_zkvm::{default_executor, ExecutorEnv, ExitCode};
     use sha2::{Digest, Sha256};
 
     type MerkleTree = IncrementalMerkleTree<10, Sha256>;
@@ -84,7 +84,13 @@ mod tests {
         let session_info = default_executor()
             .execute(env, super::CAN_SPEND_ELF)
             .unwrap();
+        assert_eq!(session_info.exit_code, ExitCode::Halted(0));
 
-        println!("Session info: {:?}", session_info);
+        // ensure the values written to the journal are as expected
+        let output = session_info.journal.bytes;
+
+        assert_eq!(tree.root(), B256::from_slice(&output[0..32]));
+        assert_eq!(nullifier_hash.as_slice(), &output[32..64]);
+        assert_eq!(recipient, Address::from_slice(&output[64..84]));
     }
 }
