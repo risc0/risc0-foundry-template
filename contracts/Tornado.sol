@@ -2,17 +2,14 @@
 pragma solidity ^0.8.20;
 
 import "./MerkleTreeWithHistory.sol";
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
+import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-interface IVerifier {
-    function verifyProof(
-        bytes memory _proof,
-        uint256[6] memory _input
-    ) external returns (bool);
-}
-
 abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
-    IVerifier public immutable verifier;
+    IRiscZeroVerifier public immutable verifier;
+    bytes32 public constant imageId = ImageID.CAN_SPEND_ID;
+
     uint256 public denomination;
 
     mapping(bytes32 => bool) public nullifierHashes;
@@ -33,7 +30,7 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
     @param _merkleTreeHeight the height of deposits' Merkle Tree
   */
     constructor(
-        IVerifier _verifier,
+        IRiscZeroVerifier _verifier,
         uint256 _denomination,
         uint32 _merkleTreeHeight
     ) MerkleTreeWithHistory(_merkleTreeHeight) {
@@ -66,7 +63,7 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
       - hash of unique deposit nullifier to prevent double spends
   */
     function withdraw(
-        bytes calldata _proof,
+        bytes calldata _seal,
         bytes32 _root,
         bytes32 _nullifierHash
     ) external payable nonReentrant {
@@ -76,21 +73,13 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
         );
         require(isKnownRoot(_root), "Cannot find your merkle root"); // Make sure to use a recent one
 
-        // todo: insert risczero proof verification here
-        // require(
-        //     verifier.verifyProof(
-        //         _proof,
-        //         [
-        //             uint256(_root),
-        //             uint256(_nullifierHash),
-        //             uint256(uint160(address(_recipient))),
-        //             uint256(uint160(address(_relayer))),
-        //             _fee,
-        //             _refund
-        //         ]
-        //     ),
-        //     "Invalid withdraw proof"
-        // );
+        // Verify the proof and ensure the journal matches
+        bytes memory journal = abi.encodePacked(
+            _root,
+            _nullifierHash,
+            msg.sender
+        );
+        verifier.verify(_seal, imageId, sha256(journal));
 
         nullifierHashes[_nullifierHash] = true;
         _processWithdraw(payable(msg.sender));

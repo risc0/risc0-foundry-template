@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import "./Tornado.sol";
 
 contract ETHTornado is Tornado {
     constructor(
-        IVerifier _verifier,
+        IRiscZeroVerifier _verifier,
         uint256 _denomination,
         uint32 _merkleTreeHeight
     ) Tornado(_verifier, _denomination, _merkleTreeHeight) {}
