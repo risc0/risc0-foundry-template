@@ -17,37 +17,74 @@ include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 
 #[cfg(test)]
 mod tests {
-    use alloy_primitives::U256;
-    use alloy_sol_types::SolValue;
+    use alloy_merkle_tree::incremental_tree::IncrementalMerkleTree;
+    use alloy_primitives::{Address, B256};
+    use mvm_core::ProofInput;
+    use num_bigint::RandBigInt;
+    use rand::Rng;
     use risc0_zkvm::{default_executor, ExecutorEnv};
+    use sha2::{Digest, Sha256};
+
+    type MerkleTree = IncrementalMerkleTree<10, Sha256>;
 
     #[test]
-    fn proves_even_number() {
-        let even_number = U256::from(1304);
+    fn can_spend() {
+        let mut tree = MerkleTree::new();
+        let rng = &mut rand::thread_rng();
+
+        let note_spending_key = rng.gen_biguint(512).to_bytes_be();
+        let (k, r) = note_spending_key.split_at(32);
+        let l: usize = 11; // position to add our commitment
+
+        let commitment = {
+            let mut hasher = Sha256::new();
+            hasher.update(&note_spending_key);
+            hasher.finalize()
+        };
+
+        let nullifier_hash = {
+            let mut hasher = Sha256::new();
+            hasher.update(&k);
+            hasher.finalize()
+        };
+
+        let recipient = Address::default();
+
+        // insert some other random values into the merkle tree to pad
+        for _ in 0..l {
+            let value = rng.gen::<[u8; 32]>();
+            tree.append(value.into()).expect("failed to append to tree");
+        }
+
+        // insert our commitment at position `l` and get opening proof
+        tree.append(B256::from_slice(&commitment))
+            .expect("failed to append commitment to tree");
+
+        let opening = tree
+            .proof_at_index(l)
+            .expect("failed to generate proof")
+            .into_iter()
+            .collect();
+
+        let input = ProofInput {
+            root: tree.root(),
+            leaf_index: l as u32,
+            opening,
+            k: B256::from_slice(&k),
+            r: B256::from_slice(&r),
+            recipient,
+        };
 
         let env = ExecutorEnv::builder()
-            .write_slice(&even_number.abi_encode())
+            .write_slice(&input.to_bytes().expect("failed to serialize proof input"))
             .build()
             .unwrap();
 
         // NOTE: Use the executor to run tests without proving.
-        let session_info = default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
-
-        let x = U256::abi_decode(&session_info.journal.bytes, true).unwrap();
-        assert_eq!(x, even_number);
-    }
-
-    #[test]
-    #[should_panic(expected = "number is not even")]
-    fn rejects_odd_number() {
-        let odd_number = U256::from(75);
-
-        let env = ExecutorEnv::builder()
-            .write_slice(&odd_number.abi_encode())
-            .build()
+        let session_info = default_executor()
+            .execute(env, super::CAN_SPEND_ELF)
             .unwrap();
 
-        // NOTE: Use the executor to run tests without proving.
-        default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
+        println!("Session info: {:?}", session_info);
     }
 }

@@ -16,7 +16,7 @@ use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 use sha2::{Digest, Sha256};
 
-type MerkleTree = IncrementalMerkleTree<20, Sha256>;
+type MerkleTree = IncrementalMerkleTree<10, Sha256>;
 
 pub(crate) async fn withdraw<T, P, N>(
     contract: &ITornadoInstance<T, P, N>,

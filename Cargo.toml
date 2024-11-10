@@ -30,6 +30,9 @@ risc0-zkp = { version = "1.1", default-features = false }
 serde = { version = "1.0", features = ["derive", "std"] }
 url = { version = "2.5" }
 mvm-core = { path = "./core" }
+sha2 = "0.10.8"
+rand = "0.8.5"
+num-bigint = { version = "0.4.6", features = ["rand"] }
 
 [profile.release]
 debug = 1

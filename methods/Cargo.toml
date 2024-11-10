@@ -14,5 +14,10 @@ risc0-zkp = { workspace = true }
 
 [dev-dependencies]
 alloy-primitives = { workspace = true }
+alloy-merkle-tree = { workspace = true }
 alloy-sol-types = { workspace = true }
 risc0-zkvm = { workspace = true, features = ["client"] }
+sha2 = { workspace = true }
+rand = { workspace = true }
+num-bigint = { workspace = true }
+mvm-core = { workspace = true }

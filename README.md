@@ -1,23 +1,43 @@
-# RISC Zero Foundry Template
+# Coin Mixer with RISC Zero
 
-> Prove computation with the [RISC Zero zkVM] and verify the results in your Ethereum contract.
+A tornado-cash style coin mixer implemented using RISC Zero
 
-This repository implements an example application on Ethereum utilizing RISC Zero as a [coprocessor] to the smart contract application.
-It provides a starting point for building powerful new applications on Ethereum that offload work that is computationally intensive (i.e. gas expensive), or difficult to implement in Solidity (e.g. ed25519 signature verification, or HTML parsing).
+## About
 
-<!-- TODO(#100) Integrate support for Steel more directly into this repo -->
-Integrate with [Steel][steel-repo] to execute view calls and simulate transactions on Ethereum. Check out the [ERC-20 counter][erc20-counter] demo to see an example.
+Implements a protocol very similar to the original Tornado-cash with the following changes:
 
-## Overview
+- Uses sha256 hashing for the nullifier and commitment tree instead of Pederson and MiMC hashes
+  - Originally Pederson and MiMC were chosen as they are cheap to compute in Groth16
+  - This uses sha256 making the protocol simpler and cheaper to implement on-chain
+- Removes the withdrawal fee functionality. Mostly to keep the example simple.
 
-Here is a simplified overview of how devs can integrate RISC Zero, with [Bonsai] proving, into their Ethereum smart contracts:
+The protocol works as follows:
 
-![RISC Zero Foundry Template Diagram](images/risc0-foundry-template.png)
+### Deposit
 
-1. Run your application logic in the [RISC Zero zkVM]. The provided [publisher] app sends an off-chain proof request to the [Bonsai] proving service.
-2. [Bonsai] generates the program result, written to the [journal], and a SNARK proof of its correctness.
-3. The [publisher] app submits this proof and journal on-chain to your app contract for validation.
-4. Your app contract calls the [RISC Zero Verifier] to validate the proof. If the verification is successful, the journal is deemed trustworthy and can be safely used.
+The depositor generates a nullifier, $k$, and secret value, $r$, locally. These are hashed together to produce a note commitment
+
+$C = H(k||r)$.
+
+This is submitted to the contract along with a pre-determined amount of eth (this example uses 1 Eth sized notes). The tuple ($k$, $r$) makes up the spending key for this note.
+
+Upon receiving the eth the contract appends the note commitment to its internal incremental Merkle tree and stores the tree root, $R$. It also saves the commitment to ensure it cannot be used again.
+
+### Withdrawal
+
+To spend the withdrawer needs to construct a proof with the following form:
+
+> I know $k$, $r$, $l$, $O(l)$
+> such that
+>
+> - $h = H(k)
+> - O(l) is a valid merkle proof for leaf $C = H(k||r)$ rooted at $R$
+
+where $l$ is the leaf position of the note commitment they are attempting to spend, and $h$ is the nullifier hash. In this case $h$ and $R$ are the public inputs and $k$, $r$, $l$, and $O(l)$ are private inputs. The proof also needs to commit to the receiving address $A$ so that the withdrawal transaction is non-malleable.
+
+To construct a valid merkle proof the withdrawer has to reconstruct the contract merkle tree locally. It does this by querying an RPC node for all deposit events and builds a tree locally with extracted the note commitments.
+
+The contract verifies this proof, checks that the nullifier hash, tree root and receiving address match the journal, and checks this nullifier hash has not been used already. If satisfied it allows the withdrawer to transfer 1 note worth of Eth out of the contract to the receiver. It then stores the nullifier hash in contract state so it cannot be used again.
 
 ## Dependencies
 
@@ -30,46 +50,18 @@ curl https://sh.rustup.rs -sSf | sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
 
-Next, you will use `rzup` to install `cargo-risczero`.
-
 To install `rzup`, run the following command and follow the instructions:
 
 ```sh
 curl -L https://risczero.com/install | bash
-```
-
-Next we can install the RISC Zero toolchain by running `rzup`:
-
-```sh
 rzup
 ```
 
-You can verify the installation was successful by running:
+This repo uses the [just](https://github.com/casey/just) command runner. Install it with:
 
 ```sh
-cargo risczero --version
+cargo install just
 ```
-
-Now you have all the tools you need to develop and deploy an application with [RISC Zero].
-
-## Quick Start
-
-First, install the RISC Zero toolchain using the [instructions above](#dependencies).
-
-Now, you can initialize a new RISC Zero project at a location of your choosing:
-
-```sh
-forge init -t risc0/bonsai-foundry-template ./my-project
-```
-
-Congratulations! You've just started your first RISC Zero project.
-
-Your new project consists of:
-
-- a [zkVM program] (written in Rust), which specifies a computation that will be proven;
-- a [app contract] (written in Solidity), which uses the proven results;
-- a [publisher] which makes proving requests to [Bonsai] and posts the proof to Ethereum.
-  We provide an example implementation, but your dApp interface or application servers could act as the publisher.
 
 ### Build the Code
 
@@ -104,7 +96,7 @@ Your new project consists of:
 - Test your Solidity contracts, integrated with your zkVM program.
 
   ```sh
-  RISC0_DEV_MODE=true forge test -vvv 
+  RISC0_DEV_MODE=true forge test -vvv
   ```
 
 - Run the same tests, with the full zkVM prover rather than dev-mode, by setting `RISC0_DEV_MODE=false`.
@@ -113,19 +105,11 @@ Your new project consists of:
   RISC0_DEV_MODE=false forge test -vvv
   ```
 
-  Producing the [Groth16 SNARK proofs][Groth16] for this test requires running on an x86 machine with [Docker] installed, or using [Bonsai](#configuring-bonsai). Apple silicon is currently unsupported for local proving, you can find out more info in the relevant issues [here](https://github.com/risc0/risc0/issues/1520) and [here](https://github.com/risc0/risc0/issues/1749). 
-
-## Develop Your Application
-
-To build your application using the RISC Zero Foundry Template, you’ll need to make changes in three main areas:
-
-- ***Guest Code***: Write the code you want proven in the [methods/guest](./methods/guest/) folder. This code runs off-chain within the RISC Zero zkVM and performs the actual computations. For example, the provided template includes a computation to check if a given number is even and generate a proof of this computation.
-- ***Smart Contracts***: Write the on-chain part of your project in the [contracts](./contracts/) folder. The smart contract verifies zkVM proofs and updates the blockchain state based on the results of off-chain computations. For instance, in the [EvenNumber](./contracts/EvenNumber.sol) example, the smart contract verifies a proof that a number is even and stores that number on-chain if the proof is valid.
-- ***Publisher Application***: Adjust the publisher example in the [apps](./apps/) folder. The publisher application bridges off-chain computation with on-chain verification by submitting proof requests, receiving proofs, and publishing them to the smart contract on Ethereum.
+  Producing the [Groth16 SNARK proofs][Groth16] for this test requires running on an x86 machine with [Docker] installed, or using [Bonsai](#configuring-bonsai). Apple silicon is currently unsupported for local proving, you can find out more info in the relevant issues [here](https://github.com/risc0/risc0/issues/1520) and [here](https://github.com/risc0/risc0/issues/1749).
 
 ### Configuring Bonsai
 
-***Note:*** *To request an API key [complete the form here](https://bonsai.xyz/apply).*
+**_Note:_** _To request an API key [complete the form here](https://bonsai.xyz/apply)._
 
 With the Bonsai proving service, you can produce a [Groth16 SNARK proof][Groth16] that is verifiable on-chain.
 You can get started by setting the following environment variables with your API key and associated URL.
@@ -150,7 +134,7 @@ The [image ID][image-id], and its importance to security, is explained in more d
 RISC0_USE_DOCKER=1 cargo build
 ```
 
-> ***Note:*** *This requires having Docker installed and in your PATH. To install Docker see [Get Docker][Docker].*
+> **_Note:_** _This requires having Docker installed and in your PATH. To install Docker see [Get Docker][Docker]._
 
 ## Deploy Your Application
 
@@ -168,8 +152,8 @@ Below are the primary files in the project directory
 │   ├── Cargo.toml
 │   └── src
 │       └── lib.rs                  // Utility functions
-│       └── bin                     
-│           └── publisher.rs        // Example app to publish program results into your app contract 
+│       └── bin
+│           └── publisher.rs        // Example app to publish program results into your app contract
 ├── contracts
 │   ├── EvenNumber.sol              // Basic example contract for you to modify
 │   └── ImageID.sol                 // Generated contract with the image ID for your zkVM program
@@ -186,25 +170,3 @@ Below are the primary files in the project directory
     ├── EvenNumber.t.sol            // Tests for the basic example contract
     └── Elf.sol                     // Generated contract with paths the guest program ELF files.
 ```
-
-[Bonsai]: https://dev.bonsai.xyz/
-[Foundry]: https://getfoundry.sh/
-[Docker]: https://docs.docker.com/get-docker/
-[Groth16]: https://www.risczero.com/news/on-chain-verification
-[RISC Zero Verifier]: https://github.com/risc0/risc0/blob/release-0.21/bonsai/ethereum/contracts/IRiscZeroVerifier.sol
-[RISC Zero installation]: https://dev.risczero.com/api/zkvm/install
-[RISC Zero zkVM]: https://dev.risczero.com/zkvm
-[RISC Zero]: https://www.risczero.com/
-[Sepolia]: https://www.alchemy.com/overviews/sepolia-testnet
-[app contract]: ./contracts/
-[cargo-binstall]: https://github.com/cargo-bins/cargo-binstall#cargo-binaryinstall
-[coprocessor]: https://www.risczero.com/news/a-guide-to-zk-coprocessors-for-scalability
-[deployment guide]: /deployment-guide.md
-[developer FAQ]: https://dev.risczero.com/faq#zkvm-application-design
-[image-id]: https://dev.risczero.com/terminology#image-id
-[install Rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
-[journal]: https://dev.risczero.com/terminology#journal
-[publisher]: ./apps/README.md
-[zkVM program]: ./methods/guest/
-[steel-repo]: https://github.com/risc0/risc0-ethereum/tree/main/steel
-[erc20-counter]: https://github.com/risc0/risc0-ethereum/tree/main/examples/erc20-counter

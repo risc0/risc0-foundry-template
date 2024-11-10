@@ -16,12 +16,11 @@ use std::io::Read;
 
 use alloy_merkle_tree::incremental_tree::IncrementalMerkleTree;
 use alloy_primitives::B256;
-use alloy_sol_types::SolValue;
 use mvm_core::ProofInput;
 use risc0_zkvm::guest::env;
 use sha2::{Digest, Sha256};
 
-type MerkleTree = IncrementalMerkleTree<20, Sha256>;
+type MerkleTree = IncrementalMerkleTree<10, Sha256>;
 
 fn main() {
     // Read the input data for this application.
@@ -34,7 +33,8 @@ fn main() {
     // hash the nullifier so we can include commit it to the journal enforcing the constraint (nullifier_hash = H(k))
     let nullifier_hash = {
         let mut hasher = Sha256::new();
-        hasher.update(&input.k);
+        let preimage = [input.k.as_slice(), input.r.as_slice()].concat();
+        hasher.update(&preimage);
         hasher.finalize()
     };
 
@@ -58,8 +58,8 @@ fn main() {
     );
 
     // Commit the instance/public values (tree root, nullifier hash, and recipient) to the journal
-    // in an EVM friendly way
+    // in an ABI friendly way
     env::commit_slice(input.root.as_slice());
-    env::commit_slice(nullifier_hash.abi_encode().as_slice());
+    env::commit_slice(B256::from_slice(&nullifier_hash).as_slice());
     env::commit_slice(input.recipient.as_slice());
 }

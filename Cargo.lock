@@ -2347,13 +2347,18 @@ dependencies = [
 name = "methods"
 version = "0.1.0"
 dependencies = [
+ "alloy-merkle-tree",
  "alloy-primitives",
  "alloy-sol-types",
  "hex",
+ "mvm-core",
+ "num-bigint",
+ "rand",
  "risc0-build",
  "risc0-build-ethereum",
  "risc0-zkp",
  "risc0-zkvm",
+ "sha2",
 ]
 
 [[package]]
