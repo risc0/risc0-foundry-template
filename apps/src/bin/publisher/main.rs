@@ -23,7 +23,6 @@ use alloy::{
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use methods::IS_EVEN_ELF;
 use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 use url::Url;
@@ -52,6 +51,10 @@ struct Args {
     #[clap(long)]
     contract: Address,
 
+    /// The height at which the contract was deployed
+    #[clap(long)]
+    contract_deploy_height: u64,
+
     /// The note size used by this contract in wei
     #[clap(long)]
     #[clap(default_value = "1000000000000000")] // 1 eth
@@ -67,7 +70,7 @@ enum SubCommand {
     Deposit,
 
     /// Withdraw N eth from the contract using the withdrawal key
-    Withdraw {},
+    Withdraw { spending_key: String },
 }
 
 fn main() -> Result<()> {
@@ -81,14 +84,20 @@ fn main() -> Result<()> {
         .with_recommended_fillers()
         .wallet(wallet)
         .on_http(args.rpc_url);
-    let contract = abi::ITornado::new(args.contract, provider);
+    let contract = abi::ITornado::new(args.contract, provider.clone());
 
     // Initialize the async runtime environment to handle the transaction sending.
     let runtime = tokio::runtime::Runtime::new()?;
 
     match args.command {
-        SubCommand::Deposit => runtime.block_on(deposit::deposit(&contract), args.note_size)?,
-        SubCommand::Withdraw {} => runtime.block_on(withdraw::withdraw(&contract))?,
+        SubCommand::Deposit => runtime.block_on(deposit::deposit(&contract, args.note_size))?,
+        SubCommand::Withdraw { spending_key } => runtime.block_on(withdraw::withdraw(
+            provider,
+            &contract,
+            args.contract_deploy_height,
+            args.note_size,
+            [0_u8; 512],
+        ))?,
     }
 
     Ok(())

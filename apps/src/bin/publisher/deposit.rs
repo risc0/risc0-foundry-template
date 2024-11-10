@@ -1,6 +1,10 @@
 use crate::abi::ITornado::ITornadoInstance;
 
-use alloy::{network::Network, primitives::U256, providers::Provider};
+use alloy::{
+    network::Network,
+    primitives::{B256, U256},
+    providers::Provider,
+};
 use anyhow::Result;
 use num_bigint::RandBigInt;
 use rand::rngs::OsRng;
@@ -29,10 +33,10 @@ where
     // submit this to the contract along with the Eth to deposit
     // this will error if the caller has insufficient eth
     let call_builder = contract
-        .deposit(alloy_primitives::FixedBytes::<32>::from_slice(&commitment))
+        .deposit(B256::from_slice(&commitment))
         .value(note_size);
     let pending_tx = call_builder.send().await?;
-    pending_tx.get_receipt().await?;
+    let receipt = pending_tx.get_receipt().await?;
 
     println!(
         "Deposit successful. Spending key:({})",

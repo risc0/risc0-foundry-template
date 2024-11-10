@@ -14,3 +14,11 @@ alloy::sol!(
         ) external payable;
     }
 );
+
+alloy::sol!(
+    event Deposit(
+        bytes32 indexed commitment,
+        uint32 leafIndex,
+        uint256 timestamp
+    );
+);

@@ -10,12 +10,12 @@ path = "src/bin/can_spend.rs"
 [workspace]
 
 [dependencies]
-alloy-primitives = { version = "=0.8.3", default-features = false, features = [
+alloy-primitives = { version = "=0.8.11", default-features = false, features = [
     "rlp",
     "serde",
     "std",
 ] }
-alloy-sol-types = { version = "=0.8.3" }
+alloy-sol-types = { version = "=0.8.11" }
 risc0-zkvm = { version = "1.1", default-features = false, features = ['std'] }
 mvm-core = { path = "../../core" }
 sha2 = "0.10.8"

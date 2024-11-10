@@ -7,6 +7,8 @@ edition = { workspace = true }
 alloy = { workspace = true }
 alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
+alloy-merkle-tree = { workspace = true }
+mvm-core = { workspace = true }
 anyhow = { workspace = true }
 clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
