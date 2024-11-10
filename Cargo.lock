@@ -227,7 +227,7 @@ dependencies = [
 [[package]]
 name = "alloy-merkle-tree"
 version = "0.7.1"
-source = "git+https://github.com/willemolding/alloy-merkle-tree#c73fc52366a540284b43ad074f6c8ed7418f8e34"
+source = "git+https://github.com/willemolding/alloy-merkle-tree?rev=9d1f05d4dcd#9d1f05d4dcd1582799099ed8e27ebcd219aeeeae"
 dependencies = [
  "alloy",
  "anyhow",

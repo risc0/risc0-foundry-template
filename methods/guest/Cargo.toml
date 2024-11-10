@@ -15,6 +15,7 @@ alloy-primitives = { version = "=0.8.11", default-features = false, features = [
     "serde",
     "std",
 ] }
+alloy-merkle-tree = { git = "https://github.com/willemolding/alloy-merkle-tree", rev = "9d1f05d4dcd" }
 alloy-sol-types = { version = "=0.8.11" }
 risc0-zkvm = { version = "1.1", default-features = false, features = ['std'] }
 mvm-core = { path = "../../core" }

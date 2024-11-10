@@ -1,14 +1,3 @@
-// https://tornado.cash
-/*
- * d888888P                                           dP              a88888b.                   dP
- *    88                                              88             d8'   `88                   88
- *    88    .d8888b. 88d888b. 88d888b. .d8888b. .d888b88 .d8888b.    88        .d8888b. .d8888b. 88d888b.
- *    88    88'  `88 88'  `88 88'  `88 88'  `88 88'  `88 88'  `88    88        88'  `88 Y8ooooo. 88'  `88
- *    88    88.  .88 88       88    88 88.  .88 88.  .88 88.  .88 dP Y8.   .88 88.  .88       88 88    88
- *    dP    `88888P' dP       dP    dP `88888P8 `88888P8 `88888P' 88  Y88888P' `88888P8 `88888P' dP    dP
- * ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
- */
-
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -40,16 +29,14 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
     /**
     @dev The constructor
     @param _verifier the address of SNARK verifier for this contract
-    @param _hasher the address of MiMC hash contract
     @param _denomination transfer amount for each deposit
     @param _merkleTreeHeight the height of deposits' Merkle Tree
   */
     constructor(
         IVerifier _verifier,
-        IHasher _hasher,
         uint256 _denomination,
         uint32 _merkleTreeHeight
-    ) MerkleTreeWithHistory(_merkleTreeHeight, _hasher) {
+    ) MerkleTreeWithHistory(_merkleTreeHeight) {
         require(_denomination > 0, "denomination should be greater than 0");
         verifier = _verifier;
         denomination = _denomination;

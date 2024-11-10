@@ -1,9 +1,10 @@
-use alloy_primitives::B256;
+use alloy_primitives::{Address, B256};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ProofInput {
     pub root: B256,         // root of the merkle tree (public)
+    pub recipient: Address, // recipient address (public, must be included for non-malleability of transaction)
     pub k: B256,            // nullifier (first part of spending key)
     pub r: B256,            // randomness (second part of spending key)
     pub leaf_index: u32,    // note leaf index in the merkle tree

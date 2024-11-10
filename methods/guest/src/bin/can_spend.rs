@@ -14,11 +14,14 @@
 
 use std::io::Read;
 
-use alloy_primitives::U256;
+use alloy_merkle_tree::incremental_tree::IncrementalMerkleTree;
+use alloy_primitives::B256;
 use alloy_sol_types::SolValue;
 use mvm_core::ProofInput;
 use risc0_zkvm::guest::env;
 use sha2::{Digest, Sha256};
+
+type MerkleTree = IncrementalMerkleTree<20, Sha256>;
 
 fn main() {
     // Read the input data for this application.
@@ -35,7 +38,7 @@ fn main() {
         hasher.finalize()
     };
 
-    // calculate the commitment and use this when checking the merjle proof
+    // calculate the commitment and use this when checking the merkle proof
     let commitment = {
         let mut hasher = Sha256::new();
         hasher.update(&input.k);
@@ -43,7 +46,20 @@ fn main() {
         hasher.finalize()
     };
 
-    // Commit the public values (tree root and nullifier hash) to the journal
-    env::commit_slice(input.root.abi_encode().as_slice());
+    // check the opening proof and panic if it is invalid
+    assert!(
+        MerkleTree::verify_proof_against_root(
+            input.root,
+            B256::from_slice(&commitment),
+            input.leaf_index.try_into().unwrap(),
+            &input.opening.try_into().unwrap(),
+        ),
+        "invalid opening proof"
+    );
+
+    // Commit the instance/public values (tree root, nullifier hash, and recipient) to the journal
+    // in an EVM friendly way
+    env::commit_slice(input.root.as_slice());
     env::commit_slice(nullifier_hash.abi_encode().as_slice());
+    env::commit_slice(input.recipient.as_slice());
 }

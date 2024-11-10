@@ -19,9 +19,9 @@ where
     P: Provider<T, N>,
     N: Network,
 {
-    // generate the nullifier and secret that make up the spending key
+    // generate the nullifier (k) and secret (r) that make up the spending key
     let mut rng = OsRng;
-    let note_spending_key = rng.gen_biguint(512).to_bytes_be(); // this is comprised of two 256 bit uints (k, r)
+    let note_spending_key = rng.gen_biguint(512).to_bytes_be(); // this is comprised of two 256 bit values (k, r)
 
     // hash them to produce the public commitment
     let commitment = {

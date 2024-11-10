@@ -3,7 +3,7 @@ use crate::abi::ITornado::ITornadoInstance;
 
 use alloy::{
     network::Network,
-    primitives::{B256, U256},
+    primitives::{Address, B256, U256},
     providers::Provider,
     rpc::types::Filter,
 };
@@ -19,11 +19,10 @@ use sha2::{Digest, Sha256};
 type MerkleTree = IncrementalMerkleTree<20, Sha256>;
 
 pub(crate) async fn withdraw<T, P, N>(
-    provider: impl Provider<T, N>,
     contract: &ITornadoInstance<T, P, N>,
     contract_deploy_height: u64,
-    note_size: U256,
-    note_spending_key: [u8; 512],
+    recipient: Address,
+    note_spending_key: [u8; 64],
 ) -> Result<()>
 where
     T: alloy::transports::Transport + Clone,
@@ -37,7 +36,7 @@ where
     };
 
     // nullifier and randomness
-    let (k, r) = note_spending_key.split_at(256);
+    let (k, r) = note_spending_key.split_at(32);
 
     let nullifier_hash = {
         let mut hasher = Sha256::new();
@@ -45,13 +44,13 @@ where
         hasher.finalize()
     };
     // reconstruct the commitment tree and use this to generate the opening proof (merkle path)
-    let (mut tree, index) = fetch_tree_and_commitment_position(
-        provider,
-        contract,
-        contract_deploy_height,
-        commitment.into(),
-    )
-    .await?;
+    let (mut tree, index) =
+        fetch_tree_and_commitment_position(contract, contract_deploy_height, commitment.into())
+            .await?;
+
+    let index = index.ok_or_else(|| {
+        anyhow::anyhow!("commitment not found in tree, cannot build a spending proof")
+    })?;
 
     let opening: Vec<_> = tree
         .proof_at_index(index.try_into()?)
@@ -65,6 +64,7 @@ where
         r: r.try_into()?,
         leaf_index: index,
         opening,
+        recipient,
     };
 
     let env = ExecutorEnv::builder()
@@ -97,14 +97,13 @@ where
     Ok(())
 }
 
-/// Parse the deposit logs in the contract to reconstruct the commitment merkle tree locally
-/// also search for the commitment of the note we are trying to spend and return its index
+/// Parse the deposit logs in the contract to reconstruct the commitment Merkle tree locally
+/// Also return the index of the given spending commitment in the tree if it is found
 pub(crate) async fn fetch_tree_and_commitment_position<T, P, N>(
-    provider: impl Provider<T, N>,
     contract: &ITornadoInstance<T, P, N>,
     contract_deploy_height: u64,
     spending_commitment: [u8; 32],
-) -> Result<(MerkleTree, u32)>
+) -> Result<(MerkleTree, Option<u32>)>
 where
     T: alloy::transports::Transport + Clone,
     P: Provider<T, N>,
@@ -116,21 +115,19 @@ where
         .event_signature(Deposit::SIGNATURE_HASH)
         .from_block(contract_deploy_height);
 
-    let logs = provider.get_logs(&filter).await?;
+    let logs = contract.provider().get_logs(&filter).await?;
 
     let mut commitment_tree = MerkleTree::new();
     let mut spending_commitment_index = None;
 
     for log in logs {
         let log = Deposit::decode_log(&log.inner, true)?;
-        commitment_tree.append(log.commitment);
+        commitment_tree
+            .append(log.commitment)
+            .map_err(|_| anyhow::anyhow!("failed to append to tree"))?;
         if log.commitment == spending_commitment {
             spending_commitment_index = Some(log.leafIndex);
         }
     }
-    if let Some(spending_commitment_index) = spending_commitment_index {
-        Ok((commitment_tree, spending_commitment_index))
-    } else {
-        Err(anyhow::anyhow!("Spending commitment not found in in tree"))
-    }
+    Ok((commitment_tree, spending_commitment_index))
 }

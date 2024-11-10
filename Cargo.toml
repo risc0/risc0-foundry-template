@@ -15,7 +15,7 @@ alloy-primitives = { version = "=0.8.11", default-features = false, features = [
     "std",
 ] }
 alloy-sol-types = { version = "=0.8.11" }
-alloy-merkle-tree = { git = "https://github.com/willemolding/alloy-merkle-tree" }
+alloy-merkle-tree = { git = "https://github.com/willemolding/alloy-merkle-tree", rev = "9d1f05d4dcd" }
 anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
 bytemuck = { version = "1.14" }

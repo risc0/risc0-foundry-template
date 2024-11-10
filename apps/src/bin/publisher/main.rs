@@ -17,14 +17,13 @@
 // to your deployed app contract.
 
 use alloy::{
-    network::EthereumWallet, providers::ProviderBuilder, signers::local::PrivateKeySigner,
-    sol_types::SolValue,
+    network::EthereumWallet,
+    providers::{ProviderBuilder, WalletProvider},
+    signers::local::PrivateKeySigner,
 };
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use risc0_ethereum_contracts::encode_seal;
-use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 use url::Url;
 
 mod abi;
@@ -55,7 +54,7 @@ struct Args {
     #[clap(long)]
     contract_deploy_height: u64,
 
-    /// The note size used by this contract in wei
+    /// The note size, N, used by this contract in wei
     #[clap(long)]
     #[clap(default_value = "1000000000000000")] // 1 eth
     note_size: U256,
@@ -73,9 +72,9 @@ enum SubCommand {
     Withdraw { spending_key: String },
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     env_logger::init();
-    // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
 
     // Create an alloy provider for that private key and URL.
@@ -84,21 +83,29 @@ fn main() -> Result<()> {
         .with_recommended_fillers()
         .wallet(wallet)
         .on_http(args.rpc_url);
-    let contract = abi::ITornado::new(args.contract, provider.clone());
-
-    // Initialize the async runtime environment to handle the transaction sending.
-    let runtime = tokio::runtime::Runtime::new()?;
+    let contract = abi::ITornado::new(args.contract, provider);
 
     match args.command {
-        SubCommand::Deposit => runtime.block_on(deposit::deposit(&contract, args.note_size))?,
-        SubCommand::Withdraw { spending_key } => runtime.block_on(withdraw::withdraw(
-            provider,
-            &contract,
-            args.contract_deploy_height,
-            args.note_size,
-            [0_u8; 512],
-        ))?,
+        SubCommand::Deposit => deposit::deposit(&contract, args.note_size).await?,
+        SubCommand::Withdraw { spending_key } => {
+            withdraw::withdraw(
+                &contract,
+                args.contract_deploy_height,
+                contract.provider().default_signer_address(),
+                decode_spending_key(&spending_key)?,
+            )
+            .await?
+        }
     }
 
     Ok(())
+}
+
+fn decode_spending_key(spending_key: &str) -> Result<[u8; 64]> {
+    let spending_key = hex::decode(spending_key.trim_start_matches("0x"))
+        .context("failed to decode spending key hex")?;
+    spending_key
+        .as_slice()
+        .try_into()
+        .context("spending key must be exactly 64 bytes")
 }
