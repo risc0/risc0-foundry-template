@@ -35,12 +35,7 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
         uint32 leafIndex,
         uint256 timestamp
     );
-    event Withdrawal(
-        address to,
-        bytes32 nullifierHash,
-        address indexed relayer,
-        uint256 fee
-    );
+    event Withdrawal(address to, bytes32 nullifierHash);
 
     /**
     @dev The constructor
@@ -88,45 +83,37 @@ abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
     function withdraw(
         bytes calldata _proof,
         bytes32 _root,
-        bytes32 _nullifierHash,
-        address payable _recipient,
-        address payable _relayer,
-        uint256 _fee,
-        uint256 _refund
+        bytes32 _nullifierHash
     ) external payable nonReentrant {
-        require(_fee <= denomination, "Fee exceeds transfer value");
         require(
             !nullifierHashes[_nullifierHash],
             "The note has been already spent"
         );
         require(isKnownRoot(_root), "Cannot find your merkle root"); // Make sure to use a recent one
-        require(
-            verifier.verifyProof(
-                _proof,
-                [
-                    uint256(_root),
-                    uint256(_nullifierHash),
-                    uint256(uint160(address(_recipient))),
-                    uint256(uint160(address(_relayer))),
-                    _fee,
-                    _refund
-                ]
-            ),
-            "Invalid withdraw proof"
-        );
+
+        // todo: insert risczero proof verification here
+        // require(
+        //     verifier.verifyProof(
+        //         _proof,
+        //         [
+        //             uint256(_root),
+        //             uint256(_nullifierHash),
+        //             uint256(uint160(address(_recipient))),
+        //             uint256(uint160(address(_relayer))),
+        //             _fee,
+        //             _refund
+        //         ]
+        //     ),
+        //     "Invalid withdraw proof"
+        // );
 
         nullifierHashes[_nullifierHash] = true;
-        _processWithdraw(_recipient, _relayer, _fee, _refund);
-        emit Withdrawal(_recipient, _nullifierHash, _relayer, _fee);
+        _processWithdraw(payable(msg.sender));
+        emit Withdrawal(msg.sender, _nullifierHash);
     }
 
     /** @dev this function is defined in a child contract */
-    function _processWithdraw(
-        address payable _recipient,
-        address payable _relayer,
-        uint256 _fee,
-        uint256 _refund
-    ) internal virtual;
+    function _processWithdraw(address payable _recipient) internal virtual;
 
     /** @dev whether a note is already spent */
     function isSpent(bytes32 _nullifierHash) public view returns (bool) {
