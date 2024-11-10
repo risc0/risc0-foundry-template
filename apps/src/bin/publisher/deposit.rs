@@ -19,7 +19,7 @@ where
     P: Provider<T, N>,
     N: Network,
 {
-    // generate the random values that make up the spending key
+    // generate the nullifier and secret that make up the spending key
     let mut rng = OsRng;
     let note_spending_key = rng.gen_biguint(512).to_bytes_be(); // this is comprised of two 256 bit uints (k, r)
 
@@ -36,7 +36,7 @@ where
         .deposit(B256::from_slice(&commitment))
         .value(note_size);
     let pending_tx = call_builder.send().await?;
-    let receipt = pending_tx.get_receipt().await?;
+    pending_tx.get_receipt().await?;
 
     println!(
         "Deposit successful. Spending key:({})",

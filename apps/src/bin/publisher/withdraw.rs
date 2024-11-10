@@ -1,7 +1,12 @@
 use crate::abi::Deposit;
 use crate::abi::ITornado::ITornadoInstance;
 
-use alloy::{network::Network, primitives::U256, providers::Provider, rpc::types::Filter};
+use alloy::{
+    network::Network,
+    primitives::{B256, U256},
+    providers::Provider,
+    rpc::types::Filter,
+};
 use alloy_merkle_tree::incremental_tree::IncrementalMerkleTree;
 use alloy_sol_types::SolEvent;
 use anyhow::Result;
@@ -81,13 +86,14 @@ where
     // Extract the journal from the receipt.
     let journal = receipt.journal.bytes.clone();
 
-    // Submit the withdrawal request including the proof
-    // let call_builder = contract.withdraw(
-    //     B256::from_slice(&commitment),
-    //     B256::from_slice(&nullifier_hash),
-    //     B256::from_slice(&seal),
-    //     journal,
-    // );
+    // Submit the withdrawal request including the seal
+    let call_builder =
+        contract.withdraw(seal.into(), tree.root(), B256::from_slice(&nullifier_hash));
+    let pending_tx = call_builder.send().await?;
+    pending_tx.get_receipt().await?;
+
+    println!("Withdrawal successful. Journal:({})", hex::encode(journal));
+
     Ok(())
 }
 
