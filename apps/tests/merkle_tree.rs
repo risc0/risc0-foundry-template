@@ -1,7 +1,7 @@
 use alloy::hex::FromHex;
 use alloy_merkle_tree::incremental_tree::IncrementalMerkleTree;
 use alloy_primitives::B256;
-use sha2::{Digest, Sha256};
+use sha2::Sha256;
 
 type MerkleTree = IncrementalMerkleTree<10, Sha256>;
 

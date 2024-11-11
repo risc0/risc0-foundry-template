@@ -2,14 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
-import "./Tornado.sol";
+import "./Mixer.sol";
 
-contract ETHTornado is Tornado {
+contract EthMixer is Mixer {
     constructor(
         IRiscZeroVerifier _verifier,
         uint256 _denomination,
         uint32 _merkleTreeHeight
-    ) Tornado(_verifier, _denomination, _merkleTreeHeight) {}
+    ) Mixer(_verifier, _denomination, _merkleTreeHeight) {}
 
     function _processDeposit() internal override {
         require(

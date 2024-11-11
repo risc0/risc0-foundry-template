@@ -13,7 +13,7 @@ pub struct ProofInput {
 
 impl ProofInput {
     pub fn try_from_bytes(bytes: &[u8]) -> Result<Self, bincode::Error> {
-        bincode::deserialize(&bytes)
+        bincode::deserialize(bytes)
     }
 
     pub fn to_bytes(&self) -> Result<Vec<u8>, bincode::Error> {

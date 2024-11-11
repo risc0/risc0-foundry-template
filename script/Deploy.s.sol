@@ -23,7 +23,7 @@ import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import {RiscZeroGroth16Verifier} from "risc0/groth16/RiscZeroGroth16Verifier.sol";
 import {ControlID} from "risc0/groth16/ControlID.sol";
 
-import {Tornado} from "../contracts/Tornado.sol";
+import {EthMixer} from "../contracts/EthMixer.sol";
 
 /// @notice Deployment script for the RISC Zero starter project.
 /// @dev Use the following environment variable to control the deployment:
@@ -36,9 +36,14 @@ import {Tornado} from "../contracts/Tornado.sol";
 ///
 /// https://book.getfoundry.sh/tutorials/solidity-scripting
 /// https://book.getfoundry.sh/reference/forge/forge-script
-contract TornadoDeploy is Script, RiscZeroCheats {
+contract EthMixerDeploy is Script, RiscZeroCheats {
     // Path to deployment config file, relative to the project root.
     string constant CONFIG_FILE = "script/config.toml";
+
+    // the note size for our deployment
+    uint256 constant DENOMINATION = 1 ether;
+    // the height of the Merkle Tree, once the tree is full a new mixer needs to be deployed
+    uint32 constant MERKLE_TREE_HEIGHT = 10;
 
     IRiscZeroVerifier verifier;
 
@@ -111,9 +116,13 @@ contract TornadoDeploy is Script, RiscZeroCheats {
             );
         }
 
-        // // Deploy the application contract.
-        // Tornado Tornado = new Tornado(verifier);
-        // console2.log("Deployed Tornado to", address(Tornado));
+        // Deploy the mixer contract.
+        EthMixer mixer = new EthMixer(
+            verifier,
+            DENOMINATION,
+            MERKLE_TREE_HEIGHT
+        );
+        console2.log("Deployed EthMixer to", address(mixer));
 
         vm.stopBroadcast();
     }

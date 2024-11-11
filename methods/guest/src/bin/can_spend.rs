@@ -30,14 +30,13 @@ fn main() {
     // Decode and parse the input
     let input = ProofInput::try_from_bytes(&input_bytes).unwrap();
 
-    // hash the nullifier so we can include commit it to the journal enforcing the constraint (nullifier_hash = H(k))
+    // hash the nullifier so we can commit it to the journal enforcing the constraint (nullifier_hash = H(k))
     let nullifier_hash = {
         let mut hasher = Sha256::new();
         hasher.update(&input.k);
         hasher.finalize()
     };
 
-    // calculate the commitment and use this when checking the merkle proof
     let commitment = {
         let mut hasher = Sha256::new();
         hasher.update(&input.k);

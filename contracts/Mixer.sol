@@ -6,7 +6,7 @@ import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
 import {ImageID} from "./ImageID.sol"; // auto-generated contract after running `cargo build`.
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-abstract contract Tornado is MerkleTreeWithHistory, ReentrancyGuard {
+abstract contract Mixer is MerkleTreeWithHistory, ReentrancyGuard {
     IRiscZeroVerifier public immutable verifier;
     bytes32 public constant imageId = ImageID.CAN_SPEND_ID;
 

@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// This application demonstrates how to send an off-chain proof request
-// to the Bonsai proving service and publish the received proofs directly
-// to your deployed app contract.
-
 use alloy::{
     network::EthereumWallet,
     providers::{ProviderBuilder, WalletProvider},
@@ -35,7 +31,7 @@ mod withdraw;
 #[clap(author, version, about, long_about = None)]
 struct Args {
     /// Ethereum chain ID
-    #[clap(long)]
+    #[clap(long, env)]
     chain_id: u64,
 
     /// Ethereum Node endpoint.
@@ -43,20 +39,21 @@ struct Args {
     eth_wallet_private_key: PrivateKeySigner,
 
     /// Ethereum Node endpoint.
-    #[clap(long)]
+    #[clap(long, env)]
     rpc_url: Url,
 
     /// Application's contract address on Ethereum
-    #[clap(long)]
+    #[clap(long, env)]
     contract: Address,
 
     /// The height at which the contract was deployed
     #[clap(long)]
+    #[clap(default_value = "0")]
     contract_deploy_height: u64,
 
     /// The note size, N, used by this contract in wei
     #[clap(long)]
-    #[clap(default_value = "1000000000000000")] // 1 eth
+    #[clap(default_value = "1000000000000000000")] // 1 eth
     note_size: U256,
 
     #[command(subcommand)]
@@ -74,7 +71,7 @@ enum SubCommand {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
+    tracing_subscriber::fmt().without_time().init();
     let args = Args::parse();
 
     // Create an alloy provider for that private key and URL.
@@ -83,7 +80,7 @@ async fn main() -> Result<()> {
         .with_recommended_fillers()
         .wallet(wallet)
         .on_http(args.rpc_url);
-    let contract = abi::ITornado::new(args.contract, provider);
+    let contract = abi::IMixer::new(args.contract, provider);
 
     match args.command {
         SubCommand::Deposit => deposit::deposit(&contract, args.note_size).await?,

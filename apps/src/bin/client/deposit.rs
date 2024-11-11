@@ -1,4 +1,4 @@
-use crate::abi::ITornado::ITornadoInstance;
+use crate::abi::IMixer::IMixerInstance;
 
 use alloy::{
     network::Network,
@@ -11,7 +11,7 @@ use rand::rngs::OsRng;
 use sha2::{Digest, Sha256};
 
 pub(crate) async fn deposit<T, P, N>(
-    contract: &ITornadoInstance<T, P, N>,
+    contract: &IMixerInstance<T, P, N>,
     note_size: U256,
 ) -> Result<()>
 where
@@ -39,7 +39,7 @@ where
     pending_tx.get_receipt().await?;
 
     println!(
-        "Deposit successful. Spending key:({})",
+        "Deposit successful. Note spending key: 0x{}",
         hex::encode(note_spending_key)
     );
 

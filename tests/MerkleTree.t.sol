@@ -16,17 +16,18 @@ contract MerkleTreeTest is Test, MerkleTreeWithHistory(10) {
                 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
             )
         );
-        // assert(
-        //     roots[0] ==
-        //         0xffff0ad7e659772f9534c195c815efc4014ef1e1daed4404c06385d11192e92b
-        // );
-        console2.logBytes32(roots[0]);
-        console2.logBytes32(roots[1]);
-        console2.logBytes32(roots[2]);
-        console2.logBytes32(roots[3]);
-        // assert(
-        //     roots[1] ==
-        //         0xffff0ad7e659772f9534c195c815efc4014ef1e1daed4404c06385d11192e92b
-        // );
+        // test against values caluculated locally using the Rust incremental merkle tree impl
+        assert(
+            roots[0] ==
+                0x506d86582d252405b840018792cad2bf1259f1ef5aa5f887e13cb2f0094f51e1
+        );
+        assert(
+            roots[1] ==
+                0xffff0ad7e659772f9534c195c815efc4014ef1e1daed4404c06385d11192e92b
+        );
+        assert(
+            roots[2] ==
+                0x606f20333f7003fc7839a11ddbf8a3d85d3f35c5b993889dde79aa2caf13d61d
+        );
     }
 }

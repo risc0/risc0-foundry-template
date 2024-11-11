@@ -1,6 +1,6 @@
 alloy::sol!(
     #[sol(rpc, all_derives)]
-    interface ITornado {
+    interface IMixer {
         function deposit(bytes32 _commitment) external payable;
 
         function withdraw(
