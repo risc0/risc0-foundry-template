@@ -24,7 +24,6 @@ const SOLIDITY_ELF_PATH: &str = "../tests/Elf.sol";
 fn main() {
     git_submodule_init();
     check_submodule_state();
-    println!("cargo:rerun-if-changed=.gitmodules");
 
     // Builds can be made deterministic, and thereby reproducible, by using Docker to build the
     // guest. Check the RISC0_USE_DOCKER variable and use Docker to build the guest if set.
@@ -57,6 +56,7 @@ fn main() {
 /// # Warnings
 /// Prints a warning to stderr if the initialization fails, but does not interrupt the build process.
 fn git_submodule_init() {
+    println!("cargo:rerun-if-changed=.gitmodules");
     let output = Command::new("git")
         .args(["submodule", "init"])
         .output()
@@ -82,6 +82,7 @@ fn git_submodule_init() {
 /// Prints warnings for any non-clean states, but does not modify submodules
 /// or interrupt the build process.
 fn check_submodule_state() {
+    println!("cargo:rerun-if-changed=.gitmodules");
     let status = Command::new("git")
         .args(["submodule", "status"])
         .output()
