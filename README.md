@@ -201,5 +201,5 @@ Below are the primary files in the project directory
 [image-id]: https://dev.risczero.com/terminology#image-id
 [install-rust]: https://doc.rust-lang.org/cargo/getting-started/installation.html
 [term-journal]: https://dev.risczero.com/terminology#journal
-[steel-repo]: https://github.com/risc0/risc0-ethereum/tree/main/steel
+[steel-repo]: https://github.com/risc0/risc0-ethereum/tree/main/crates/steel
 [erc20-counter]: https://github.com/risc0/risc0-ethereum/tree/main/examples/erc20-counter
