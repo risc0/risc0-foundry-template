@@ -23,7 +23,6 @@ use alloy::{
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::Parser;
-use ethers::prelude::*;
 use methods::IS_EVEN_ELF;
 use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
