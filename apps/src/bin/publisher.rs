@@ -66,10 +66,7 @@ fn main() -> Result<()> {
 
     // Create an alloy provider for that private key and URL.
     let wallet = EthereumWallet::from(args.eth_wallet_private_key);
-    let provider = ProviderBuilder::new()
-        .with_recommended_fillers()
-        .wallet(wallet)
-        .on_http(args.rpc_url);
+    let provider = ProviderBuilder::new().wallet(wallet).on_http(args.rpc_url);
 
     // ABI encode input: Before sending the proof request to the Bonsai proving service,
     // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
