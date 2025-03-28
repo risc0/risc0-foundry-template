@@ -15,6 +15,7 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
+  RISC0_VERSION: 2.0.0
   RISC0_TOOLCHAIN_VERSION: 1.85.0
 
 jobs:
@@ -46,6 +47,8 @@ jobs:
 
       - name: Install toolchains
         run: |
+          rzup install --verbose force cargo-risczero ${{ env.RISC0_VERSION }}
+          rzup install --verbose force r0vm ${{ env.RISC0_VERSION }}
           rzup install --verbose --force rust ${{ env.RISC0_TOOLCHAIN_VERSION }}
           rzup install --verbose cpp
         shell: bash
@@ -95,6 +98,8 @@ jobs:
 
       - name: Install toolchains
         run: |
+          rzup install --verbose force cargo-risczero ${{ env.RISC0_VERSION }}
+          rzup install --verbose force r0vm ${{ env.RISC0_VERSION }}
           rzup install --verbose --force rust ${{ env.RISC0_TOOLCHAIN_VERSION }}
           rzup install --verbose cpp
         shell: bash
