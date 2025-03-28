@@ -47,8 +47,8 @@ jobs:
 
       - name: Install toolchains
         run: |
-          rzup install --verbose force cargo-risczero ${{ env.RISC0_VERSION }}
-          rzup install --verbose force r0vm ${{ env.RISC0_VERSION }}
+          rzup install --verbose cargo-risczero ${{ env.RISC0_VERSION }}
+          rzup install --verbose r0vm ${{ env.RISC0_VERSION }}
           rzup install --verbose --force rust ${{ env.RISC0_TOOLCHAIN_VERSION }}
           rzup install --verbose cpp
         shell: bash
@@ -98,8 +98,8 @@ jobs:
 
       - name: Install toolchains
         run: |
-          rzup install --verbose force cargo-risczero ${{ env.RISC0_VERSION }}
-          rzup install --verbose force r0vm ${{ env.RISC0_VERSION }}
+          rzup install --verbose cargo-risczero ${{ env.RISC0_VERSION }}
+          rzup install --verbose r0vm ${{ env.RISC0_VERSION }}
           rzup install --verbose --force rust ${{ env.RISC0_TOOLCHAIN_VERSION }}
           rzup install --verbose cpp
         shell: bash
