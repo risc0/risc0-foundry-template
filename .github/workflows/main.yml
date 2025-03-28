@@ -38,7 +38,7 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@release-2.0
+        uses: risc0/risc0-ethereum/.github/actions/bininstall-risc0@release-2.0
         with:
           risczero-version: '2.0.0'
           toolchain-version: '1.85.0'
@@ -81,7 +81,7 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@release-2.0
+        uses: risc0/risc0-ethereum/.github/actions/bininstall-risc0@release-2.0
         with:
           risczero-version: '2.0.0'
           toolchain-version: '1.85.0'
