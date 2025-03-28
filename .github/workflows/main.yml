@@ -15,6 +15,8 @@ concurrency:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   RUST_BACKTRACE: "1"
+  RISC0_TOOLCHAIN_VERSION: 1.85.0
+  RISC0_MONOREPO_REF: "release-2.0"
 
 jobs:
   test:
@@ -38,10 +40,10 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/bininstall-risc0@release-2.0
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@release-2.0
         with:
-          risczero-version: '2.0.0'
-          toolchain-version: '1.85.0'
+          ref: ${{ env.RISC0_MONOREPO_REF }}
+          toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
 
       - name: build rust guest
         run: cargo build
@@ -81,10 +83,10 @@ jobs:
         uses: foundry-rs/foundry-toolchain@v1
 
       - name: risczero toolchain install
-        uses: risc0/risc0-ethereum/.github/actions/bininstall-risc0@release-2.0
+        uses: risc0/risc0-ethereum/.github/actions/cargo-risczero-install@release-2.0
         with:
-          risczero-version: '2.0.0'
-          toolchain-version: '1.85.0'
+          ref: ${{ env.RISC0_MONOREPO_REF }}
+          toolchain-version: ${{ env.RISC0_TOOLCHAIN_VERSION }}
 
       - name: build rust guest
         run: cargo build
