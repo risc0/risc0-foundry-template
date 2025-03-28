@@ -1,0 +1,14 @@
+[profile.mainnet] 
+# RISC Zero Verifier contract deployed on mainnet (see https://dev.risczero.com/api/blockchain-integration/contracts/verifier#deployed-verifiers)
+chainId = 1
+riscZeroVerifierAddress = "0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319"
+
+[profile.sepolia]
+# RISC Zero Verifier contract deployed on sepolia (see https://dev.risczero.com/api/blockchain-integration/contracts/verifier#deployed-verifiers)
+chainId = 11155111
+riscZeroVerifierAddress = "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187"
+
+# You can add additional profiles here
+# [profile.custom]
+# chainId = 11155111
+# riscZeroVerifierAddress =
