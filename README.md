@@ -27,7 +27,7 @@ First, [install Rust][install-rust] and [Foundry][install-foundry], and then res
 # Install Rust
 curl https://sh.rustup.rs -sSf | sh
 # Install Foundry
-curl -L https://foundry.paradigm.xyz | bash
+curl -L https://raw.githubusercontent.com/foundry-rs/foundry/master/foundryup/install | bash
 ```
 
 Next, you will use `rzup` to install `cargo-risczero`.
