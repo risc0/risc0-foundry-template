@@ -10,9 +10,9 @@ path = "src/bin/is_even.rs"
 [workspace]
 
 [dependencies]
-alloy-primitives = { version = "0.8", default-features = false, features = ["rlp", "serde", "std"] }
-alloy-sol-types = { version = "0.8" }
-risc0-zkvm = { version = "2.0.0", default-features = false, features = ['std'] }
+alloy-primitives = { version = "1.0", default-features = false, features = ["rlp", "serde", "std"] }
+alloy-sol-types = { version = "1.0" }
+risc0-zkvm = { version = "2.0.2", default-features = false, features = ['std'] }
 
 [profile.release]
 lto = "thin"
