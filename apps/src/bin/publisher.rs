@@ -66,7 +66,9 @@ fn main() -> Result<()> {
 
     // Create an alloy provider for that private key and URL.
     let wallet = EthereumWallet::from(args.eth_wallet_private_key);
-    let provider = ProviderBuilder::new().wallet(wallet).on_http(args.rpc_url);
+    let provider = ProviderBuilder::new()
+        .wallet(wallet)
+        .connect_http(args.rpc_url);
 
     // ABI encode input: Before sending the proof request to the Bonsai proving service,
     // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
@@ -92,7 +94,7 @@ fn main() -> Result<()> {
     // Decode Journal: Upon receiving the proof, the application decodes the journal to extract
     // the verified number. This ensures that the number being submitted to the blockchain matches
     // the number that was verified off-chain.
-    let x = U256::abi_decode(&journal, true).context("decoding journal data")?;
+    let x = U256::abi_decode(&journal).context("decoding journal data")?;
 
     // Construct function call: Using the IEvenNumber interface, the application constructs
     // the ABI-encoded function call for the set function of the EvenNumber contract.

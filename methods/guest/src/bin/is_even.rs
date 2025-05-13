@@ -23,7 +23,7 @@ fn main() {
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
     // Decode and parse the input
-    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
+    let number = <U256>::abi_decode(&input_bytes).unwrap();
 
     // Run the computation.
     // In this case, asserting that the provided number is even.
