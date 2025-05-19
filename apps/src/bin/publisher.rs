@@ -42,7 +42,7 @@ struct Args {
     #[clap(long)]
     chain_id: u64,
 
-    /// Ethereum Node endpoint.
+    /// Wallet private key.
     #[clap(long, env)]
     eth_wallet_private_key: PrivateKeySigner,
 
