@@ -1,11 +1,13 @@
 # RISC Zero Foundry Template
 
+> [!WARNING]
+> **This repository has been deprecated.** After serving the community well, this template is now superseded by the [Boundless Foundry Template](https://github.com/boundless-xyz/boundless-foundry-template). All new projects should use the Boundless Foundry Template for the latest features and ongoing support. Thank you for your understanding. 🙏
+
 > Prove computation with the [RISC Zero zkVM][docs-zkvm] and verify the results in your Ethereum contract.
 
 This repository implements an example application on Ethereum utilizing RISC Zero as a [coprocessor][blog-coprocessor] to the smart contract application.
 It provides a starting point for building powerful new applications on Ethereum that offload work that is computationally intensive (i.e. gas expensive), or difficult to implement in Solidity (e.g. ed25519 signature verification, or HTML parsing).
 
-<!-- TODO(#100) Integrate support for Steel more directly into this repo -->
 Integrate with [Steel][steel-repo] to execute view calls and simulate transactions on Ethereum. Check out the [ERC-20 counter][erc20-counter] demo to see an example.
 
 ## Overview
