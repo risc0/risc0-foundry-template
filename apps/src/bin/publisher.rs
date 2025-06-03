@@ -85,9 +85,13 @@ fn main() -> Result<()> {
             &ProverOpts::groth16(),
         )?
         .receipt;
+    println!("receipt {:?}", receipt);
+    println!("receipt {}", hex::encode(&bincode::serialize(&receipt)?));
+    receipt.verify(IS_EVEN_ID).unwrap();
 
     // Encode the seal with the selector.
     let seal = encode_seal(&receipt)?;
+    println!("seal: {}", hex::encode(&seal));
 
     // Extract the journal from the receipt.
     let journal = receipt.journal.bytes.clone();
@@ -100,8 +104,11 @@ fn main() -> Result<()> {
     // Construct function call: Using the IEvenNumber interface, the application constructs
     // the ABI-encoded function call for the set function of the EvenNumber contract.
     // This call includes the verified number, the post-state digest, and the seal (proof).
+    // NOTE: Set a gas limit to skip gas estimation so that the transaction is sent even if it
+    // would fail. This allows for debugging of the revert on Tenderly
+    // (https://dashboard.tenderly.co/).
     let contract = IEvenNumber::new(args.contract, provider);
-    let call_builder = contract.set(x, seal.into());
+    let call_builder = contract.set(x, seal.into()).gas(500000);
 
     // Initialize the async runtime environment to handle the transaction sending.
     let runtime = tokio::runtime::Runtime::new()?;
@@ -109,6 +116,7 @@ fn main() -> Result<()> {
     // Send transaction: Finally, send the transaction to the Ethereum blockchain,
     // effectively calling the set function of the EvenNumber contract with the verified number and proof.
     let pending_tx = runtime.block_on(call_builder.send())?;
+    println!("sent {pending_tx:x?}");
     runtime.block_on(pending_tx.get_receipt())?;
 
     Ok(())

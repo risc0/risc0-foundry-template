@@ -8,11 +8,13 @@ alloy = { workspace = true }
 alloy-primitives = { workspace = true }
 alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
+bincode.workspace = true
 clap = { version = "4.0", features = ["derive", "env"] }
 env_logger = { version = "0.10" }
+hex.workspace = true
 log = { workspace = true }
 methods = { workspace = true }
 risc0-ethereum-contracts = { workspace = true }
-risc0-zkvm = { workspace = true, features = ["client"] }
+risc0-zkvm = { workspace = true, features = ["client", "bonsai"] }
 tokio = { version = "1.35", features = ["full"] }
 url = { workspace = true }

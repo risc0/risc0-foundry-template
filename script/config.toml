@@ -8,6 +8,11 @@ riscZeroVerifierAddress = "0x8EaB2D97Dfce405A1692a21b3ff3A172d593D319"
 chainId = 11155111
 riscZeroVerifierAddress = "0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187"
 
+[profile.arbitrum]
+# RISC Zero Verifier contract deployed on sepolia (see https://dev.risczero.com/api/blockchain-integration/contracts/verifier#deployed-verifiers)
+chainId = 42161
+riscZeroVerifierAddress = "0x0b144e07a0826182b6b59788c34b32bfa86fb711"
+
 # You can add additional profiles here
 # [profile.custom]
 # chainId = 11155111
