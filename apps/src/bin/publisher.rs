@@ -23,16 +23,10 @@ use alloy::{
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::Parser;
-use methods::IS_EVEN_ELF;
-use risc0_ethereum_contracts::encode_seal;
-use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
+use methods::{IS_EVEN_ELF, IS_EVEN_ID};
+use risc0_ethereum_contracts::{encode_seal, IRiscZeroVerifier};
+use risc0_zkvm::{default_prover, sha::Digestible, ExecutorEnv, ProverOpts, VerifierContext};
 use url::Url;
-
-// `IEvenNumber` interface automatically generated via the alloy `sol!` macro.
-alloy::sol!(
-    #[sol(rpc, all_derives)]
-    "../contracts/IEvenNumber.sol"
-);
 
 /// Arguments of the publisher CLI.
 #[derive(Parser, Debug)]
@@ -59,7 +53,8 @@ struct Args {
     input: U256,
 }
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
     env_logger::init();
     // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
@@ -88,27 +83,15 @@ fn main() -> Result<()> {
     // Encode the seal with the selector.
     let seal = encode_seal(&receipt)?;
 
-    // Extract the journal from the receipt.
-    let journal = receipt.journal.bytes.clone();
-
-    // Decode Journal: Upon receiving the proof, the application decodes the journal to extract
-    // the verified number. This ensures that the number being submitted to the blockchain matches
-    // the number that was verified off-chain.
-    let x = U256::abi_decode(&journal).context("decoding journal data")?;
-
-    // Construct function call: Using the IEvenNumber interface, the application constructs
-    // the ABI-encoded function call for the set function of the EvenNumber contract.
-    // This call includes the verified number, the post-state digest, and the seal (proof).
-    let contract = IEvenNumber::new(args.contract, provider);
-    let call_builder = contract.set(x, seal.into());
-
-    // Initialize the async runtime environment to handle the transaction sending.
-    let runtime = tokio::runtime::Runtime::new()?;
-
-    // Send transaction: Finally, send the transaction to the Ethereum blockchain,
-    // effectively calling the set function of the EvenNumber contract with the verified number and proof.
-    let pending_tx = runtime.block_on(call_builder.send())?;
-    runtime.block_on(pending_tx.get_receipt())?;
+    let contract = IRiscZeroVerifier::new(args.contract, provider);
+    let () = contract
+        .verify(
+            seal.into(),
+            bytemuck::cast::<_, [u8; 32]>(IS_EVEN_ID).into(),
+            <[u8; 32]>::from(receipt.journal.digest()).into(),
+        )
+        .call()
+        .await?;
 
     Ok(())
 }
