@@ -58,22 +58,21 @@ async fn main() -> Result<()> {
         .connect(args.rpc_url.as_str())
         .await?;
 
-    // ABI encode input: Before sending the proof request to the Bonsai proving service,
-    // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
-    // NOTE: What is proven does not matter for the purposes of this test. The is_even guest is
-    // used because the starting point was the Foundry template.
-    let env = ExecutorEnv::builder()
-        .write_slice(&U256::ZERO.abi_encode())
-        .build()?;
-
-    let receipt = default_prover()
-        .prove_with_ctx(
+    let receipt = tokio::task::spawn_blocking(move || {
+        // NOTE: What is proven does not matter for the purposes of this test. The is_even guest is
+        // used because the starting point was the Foundry template.
+        let env = ExecutorEnv::builder()
+            .write_slice(&U256::ZERO.abi_encode())
+            .build()?;
+        default_prover().prove_with_ctx(
             env,
             &VerifierContext::default(),
             IS_EVEN_ELF,
             &ProverOpts::groth16(),
-        )?
-        .receipt;
+        )
+    })
+    .await??
+    .receipt;
 
     // Encode the seal with the selector.
     let seal = encode_seal(&receipt)?;
