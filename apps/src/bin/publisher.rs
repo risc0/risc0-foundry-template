@@ -16,10 +16,7 @@
 // to the Bonsai proving service and publish the received proofs directly
 // to your deployed app contract.
 
-use alloy::{
-    network::EthereumWallet, providers::ProviderBuilder, signers::local::PrivateKeySigner,
-    sol_types::SolValue,
-};
+use alloy::{providers::ProviderBuilder, sol_types::SolValue};
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::Parser;
@@ -32,25 +29,17 @@ use url::Url;
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
-    /// Ethereum chain ID
-    #[clap(long)]
-    chain_id: u64,
-
     /// Ethereum Node endpoint.
     #[clap(long, env)]
-    eth_wallet_private_key: PrivateKeySigner,
-
-    /// Ethereum Node endpoint.
-    #[clap(long)]
     rpc_url: Url,
 
-    /// Application's contract address on Ethereum
+    /// Address of the verifier to test against. Should be set to the address of the
+    /// RiscZeroVerifierRouter on the given chain.
+    // NOTE: The verifier address can be different on each chain but does not change between
+    // versions and so could be part of a static config. One option would be to pull it from the
+    // `contracts/deployment.toml` file in the risc0-ethereum repo.
     #[clap(long)]
-    contract: Address,
-
-    /// The input to provide to the guest binary
-    #[clap(short, long)]
-    input: U256,
+    verifier_address: Address,
 }
 
 #[tokio::main]
@@ -60,16 +49,17 @@ async fn main() -> Result<()> {
     let args = Args::parse();
 
     // Create an alloy provider for that private key and URL.
-    let wallet = EthereumWallet::from(args.eth_wallet_private_key);
     let provider = ProviderBuilder::new()
-        .wallet(wallet)
-        .connect_http(args.rpc_url);
+        .connect(args.rpc_url.as_str())
+        .await?;
 
     // ABI encode input: Before sending the proof request to the Bonsai proving service,
     // the input number is ABI-encoded to match the format expected by the guest code running in the zkVM.
-    let input = args.input.abi_encode();
-
-    let env = ExecutorEnv::builder().write_slice(&input).build()?;
+    // NOTE: What is proven does not matter for the purposes of this test. The is_even guest is
+    // used because the starting point was the Foundry template.
+    let env = ExecutorEnv::builder()
+        .write_slice(&U256::ZERO.abi_encode())
+        .build()?;
 
     let receipt = default_prover()
         .prove_with_ctx(
@@ -83,15 +73,18 @@ async fn main() -> Result<()> {
     // Encode the seal with the selector.
     let seal = encode_seal(&receipt)?;
 
-    let contract = IRiscZeroVerifier::new(args.contract, provider);
-    let () = contract
+    // IRiscZeroVerifier::verify has no return, and the Solidity implementations revert on
+    // verification failure. If it reverts, the call result will be an error.
+    let contract = IRiscZeroVerifier::new(args.verifier_address, provider);
+    contract
         .verify(
             seal.into(),
             bytemuck::cast::<_, [u8; 32]>(IS_EVEN_ID).into(),
             <[u8; 32]>::from(receipt.journal.digest()).into(),
         )
         .call()
-        .await?;
+        .await
+        .context("IRiscZeroVerifier::verify call failed")?;
 
     Ok(())
 }
