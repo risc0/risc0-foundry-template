@@ -26,6 +26,11 @@ use risc0_zkvm::{default_prover, sha::Digestible, ExecutorEnv, ProverOpts, Verif
 use url::Url;
 
 /// Arguments of the publisher CLI.
+/// ```sh
+/// RPC_URL=https://ethereum-sepolia-rpc.publicnode.com \
+/// VERIFIER_ADDRESS=0x925d8331ddc0a1F0d96E68CF073DFE1d92b69187 \
+/// cargo run
+/// ```
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
@@ -38,7 +43,7 @@ struct Args {
     // NOTE: The verifier address can be different on each chain but does not change between
     // versions and so could be part of a static config. One option would be to pull it from the
     // `contracts/deployment.toml` file in the risc0-ethereum repo.
-    #[clap(long)]
+    #[clap(long, env)]
     verifier_address: Address,
 }
 
