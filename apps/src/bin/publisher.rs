@@ -24,7 +24,7 @@ use alloy::{
 use anyhow::{Context, Result};
 use clap::Parser;
 use methods::{IS_EVEN_ELF, IS_EVEN_ID};
-use risc0_ethereum_contracts::{encode_seal, IRiscZeroVerifier};
+use risc0_ethereum_contracts::IRiscZeroVerifier;
 use risc0_zkvm::{default_prover, sha::Digestible, ExecutorEnv, ProverOpts, VerifierContext};
 use url::Url;
 
@@ -55,11 +55,6 @@ async fn main() -> Result<()> {
     // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
 
-    // Create an alloy provider for that private key and URL.
-    let provider = ProviderBuilder::new()
-        .connect(args.rpc_url.as_str())
-        .await?;
-
     let receipt = tokio::task::spawn_blocking(move || {
         // NOTE: What is proven does not matter for the purposes of this test. The is_even guest is
         // used because the starting point was the Foundry template.
@@ -76,8 +71,13 @@ async fn main() -> Result<()> {
     .await??
     .receipt;
 
+    // Create an alloy provider with the given RPC URL.
+    let provider = ProviderBuilder::new()
+        .connect(args.rpc_url.as_str())
+        .await?;
+
     // Encode the seal with the selector.
-    let seal = encode_seal(&receipt)?;
+    let seal = risc0_ethereum_contracts::encode_seal(&receipt)?;
 
     // IRiscZeroVerifier::verify has no return, and the Solidity implementations revert on
     // verification failure. If it reverts, the call result will be an error.
