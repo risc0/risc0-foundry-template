@@ -46,6 +46,7 @@ struct Args {
     // NOTE: The verifier address can be different on each chain but does not change between
     // versions and so could be part of a static config. One option would be to pull it from the
     // `contracts/deployment.toml` file in the risc0-ethereum repo.
+    // https://github.com/risc0/risc0-ethereum/blob/main/contracts/deployment.toml
     #[clap(long, env)]
     verifier_address: Address,
 }
