@@ -5,13 +5,9 @@ edition = { workspace = true }
 
 [dependencies]
 alloy = { workspace = true }
-alloy-primitives = { workspace = true }
-alloy-sol-types = { workspace = true }
 anyhow = { workspace = true }
 bytemuck = "1"
 clap = { version = "4.0", features = ["derive", "env"] }
-env_logger = { version = "0.10" }
-log = { workspace = true }
 methods = { workspace = true }
 risc0-ethereum-contracts = { workspace = true }
 risc0-zkvm = { workspace = true, default-features = true }

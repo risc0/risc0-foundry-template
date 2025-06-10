@@ -15,7 +15,6 @@ anyhow = { version = "1.0.75" }
 bincode = { version = "1.3" }
 bytemuck = { version = "1" }
 hex = { version = "0.4" }
-log = { version = "0.4" }
 methods = { path = "./methods" }
 risc0-build = { version = "2.0.1", features = ["docker"] }
 # using git references here to ensure this matches the submodules in ./lib

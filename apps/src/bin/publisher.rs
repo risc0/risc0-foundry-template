@@ -16,8 +16,11 @@
 // to the Bonsai proving service and publish the received proofs directly
 // to your deployed app contract.
 
-use alloy::{providers::ProviderBuilder, sol_types::SolValue};
-use alloy_primitives::{Address, U256};
+use alloy::{
+    primitives::{Address, U256},
+    providers::ProviderBuilder,
+    sol_types::SolValue,
+};
 use anyhow::{Context, Result};
 use clap::Parser;
 use methods::{IS_EVEN_ELF, IS_EVEN_ID};
@@ -49,7 +52,6 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init();
     // Parse CLI Arguments: The application starts by parsing command-line arguments provided by the user.
     let args = Args::parse();
 
