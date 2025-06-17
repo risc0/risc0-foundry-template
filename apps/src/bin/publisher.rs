@@ -42,11 +42,11 @@ struct Args {
     #[clap(long)]
     chain_id: u64,
 
-    /// Ethereum Node endpoint.
+    /// Private key for signing Ethereum transactions.
     #[clap(long, env)]
     eth_wallet_private_key: PrivateKeySigner,
 
-    /// Ethereum Node endpoint.
+    /// Ethereum Node RPC URL.
     #[clap(long)]
     rpc_url: Url,
 
