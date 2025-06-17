@@ -43,4 +43,4 @@ Options:
 ```
 
 [publisher]: ./src/bin/publisher.rs
-[Bonsai]: https://dev.bonsai.xyz/
+[Bonsai]: http://dev.risczero.com/bonsai/
